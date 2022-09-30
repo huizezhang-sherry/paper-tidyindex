@@ -1,0 +1,33 @@
+---
+title: "Demo arXiv template"
+format:
+  arxiv-pdf:
+    keep-tex: true  
+  arxiv-html: default
+author:
+  - name: H. Sherry Zhang
+    affiliations:
+      - name: Monash University
+        department: Department of Econometrics and Business Statistics
+        address: 29 Ancora Imparo Way, Clayton
+        city: Melbourne, VIC
+        country: Australia
+    orcid: 0000-0002-7122-1463
+    email: huize.zhang@monash.edu
+    url: https://huizezhangsh.netlify.app/
+  - name: Collaborators
+    affiliations:
+      - name: Monash University
+        department: Department of Econometrics and Business Statistics
+        address: 29 Ancora Imparo Way, Clayton
+        city: Melbourne, VIC
+        country: Australia
+abstract: |
+  - The paper describes a framework for constructing indices 
+  - use drought indices as examples, but appliable in general to environmental indices constructed from multivariate spatio-temporal data
+keywords: 
+  - template
+  - demo
+bibliography: bibliography.bib  
+---
+
