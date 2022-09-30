@@ -26,8 +26,71 @@ abstract: |
   - The paper describes a framework for constructing indices 
   - use drought indices as examples, but appliable in general to environmental indices constructed from multivariate spatio-temporal data
 keywords: 
-  - template
-  - demo
+  - spatio-temporal data
+  - indices
+  - data pipeline
 bibliography: bibliography.bib  
 ---
 
+# Introduction
+
+Index construction is a way to summarise complicated information (used in environmental data). 
+The complexity of these information may involve a spatial distribution, a temporal scale that defines the frequency of the data, and a multivariate perspective that collects different climate variables.
+
+Numerous indices have been proposed by researchers and practitioners to monitor natural hazard, for example, @alahacoon_comprehensive_2022 reviews 111 drought indices derived from traditional and remote sensing data; [review of index construction in other area, climate indices, many other reviews in drought]. 
+
+<!-- These indices are customised to distinct local weather condition and historical data availability. -->
+
+Various methods are proposed to extract multivariate information on the spatial extent, across time.
+
+Each individual index follows its own data pipeline and it can be difficult to evaluate how an index can be affected by tweaking parameters in a certain step, rearranging the order of steps, using to different method. 
+This paper proposes a data pipeline for constructing indices using multivariate spatio-temporal data. The steps involved in the pipeline are general in nature and flexible to be adopted to most index construction for environmental data.
+
+# Natural hazard indices
+
+## Climate indices
+
+## Drought indices
+
+# Data pipeline 
+
+Constructing a pipeline that divides a complex procedure into steps that can be concatenated has been adopted widely in the computational statistics community. 
+One particular example is a machine learning pipeline, tidymodel [@tidymodel]. 
+[more details on pipeline]
+
+**Statistical pipeline in interactive graphics**
+
+The data pipeline in interactive graphics is a set of steps that transform the raw data to the plots displayed on the screen. 
+The initial pipeline proposed by @buja_elements_1988 involves the following steps: non-linear transformation, variables standardization, randomization, projection engine, and viewporting.
+Another example in the early work of pipeline by @sutherland_orca_2000 describes a three-step pipeline: variable standardization, dimension reduction, and scaling data into the viewing window. 
+This pipeline also includes the transformation on spatial and temporal variables, i.e. computing time lag on temporal variables.
+@wickham_plumbing_2009 argues that whether made explicit or not, pipeline has to be presented in every graphics program and breaking down graphic rendering into steps is also beneficial for understand the implementation and compare between different graphic systems.
+
+
+**Statistical pipeline in other domains**
+
+TODO: read papers on other pipeline in R
+
+# A pipeline for natural hazard indices
+
+uniform workflow to work with index construction. 
+
+
+  - illustration 
+  - math notation
+  - benefit of the pipeline approach 
+    - index diagnostic
+    - uncertainty 
+  
+# Examples 
+
+## Constructing Standardised Precipitation Index (SPI)
+
+  - a basic workflow and congruence with results in the `SPEI` pkg
+  - allow multiple distribution fit 
+  - allow bootstrap uncertainty 
+
+
+
+
+# Reference

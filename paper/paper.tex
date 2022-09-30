@@ -73,6 +73,29 @@
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \usepackage{arxiv}
 \usepackage{orcidlink}
@@ -138,7 +161,7 @@
 \hypersetup{
   pdftitle={Demo arXiv template},
   pdfauthor={H. Sherry Zhang; Collaborators},
-  pdfkeywords={template, demo},
+  pdfkeywords={spatio-temporal data, indices, data pipeline},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -157,16 +180,165 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 \begin{document}
 \maketitle
 \begin{abstract}
-This document is only a demo explaining how to use the template.
+\begin{itemize}
+\tightlist
+\item
+  The paper describes a framework for constructing indices
+\item
+  use drought indices as examples, but appliable in general to
+  environmental indices constructed from multivariate spatio-temporal
+  data
+\end{itemize}
 \end{abstract}
 {\bfseries \emph Keywords}
 \def\sep{\textbullet\ }
-template \sep 
-demo
+spatio-temporal data \sep indices \sep 
+data pipeline
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, borderline west={3pt}{0pt}{shadecolor}, interior hidden, frame hidden, enhanced, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, interior hidden, sharp corners, frame hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced]}{\end{tcolorbox}}\fi
 
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
 
+Index construction is a way to summarise complicated information (used
+in environmental data). The complexity of these information may involve
+a spatial distribution, a temporal scale that defines the frequency of
+the data, and a multivariate perspective that collects different climate
+variables.
+
+Numerous indices have been proposed by researchers and practitioners to
+monitor natural hazard, for example, Alahacoon and Edirisinghe (2022)
+reviews 111 drought indices derived from traditional and remote sensing
+data; {[}review of index construction in other area, climate indices,
+many other reviews in drought{]}.
+
+Various methods are proposed to extract multivariate information on the
+spatial extent, across time.
+
+Each individual index follows its own data pipeline and it can be
+difficult to evaluate how an index can be affected by tweaking
+parameters in a certain step, rearranging the order of steps, using to
+different method. This paper proposes a data pipeline for constructing
+indices using multivariate spatio-temporal data. The steps involved in
+the pipeline are general in nature and flexible to be adopted to most
+index construction for environmental data.
+
+\hypertarget{natural-hazard-indices}{%
+\section{Natural hazard indices}\label{natural-hazard-indices}}
+
+\hypertarget{climate-indices}{%
+\subsection{Climate indices}\label{climate-indices}}
+
+\hypertarget{drought-indices}{%
+\subsection{Drought indices}\label{drought-indices}}
+
+\hypertarget{data-pipeline}{%
+\section{Data pipeline}\label{data-pipeline}}
+
+Constructing a pipeline that divides a complex procedure into steps that
+can be concatenated has been adopted widely in the computational
+statistics community. One particular example is a machine learning
+pipeline, tidymodel (Kuhn and Wickham 2020). {[}more details on
+pipeline{]}
+
+\textbf{Statistical pipeline in interactive graphics}
+
+The data pipeline in interactive graphics is a set of steps that
+transform the raw data to the plots displayed on the screen. The initial
+pipeline proposed by Buja et al. (1988) involves the following steps:
+non-linear transformation, variables standardization, randomization,
+projection engine, and viewporting. Another example in the early work of
+pipeline by Sutherland et al. (2000) describes a three-step pipeline:
+variable standardization, dimension reduction, and scaling data into the
+viewing window. This pipeline also includes the transformation on
+spatial and temporal variables, i.e.~computing time lag on temporal
+variables. Wickham et al. (2009) argues that whether made explicit or
+not, pipeline has to be presented in every graphics program and breaking
+down graphic rendering into steps is also beneficial for understand the
+implementation and compare between different graphic systems.
+
+\textbf{Statistical pipeline in other domains}
+
+TODO: read papers on other pipeline in R
+
+\hypertarget{a-pipeline-for-natural-hazard-indices}{%
+\section{A pipeline for natural hazard
+indices}\label{a-pipeline-for-natural-hazard-indices}}
+
+uniform workflow to work with index construction.
+
+\begin{itemize}
+\tightlist
+\item
+  illustration
+\item
+  math notation
+\item
+  benefit of the pipeline approach
+
+  \begin{itemize}
+  \tightlist
+  \item
+    index diagnostic
+  \item
+    uncertainty
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{examples}{%
+\section{Examples}\label{examples}}
+
+\hypertarget{constructing-standardised-precipitation-index-spi}{%
+\subsection{Constructing Standardised Precipitation Index
+(SPI)}\label{constructing-standardised-precipitation-index-spi}}
+
+\begin{itemize}
+\tightlist
+\item
+  a basic workflow and congruence with results in the \texttt{SPEI} pkg
+\item
+  allow multiple distribution fit
+\item
+  allow bootstrap uncertainty
+\end{itemize}
+
+\hypertarget{reference}{%
+\section*{Reference}\label{reference}}
+\addcontentsline{toc}{section}{Reference}
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-alahacoon_comprehensive_2022}{}}%
+Alahacoon, Niranga, and Mahesh Edirisinghe. 2022. {``A Comprehensive
+Assessment of Remote Sensing and Traditional Based Drought Monitoring
+Indices at Global and Regional Scale.''} \emph{Geomatics, Natural
+Hazards and Risk} 13 (December): 762--99.
+\url{https://doi.org/10.1080/19475705.2022.2044394}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-buja_elements_1988}{}}%
+Buja, A, D Asimov, C Hurley, and JA McDonald. 1988. {``Elements of a
+Viewing Pipeline for Data Analysis.''} In \emph{Dynamic Graphics for
+Statistics}, 277--308. Wadsworth, Belmont.
+
+\leavevmode\vadjust pre{\hypertarget{ref-tidymodel}{}}%
+Kuhn, Max, and Hadley Wickham. 2020. \emph{Tidymodels: A Collection of
+Packages for Modeling and Machine Learning Using Tidyverse Principles.}
+\url{https://www.tidymodels.org}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-sutherland_orca_2000}{}}%
+Sutherland, Peter, Anthony Rossini, Thomas Lumley, Nicholas Lewin-Koh,
+Julie Dickerson, Zach Cox, and Dianne Cook. 2000. {``Orca: {A}
+{Visualization} {Toolkit} for {High}-{Dimensional} {Data}.''}
+\emph{Journal of Computational and Graphical Statistics} 9 (3): 509--29.
+\url{https://www.jstor.org/stable/1390943}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-wickham_plumbing_2009}{}}%
+Wickham, Hadley, Michael Lawrence, Dianne Cook, Andreas Buja, Heike
+Hofmann, and Deborah F. Swayne. 2009. {``The Plumbing of Interactive
+Graphics.''} \emph{Computational Statistics} 24 (2): 207--15.
+\url{https://doi.org/10.1007/s00180-008-0116-x}.
+
+\end{CSLReferences}
 
 
 
