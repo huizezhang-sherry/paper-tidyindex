@@ -195,7 +195,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 spatio-temporal data \sep indices \sep 
 data pipeline
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, interior hidden, sharp corners, frame hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced, breakable, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -232,16 +232,11 @@ index construction for environmental data.
 \hypertarget{drought-indices}{%
 \subsection{Drought indices}\label{drought-indices}}
 
-\hypertarget{data-pipeline}{%
-\section{Data pipeline}\label{data-pipeline}}
+\hypertarget{data-pipeline-in-r}{%
+\section{Data pipeline in R}\label{data-pipeline-in-r}}
 
 Constructing a pipeline that divides a complex procedure into steps that
-can be concatenated has been adopted widely in the computational
-statistics community. One particular example is a machine learning
-pipeline, tidymodel (Kuhn and Wickham 2020). {[}more details on
-pipeline{]}
-
-\textbf{Statistical pipeline in interactive graphics}
+can be concatenated has been adopted widely in the R community.
 
 The data pipeline in interactive graphics is a set of steps that
 transform the raw data to the plots displayed on the screen. The initial
@@ -257,13 +252,74 @@ not, pipeline has to be presented in every graphics program and breaking
 down graphic rendering into steps is also beneficial for understand the
 implementation and compare between different graphic systems.
 
-\textbf{Statistical pipeline in other domains}
+The data pipeline concept is further enhanced by the pipe operator
+(\texttt{\%\textgreater{}\%}) in R where a set of operations, or steps,
+can be chained together to form a set of instructions.
 
-TODO: read papers on other pipeline in R
+A more recent data pipeline is tidymodels (Kuhn and Wickham 2020), a set
+of packages for machine learning models following the tidyverse
+principles (Wickham et al. 2019). {[}expand on tidymodels{]}
 
-\hypertarget{a-pipeline-for-natural-hazard-indices}{%
-\section{A pipeline for natural hazard
-indices}\label{a-pipeline-for-natural-hazard-indices}}
+\hypertarget{a-pipeline-for-building-natural-hazard-indices}{%
+\section{A pipeline for building natural hazard
+indices}\label{a-pipeline-for-building-natural-hazard-indices}}
+
+The construction of natural hazard indices also follows a set of steps,
+which is usually illustrated using a flowchart in the paper. However,
+every researcher follows a certain design philosophy and steps taken in
+the index constructed by different researchers are not aligned. This
+discourages experiment with multiple indices. Initiate a new workflow
+when computing a new index.
+
+\hypertarget{raw-data}{%
+\subsection{Raw data}\label{raw-data}}
+
+The data used to construct the natural hazard index usually have three
+dimensions, one for location, one for time, and one for multivariate.
+Mathematically, it can be written as \(X_{j, s, t}\), where
+\(j = 1, 2, \cdots, J\) for variable, \(s = 1, 2, \cdots, S\) for
+location, and \(t = 1, 2, \cdots, T\) for time.
+
+The location \(s\) can refer to vector points or areas characterised by
+longitude-latitude coordinates, or raster cells obtained from satellite
+images.
+
+The time dimension \(t\) can be daily, weekly, biweekly (14-16 days),
+monthly, or even quarterly
+
+Variables
+
+This multidimensional array structure is commonly used in geospatial
+analysis
+
+Given the variety of data sources at different spatial resolution and
+temporal granularity, the raw data may first come in multiple pieces.
+Sometimes, even a considerable amount of work is needed to align the
+spatial and temporal extent of multivariate data.
+
+A notation for different variables have different spatial and temporal
+granularity \(X_{j_1, s_1, t_1}\)???
+
+\hypertarget{spatial-aggregation}{%
+\subsection{Spatial aggregation}\label{spatial-aggregation}}
+
+\hypertarget{variable-transformation}{%
+\subsection{Variable transformation}\label{variable-transformation}}
+
+\hypertarget{temporal-processing}{%
+\subsection{Temporal processing}\label{temporal-processing}}
+
+\hypertarget{dimension-reduction}{%
+\subsection{Dimension reduction}\label{dimension-reduction}}
+
+\hypertarget{normalising}{%
+\subsection{Normalising}\label{normalising}}
+
+\hypertarget{benchmarking}{%
+\subsection{Benchmarking}\label{benchmarking}}
+
+\hypertarget{simplification}{%
+\subsection{Simplification}\label{simplification}}
 
 uniform workflow to work with index construction.
 
@@ -284,6 +340,9 @@ uniform workflow to work with index construction.
     uncertainty
   \end{itemize}
 \end{itemize}
+
+\hypertarget{extending-the-pipeline}{%
+\section{Extending the pipeline}\label{extending-the-pipeline}}
 
 \hypertarget{examples}{%
 \section{Examples}\label{examples}}
@@ -320,7 +379,7 @@ Buja, A, D Asimov, C Hurley, and JA McDonald. 1988. {``Elements of a
 Viewing Pipeline for Data Analysis.''} In \emph{Dynamic Graphics for
 Statistics}, 277--308. Wadsworth, Belmont.
 
-\leavevmode\vadjust pre{\hypertarget{ref-tidymodel}{}}%
+\leavevmode\vadjust pre{\hypertarget{ref-tidymodels}{}}%
 Kuhn, Max, and Hadley Wickham. 2020. \emph{Tidymodels: A Collection of
 Packages for Modeling and Machine Learning Using Tidyverse Principles.}
 \url{https://www.tidymodels.org}.
@@ -331,6 +390,12 @@ Julie Dickerson, Zach Cox, and Dianne Cook. 2000. {``Orca: {A}
 {Visualization} {Toolkit} for {High}-{Dimensional} {Data}.''}
 \emph{Journal of Computational and Graphical Statistics} 9 (3): 509--29.
 \url{https://www.jstor.org/stable/1390943}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-tidyverse}{}}%
+Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy
+D'Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019.
+{``Welcome to the {tidyverse}.''} \emph{Journal of Open Source Software}
+4 (43): 1686. \url{https://doi.org/10.21105/joss.01686}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-wickham_plumbing_2009}{}}%
 Wickham, Hadley, Michael Lawrence, Dianne Cook, Andreas Buja, Heike

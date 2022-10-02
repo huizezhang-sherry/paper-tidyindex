@@ -37,14 +37,14 @@ bibliography: bibliography.bib
 Index construction is a way to summarise complicated information (used in environmental data). 
 The complexity of these information may involve a spatial distribution, a temporal scale that defines the frequency of the data, and a multivariate perspective that collects different climate variables.
 
-Numerous indices have been proposed by researchers and practitioners to monitor natural hazard, for example, @alahacoon_comprehensive_2022 reviews 111 drought indices derived from traditional and remote sensing data; [review of index construction in other area, climate indices, many other reviews in drought]. 
 
 <!-- These indices are customised to distinct local weather condition and historical data availability. -->
 
 Various methods are proposed to extract multivariate information on the spatial extent, across time.
 
 Each individual index follows its own data pipeline and it can be difficult to evaluate how an index can be affected by tweaking parameters in a certain step, rearranging the order of steps, using to different method. 
-This paper proposes a data pipeline for constructing indices using multivariate spatio-temporal data. The steps involved in the pipeline are general in nature and flexible to be adopted to most index construction for environmental data.
+This paper proposes a data pipeline for constructing indices using multivariate spatio-temporal data.
+The steps involved in the pipeline are general in nature and flexible to be adopted to most index construction for environmental data.
 
 # Natural hazard indices
 
@@ -52,45 +52,82 @@ This paper proposes a data pipeline for constructing indices using multivariate 
 
 ## Drought indices
 
-# Data pipeline 
+# Data pipeline in R
 
-Constructing a pipeline that divides a complex procedure into steps that can be concatenated has been adopted widely in the computational statistics community. 
-One particular example is a machine learning pipeline, tidymodel [@tidymodel]. 
-[more details on pipeline]
-
-**Statistical pipeline in interactive graphics**
+Constructing a pipeline that divides a complex procedure into steps that can be concatenated has been adopted widely in the R community.
 
 The data pipeline in interactive graphics is a set of steps that transform the raw data to the plots displayed on the screen. 
 The initial pipeline proposed by @buja_elements_1988 involves the following steps: non-linear transformation, variables standardization, randomization, projection engine, and viewporting.
+The initial pipeline proposed by @buja_elements_1988 involves the following steps: non-linear transformation, variables standardization, randomization, projection engine, and viewporting. 
 Another example in the early work of pipeline by @sutherland_orca_2000 describes a three-step pipeline: variable standardization, dimension reduction, and scaling data into the viewing window. 
 This pipeline also includes the transformation on spatial and temporal variables, i.e. computing time lag on temporal variables.
+This pipeline also includes the transformation on spatial and temporal variables, i.e. computing time lag on temporal variables. 
 @wickham_plumbing_2009 argues that whether made explicit or not, pipeline has to be presented in every graphics program and breaking down graphic rendering into steps is also beneficial for understand the implementation and compare between different graphic systems.
 
+The data pipeline concept is further enhanced by the pipe operator (`%>%`) in R where a set of operations, or steps, can be chained together to form a set of instructions.
 
-**Statistical pipeline in other domains**
+A more recent data pipeline is tidymodels [@tidymodels], a set of packages for machine learning models following the tidyverse principles [@tidyverse]. \[expand on tidymodels\]
 
-TODO: read papers on other pipeline in R
+# A pipeline for building natural hazard indices
 
-# A pipeline for natural hazard indices
+The construction of natural hazard indices also follows a set of steps, which is usually illustrated using a flowchart in the paper. 
+However, every researcher follows a certain design philosophy and steps taken in the index constructed by different researchers are not aligned. 
+This discourages experiment with multiple indices. Initiate a new workflow when computing a new index.
 
-uniform workflow to work with index construction. 
+## Raw data
 
+The data used to construct the natural hazard index usually have three dimensions, one for location, one for time, and one for multivariate. 
+Mathematically, it can be written as $X_{j, s, t}$, where $j = 1, 2, \cdots, J$ for variable, $s = 1, 2, \cdots, S$ for location, and $t = 1, 2, \cdots, T$ for time.
 
-  - illustration 
-  - math notation
-  - benefit of the pipeline approach 
-    - index diagnostic
-    - uncertainty 
-  
-# Examples 
+The location $s$ can refer to vector points or areas characterised by longitude-latitude coordinates, or raster cells obtained from satellite images.
+
+The time dimension $t$ can be daily, weekly, biweekly (14-16 days), monthly, or even quarterly
+
+Variables
+
+This multidimensional array structure is commonly used in geospatial analysis
+
+Given the variety of data sources at different spatial resolution and temporal granularity, the raw data may first come in multiple pieces. 
+Sometimes, even a considerable amount of work is needed to align the spatial and temporal extent of multivariate data.
+
+A notation for different variables have different spatial and temporal granularity $X_{j_1, s_1, t_1}$???
+
+## Spatial aggregation
+
+## Variable transformation
+
+Take one or multiple variables to create a new variable, linearly? 
+sometimes called feature extraction in the machine learning community 
+With drought indices, the extraction of meaningful variables from the original data is usually supported by the water balance model, for example, in SPEI, the step that create $d$ out of precipitation and potential evapotranspiration (PET) has theoretical backup from [see paper.]
+
+## Temporal processing
+
+## Dimension reduction
+
+## Normalising
+
+only for distribution fit, convert from an fitted distribution to normal
+
+## Benchmarking
+
+## Simplification
+
+uniform workflow to work with index construction.
+
+-   illustration
+-   math notation
+-   benefit of the pipeline approach
+    -   index diagnostic
+    -   uncertainty
+
+# Extending the pipeline
+
+# Examples
 
 ## Constructing Standardised Precipitation Index (SPI)
 
-  - a basic workflow and congruence with results in the `SPEI` pkg
-  - allow multiple distribution fit 
-  - allow bootstrap uncertainty 
-
-
-
+-   a basic workflow and congruence with results in the `SPEI` pkg
+-   allow multiple distribution fit
+-   allow bootstrap uncertainty
 
 # Reference
