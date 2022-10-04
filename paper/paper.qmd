@@ -23,8 +23,13 @@ author:
         city: Melbourne, VIC
         country: Australia
 abstract: |
-  - The paper describes a framework for constructing indices 
-  - use drought indices as examples, but appliable in general to environmental indices constructed from multivariate spatio-temporal data
+  - Indices, useful, quantify severity, early monitoring, 
+  - A huge number of indices have been proposed by domain experts, however, a large majority of them are not being adopted and reused in research or in practice. 
+  - One of the most commonly used drought index, SPI and SPEI, are available through the `SPEI` package and its readily avaiability to be applied on user's data 
+  - However, even if most of the indices have available existing implementation available to users, there would be hundreds of them and it will be burdensome to remember
+  - The paper describes a general pipeline framework to construct indices from spatio-temporal data, so that indices can be constructed through [a set of general steps].
+  - The benefit of such a framework is that ...
+  - The framework will be demonstrated with drought indices as examples, but appliable in general to environmental indices constructed from multivariate spatio-temporal data
 keywords: 
   - spatio-temporal data
   - indices
@@ -40,7 +45,9 @@ The complexity of these information may involve a spatial distribution, a tempor
 
 <!-- These indices are customised to distinct local weather condition and historical data availability. -->
 
-Various methods are proposed to extract multivariate information on the spatial extent, across time.
+Various methods are proposed to extract multivariate information on the spatial coverage, across time.
+
+Indices with readily available code to implement have more potential to be computed by researchers, i.e. the package `SPEI` [@SPEI] has implemented the SPI and SPEI index for calculating drought indices. [Another package in a different domain]
 
 Each individual index follows its own data pipeline and it can be difficult to evaluate how an index can be affected by tweaking parameters in a certain step, rearranging the order of steps, using to different method. 
 This paper proposes a data pipeline for constructing indices using multivariate spatio-temporal data.
@@ -52,7 +59,25 @@ The steps involved in the pipeline are general in nature and flexible to be adop
 
 ## Drought indices
 
+## Economics/ social indices
+
 # Data pipeline in R
+
+## Tidy data
+
+Before the concept of tidy data [@wickham_tidy_2014], tabular data arrive at data analysts in all different ways. 
+Different analysts would write customised scripts for analysing the specific data. 
+These scripts can be extended to other data analysed by the same people or group but this is not generalizable directly to another dataset. 
+When the tidy data concept comes, variables and values are arranged so that 1) Each variable forms a column, 2) Each observation forms a row, and; 3) Each type of observational unit forms a table.
+With this specific layout, wrangling on tabular data can be standardised into a grammar of data manipulation in `dplyr` [@dplyr]. 
+
+A similar issue happens with index construction where researchers construct their own indices in their own ways and there has not yet been a tidy principle on index construction.
+Also, this tidy principle on index construction is more complex than those in tidy data and the `dplyr` package.
+It has to encompass the workflow of transformation from the raw data towards the final index series.
+
+
+
+## Data pipeline
 
 Constructing a pipeline that divides a complex procedure into steps that can be concatenated has been adopted widely in the R community.
 
@@ -68,11 +93,20 @@ The data pipeline concept is further enhanced by the pipe operator (`%>%`) in R 
 
 A more recent data pipeline is tidymodels [@tidymodels], a set of packages for machine learning models following the tidyverse principles [@tidyverse]. \[expand on tidymodels\]
 
+
 # A pipeline for building natural hazard indices
 
 The construction of natural hazard indices also follows a set of steps, which is usually illustrated using a flowchart in the paper. 
 However, every researcher follows a certain design philosophy and steps taken in the index constructed by different researchers are not aligned. 
 This discourages experiment with multiple indices. Initiate a new workflow when computing a new index.
+
+The most popular indices (i.e. SPI, SPEI, etc) have existing software implementation (`SPEI`) to be applied to a different set of data.
+
+constructing time series index should also be encapsulated in my framework
+
+
+
+reusable 
 
 ## Raw data
 
@@ -106,11 +140,15 @@ With drought indices, the extraction of meaningful variables from the original d
 
 ## Normalising
 
-only for distribution fit, convert from an fitted distribution to normal
+specifically for converting from a fitted distribution to normal score via reverse CDF function, non-parametric formula, or empirical approximation, a common step in many index: SPI, SSI, Z score. The purpose of normalising is to convert the index into a standardised series after all the steps for the ease of comparison.
 
 ## Benchmarking
 
+
+
 ## Simplification
+
+Discretise the continuous index into a few labelled categories. For communicating the severity of natural hazard to general public.
 
 uniform workflow to work with index construction.
 

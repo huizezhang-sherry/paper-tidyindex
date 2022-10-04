@@ -183,11 +183,29 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 \begin{itemize}
 \tightlist
 \item
-  The paper describes a framework for constructing indices
+  Indices, useful, quantify severity, early monitoring,
 \item
-  use drought indices as examples, but appliable in general to
-  environmental indices constructed from multivariate spatio-temporal
-  data
+  A huge number of indices have been proposed by domain experts,
+  however, a large majority of them are not being adopted and reused in
+  research or in practice.
+\item
+  One of the most commonly used drought index, SPI and SPEI, are
+  available through the \texttt{SPEI} package and its readily
+  avaiability to be applied on user's data
+\item
+  However, even if most of the indices have available existing
+  implementation available to users, there would be hundreds of them and
+  it will be burdensome to remember
+\item
+  The paper describes a general pipeline framework to construct indices
+  from spatio-temporal data, so that indices can be constructed through
+  {[}a set of general steps{]}.
+\item
+  The benefit of such a framework is that \ldots{}
+\item
+  The framework will be demonstrated with drought indices as examples,
+  but appliable in general to environmental indices constructed from
+  multivariate spatio-temporal data
 \end{itemize}
 \end{abstract}
 {\bfseries \emph Keywords}
@@ -195,7 +213,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 spatio-temporal data \sep indices \sep 
 data pipeline
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced, breakable, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, enhanced, sharp corners, frame hidden, interior hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -206,14 +224,13 @@ a spatial distribution, a temporal scale that defines the frequency of
 the data, and a multivariate perspective that collects different climate
 variables.
 
-Numerous indices have been proposed by researchers and practitioners to
-monitor natural hazard, for example, Alahacoon and Edirisinghe (2022)
-reviews 111 drought indices derived from traditional and remote sensing
-data; {[}review of index construction in other area, climate indices,
-many other reviews in drought{]}.
-
 Various methods are proposed to extract multivariate information on the
-spatial extent, across time.
+spatial coverage, across time.
+
+Indices with readily available code to implement have more potential to
+be computed by researchers, i.e.~the package \texttt{SPEI} (Beguería and
+Vicente-Serrano 2017) has implemented the SPI and SPEI index for
+calculating drought indices. {[}Another package in a different domain{]}
 
 Each individual index follows its own data pipeline and it can be
 difficult to evaluate how an index can be affected by tweaking
@@ -232,8 +249,35 @@ index construction for environmental data.
 \hypertarget{drought-indices}{%
 \subsection{Drought indices}\label{drought-indices}}
 
+\hypertarget{economics-social-indices}{%
+\subsection{Economics/ social indices}\label{economics-social-indices}}
+
 \hypertarget{data-pipeline-in-r}{%
 \section{Data pipeline in R}\label{data-pipeline-in-r}}
+
+\hypertarget{tidy-data}{%
+\subsection{Tidy data}\label{tidy-data}}
+
+Before the concept of tidy data (Wickham 2014), tabular data arrive at
+data analysts in all different ways. Different analysts would write
+customised scripts for analysing the specific data. These scripts can be
+extended to other data analysed by the same people or group but this is
+not generalizable directly to another dataset. When the tidy data
+concept comes, variables and values are arranged so that 1) Each
+variable forms a column, 2) Each observation forms a row, and; 3) Each
+type of observational unit forms a table. With this specific layout,
+wrangling on tabular data can be standardised into a grammar of data
+manipulation in \texttt{dplyr} (Wickham et al. 2022).
+
+A similar issue happens with index construction where researchers
+construct their own indices in their own ways and there has not yet been
+a tidy principle on index construction. Also, this tidy principle on
+index construction is more complex than those in tidy data and the
+\texttt{dplyr} package. It has to encompass the workflow of
+transformation from the raw data towards the final index series.
+
+\hypertarget{data-pipeline}{%
+\subsection{Data pipeline}\label{data-pipeline}}
 
 Constructing a pipeline that divides a complex procedure into steps that
 can be concatenated has been adopted widely in the R community.
@@ -242,15 +286,20 @@ The data pipeline in interactive graphics is a set of steps that
 transform the raw data to the plots displayed on the screen. The initial
 pipeline proposed by Buja et al. (1988) involves the following steps:
 non-linear transformation, variables standardization, randomization,
-projection engine, and viewporting. Another example in the early work of
-pipeline by Sutherland et al. (2000) describes a three-step pipeline:
-variable standardization, dimension reduction, and scaling data into the
-viewing window. This pipeline also includes the transformation on
-spatial and temporal variables, i.e.~computing time lag on temporal
-variables. Wickham et al. (2009) argues that whether made explicit or
-not, pipeline has to be presented in every graphics program and breaking
-down graphic rendering into steps is also beneficial for understand the
-implementation and compare between different graphic systems.
+projection engine, and viewporting. The initial pipeline proposed by
+Buja et al. (1988) involves the following steps: non-linear
+transformation, variables standardization, randomization, projection
+engine, and viewporting. Another example in the early work of pipeline
+by Sutherland et al. (2000) describes a three-step pipeline: variable
+standardization, dimension reduction, and scaling data into the viewing
+window. This pipeline also includes the transformation on spatial and
+temporal variables, i.e.~computing time lag on temporal variables. This
+pipeline also includes the transformation on spatial and temporal
+variables, i.e.~computing time lag on temporal variables. Wickham et al.
+(2009) argues that whether made explicit or not, pipeline has to be
+presented in every graphics program and breaking down graphic rendering
+into steps is also beneficial for understand the implementation and
+compare between different graphic systems.
 
 The data pipeline concept is further enhanced by the pipe operator
 (\texttt{\%\textgreater{}\%}) in R where a set of operations, or steps,
@@ -270,6 +319,14 @@ every researcher follows a certain design philosophy and steps taken in
 the index constructed by different researchers are not aligned. This
 discourages experiment with multiple indices. Initiate a new workflow
 when computing a new index.
+
+The most popular indices (i.e.~SPI, SPEI, etc) have existing software
+implementation (\texttt{SPEI}) to be applied to a different set of data.
+
+constructing time series index should also be encapsulated in my
+framework
+
+reusable
 
 \hypertarget{raw-data}{%
 \subsection{Raw data}\label{raw-data}}
@@ -306,6 +363,14 @@ granularity \(X_{j_1, s_1, t_1}\)???
 \hypertarget{variable-transformation}{%
 \subsection{Variable transformation}\label{variable-transformation}}
 
+Take one or multiple variables to create a new variable, linearly?
+sometimes called feature extraction in the machine learning community
+With drought indices, the extraction of meaningful variables from the
+original data is usually supported by the water balance model, for
+example, in SPEI, the step that create \(d\) out of precipitation and
+potential evapotranspiration (PET) has theoretical backup from {[}see
+paper.{]}
+
 \hypertarget{temporal-processing}{%
 \subsection{Temporal processing}\label{temporal-processing}}
 
@@ -315,11 +380,20 @@ granularity \(X_{j_1, s_1, t_1}\)???
 \hypertarget{normalising}{%
 \subsection{Normalising}\label{normalising}}
 
+specifically for converting from a fitted distribution to normal score
+via reverse CDF function, non-parametric formula, or empirical
+approximation, a common step in many index: SPI, SSI, Z score. The
+purpose of normalising is to convert the index into a standardised
+series after all the steps for the ease of comparison.
+
 \hypertarget{benchmarking}{%
 \subsection{Benchmarking}\label{benchmarking}}
 
 \hypertarget{simplification}{%
 \subsection{Simplification}\label{simplification}}
+
+Discretise the continuous index into a few labelled categories. For
+communicating the severity of natural hazard to general public.
 
 uniform workflow to work with index construction.
 
@@ -367,12 +441,10 @@ uniform workflow to work with index construction.
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-alahacoon_comprehensive_2022}{}}%
-Alahacoon, Niranga, and Mahesh Edirisinghe. 2022. {``A Comprehensive
-Assessment of Remote Sensing and Traditional Based Drought Monitoring
-Indices at Global and Regional Scale.''} \emph{Geomatics, Natural
-Hazards and Risk} 13 (December): 762--99.
-\url{https://doi.org/10.1080/19475705.2022.2044394}.
+\leavevmode\vadjust pre{\hypertarget{ref-SPEI}{}}%
+Beguería, Santiago, and Sergio M. Vicente-Serrano. 2017. \emph{SPEI:
+Calculation of the Standardised Precipitation-Evapotranspiration Index}.
+\url{https://CRAN.R-project.org/package=SPEI}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-buja_elements_1988}{}}%
 Buja, A, D Asimov, C Hurley, and JA McDonald. 1988. {``Elements of a
@@ -391,11 +463,20 @@ Julie Dickerson, Zach Cox, and Dianne Cook. 2000. {``Orca: {A}
 \emph{Journal of Computational and Graphical Statistics} 9 (3): 509--29.
 \url{https://www.jstor.org/stable/1390943}.
 
+\leavevmode\vadjust pre{\hypertarget{ref-wickham_tidy_2014}{}}%
+Wickham, Hadley. 2014. {``Tidy {Data}.''} \emph{Journal of Statistical
+Software} 59 (September): 1--23.
+\url{https://doi.org/10.18637/jss.v059.i10}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-tidyverse}{}}%
 Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy
 D'Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019.
 {``Welcome to the {tidyverse}.''} \emph{Journal of Open Source Software}
 4 (43): 1686. \url{https://doi.org/10.21105/joss.01686}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-dplyr}{}}%
+Wickham, Hadley, Romain François, Lionel Henry, and Kirill Müller. 2022.
+\emph{Dplyr: A Grammar of Data Manipulation}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-wickham_plumbing_2009}{}}%
 Wickham, Hadley, Michael Lawrence, Dianne Cook, Andreas Buja, Heike
