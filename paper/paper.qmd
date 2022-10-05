@@ -37,10 +37,15 @@ keywords:
 bibliography: bibliography.bib  
 ---
 
+* indices, why do we need them, decision making
+* define what is an index, what is not even if they are called index
+* only very brief on indices in the introduction
+* potential audience + what do you think they should learn from this work. 
+
 
 # Introduction
 
-Index construction is a way to summarise complicated information (used in environmental data). 
+<!-- Index construction is a way to summarise complicated information (used in environmental data). **it basically says nothing** -->
 The complexity of these information may involve a spatial distribution, a temporal scale that defines the frequency of the data, and a multivariate perspective that collects different climate variables.
 
 
@@ -57,13 +62,16 @@ There is a need for a framework to generally describe how indices can be constru
 This paper proposes such data pipeline for constructing indices.
 The steps involved in the pipeline are general in nature and flexible to be adopted to most index construction for environmental data.
 
-# Natural hazard indices
 
-## Climate indices
+**Why index is useful, why people care about indices**
 
-## Drought indices
+**review indices, climate, drought, economic, UN and other indices**
 
-## Economics/ social indices
+**What is the problem with current workflow on index construction**
+
+**who would benefit from this paper: 1) people proposing new indices; 2) people analysing index variation, compare between indices, 3) those making decisions from indices, 4) other statistician, how to modularise steps for anlaysis in your domain.**
+
+
 
 # Data pipeline in R
 
@@ -114,6 +122,8 @@ reusable
 
 ## Raw data
 
+**Another section on original data directly downloaded, can have different spatial resolution, temporal granularity, data quality problem. After processing them and align them together they become the "raw data"**
+
 The data used to construct the natural hazard index usually have three dimensions, one for location, one for time, and one for multivariate. 
 Mathematically, it can be written as $X_{j, s, t}$, where $j = 1, 2, \cdots, J$ for variable, $s = 1, 2, \cdots, S$ for location, and $t = 1, 2, \cdots, T$ for time.
 
@@ -132,15 +142,26 @@ A notation for different variables have different spatial and temporal granulari
 
 ## Spatial aggregation
 
+mostly happen with raster data
+
+## Scaling
+
+standardising
+close to variable transformation step
+
 ## Variable transformation
 
-Take one or multiple variables to create a new variable, linearly? 
-sometimes called feature extraction in the machine learning community 
-With drought indices, the extraction of meaningful variables from the original data is usually supported by the water balance model, for example, in SPEI, the step that create $d$ out of precipitation and potential evapotranspiration (PET) has theoretical backup from [see paper.]
+<!-- Take one or multiple variables to create a new variable,  -->
+Restrict it to single variable, square root, log etc could be linearly, also non-linear
+
+GAM, can you do additive model pairwise/ three-way
 
 ## Temporal processing
 
 ## Dimension reduction
+
+sometimes called feature extraction in the machine learning community 
+With drought indices, the extraction of meaningful variables from the original data is usually supported by the water balance model, for example, in SPEI, the step that create $d$ out of precipitation and potential evapotranspiration (PET) has theoretical backup from [see paper.]
 
 ## Normalising
 
@@ -162,7 +183,9 @@ uniform workflow to work with index construction.
     -   index diagnostic
     -   uncertainty
 
-# Extending the pipeline
+# Incorporating new methods into the pipeline 
+
+<!-- # [Extending the pipeline] a different name here: alternate a module with a different (method) -->
 
 # Examples
 
@@ -171,5 +194,7 @@ uniform workflow to work with index construction.
 -   a basic workflow and congruence with results in the `SPEI` pkg
 -   allow multiple distribution fit
 -   allow bootstrap uncertainty
+
+## Calculating SPEI with raster data
 
 # Reference
