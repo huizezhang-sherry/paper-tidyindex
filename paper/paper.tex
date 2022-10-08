@@ -214,7 +214,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 spatio-temporal data \sep indices \sep 
 data pipeline
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, borderline west={3pt}{0pt}{shadecolor}, frame hidden, interior hidden, boxrule=0pt, sharp corners, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, enhanced, frame hidden, interior hidden, boxrule=0pt, sharp corners, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \begin{itemize}
 \tightlist
@@ -232,42 +232,85 @@ data pipeline
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
-The complexity of these information may involve a spatial distribution,
-a temporal scale that defines the frequency of the data, and a
-multivariate perspective that collects different climate variables.
-
-Various methods are proposed to extract multivariate information on the
-spatial coverage, across time. Each individual index follows its own
-data pipeline and it can be difficult to evaluate how an index can be
-affected by tweaking parameters in a certain step, rearranging the order
-of steps, using to different method.
-
-Indices with readily available code to implement have more potential to
-be computed by researchers, i.e.~the package \texttt{SPEI} (Beguería and
-Vicente-Serrano 2017) has implemented the SPI and SPEI index for
-calculating drought indices. {[}Another package in a different
-domain{]}.\\
-However, even if most of the indices have available existing
-implementation available to users, there would be hundreds of them and
-it will be burdensome to remember, classify, and compare between. There
-is a need for a framework to generally describe how indices can be
-constructed from spatio-temporal data.
-
-This paper proposes such data pipeline for constructing indices. The
-steps involved in the pipeline are general in nature and flexible to be
-adopted to most index construction for environmental data.
-
 \textbf{Why index is useful, why people care about indices}
 
-\textbf{review indices, climate, drought, economic, UN and other
-indices}
+\begin{itemize}
+\tightlist
+\item
+  decision making: need to consider multi-facet for allocating
+  resources, {[}\ldots{]}
+\item
+  to quantify concept without direct measure. 1) almost impossible to
+  include all the items in the market, indices created from a basket of
+  representative items are useful to characterise the market condition;
+  2) the concept of interest can't be directly measured,
+  i.e.~livability, human developement etc
+\end{itemize}
+
+Integrate multiple information to produce a single number summary
+(across time).
+
+\textbf{Define what is an index, what is not}
+
+Indices quantify a concept of interest that is hard to measure using
+{[}\ldots{]}. In finance and economic, the behavior of stock market,
+indices like Dow Jones Industrial Average, S\&P 500, and Nasdaq
+Composite uses a representative set of companies. Natural hazard are
+also indices difficult to define because \ldots. Various drought, flood
+indices have been developed to characterise the severity and monitor
+from the perspective of meteorology, agricultural, hydrology, and also
+socio-economy. Examples of indices are ubiquitous: economic indices for
+quantifying productibility (GDP?), inflation (CPI), {[}\ldots{]}; Social
+development indices like Human Development Index and Global Liveability
+Index; diversity indices to characterise the richness, evenness and
+dominance in ecology
+
+Despite many measurements are called indices, they are actually not
+indices. A direct rate or transformation on a measured variable: birth
+\& death rate computes the total number of new-borns and death per 1000
+people. Many remote sensing measures are not indices, i.e.~Normalized
+Difference Vegetation Index (NDVI), despite being named as an index, is
+a mere statistical transformation: the difference of near-infrared (NIR)
+and red visible channel over its sum.
+
+\begin{itemize}
+\tightlist
+\item
+  need think through:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    is cash rate/ interest rate indices? employment rate? eocnomic
+    indices?
+  \end{itemize}
+\end{itemize}
 
 \textbf{What is the problem with current workflow on index construction}
 
-\textbf{who would benefit from this paper: 1) people proposing new
-indices; 2) people analysing index variation, compare between indices,
-3) those making decisions from indices, 4) other statistician, how to
-modularise steps for anlaysis in your domain.}
+\begin{itemize}
+\item
+  most indices are presented as calculated numerical or categorical
+  values without open source code accompanied.
+\item
+  This causes the problem that if analysts are not agreed with a certain
+  step in the index construction, there is no room for experiment with
+  other possibility.
+\end{itemize}
+
+\textbf{who would benefit from this paper}
+
+\begin{itemize}
+\tightlist
+\item
+  domain scientists who propose new indices and {[}use multiple indices
+  to compare{]}
+\item
+  decision makers, towards understand the
+\item
+  statisticians, so as to {[}draw focus/ advocate{]} on statistical
+  workflow
+\end{itemize}
 
 \hypertarget{data-pipeline-in-r}{%
 \section{Data pipeline in R}\label{data-pipeline-in-r}}
@@ -387,7 +430,11 @@ mostly happen with raster data
 \hypertarget{scaling}{%
 \subsection{Scaling}\label{scaling}}
 
-standardising close to variable transformation step
+A specific transformation on the scale of the data
+
+z-score standardising, min-max standardisation into {[}0, 1{]} or {[}0,
+100{]}, percentage change on the baseline close to variable
+transformation step
 
 \hypertarget{variable-transformation}{%
 \subsection{Variable transformation}\label{variable-transformation}}
@@ -410,8 +457,13 @@ example, in SPEI, the step that create \(d\) out of precipitation and
 potential evapotranspiration (PET) has theoretical backup from {[}see
 paper.{]}
 
+Also include weighting
+
 \hypertarget{normalising}{%
 \subsection{Normalising}\label{normalising}}
+
+The purpose of normalising is for cross-comparison. This step can get
+criticism from analysts for \ldots{}
 
 specifically for converting from a fitted distribution to normal score
 via reverse CDF function, non-parametric formula, or empirical
@@ -479,11 +531,6 @@ data}\label{calculating-spei-with-raster-data}}
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-SPEI}{}}%
-Beguería, Santiago, and Sergio M. Vicente-Serrano. 2017. \emph{SPEI:
-Calculation of the Standardised Precipitation-Evapotranspiration Index}.
-\url{https://CRAN.R-project.org/package=SPEI}.
-
 \leavevmode\vadjust pre{\hypertarget{ref-buja_elements_1988}{}}%
 Buja, A, D Asimov, C Hurley, and JA McDonald. 1988. {``Elements of a
 Viewing Pipeline for Data Analysis.''} In \emph{Dynamic Graphics for

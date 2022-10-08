@@ -46,30 +46,72 @@ bibliography: bibliography.bib
 # Introduction
 
 <!-- Index construction is a way to summarise complicated information (used in environmental data). **it basically says nothing** -->
-The complexity of these information may involve a spatial distribution, a temporal scale that defines the frequency of the data, and a multivariate perspective that collects different climate variables.
+<!-- The complexity of these information may involve a spatial distribution, a temporal scale that defines the frequency of the data, and a multivariate perspective that collects different climate variables. -->
 
 
 <!-- These indices are customised to distinct local weather condition and historical data availability. -->
 
-Various methods are proposed to extract multivariate information on the spatial coverage, across time.
-Each individual index follows its own data pipeline and it can be difficult to evaluate how an index can be affected by tweaking parameters in a certain step, rearranging the order of steps, using to different method. 
+<!-- Various methods are proposed to extract multivariate information on the spatial coverage, across time. -->
+<!-- Each individual index follows its own data pipeline and it can be difficult to evaluate how an index can be affected by tweaking parameters in a certain step, rearranging the order of steps, using to different method.  -->
 
-Indices with readily available code to implement have more potential to be computed by researchers, i.e. the package `SPEI` [@SPEI] has implemented the SPI and SPEI index for calculating drought indices. 
-[Another package in a different domain].  
-However, even if most of the indices have available existing implementation available to users, there would be hundreds of them and it will be burdensome to remember, classify, and compare between.
-There is a need for a framework to generally describe how indices can be constructed from spatio-temporal data.
+<!-- Indices with readily available code to implement have more potential to be computed by researchers, i.e. the package `SPEI` [@SPEI] has implemented the SPI and SPEI index for calculating drought indices.  -->
+<!-- [Another package in a different domain].   -->
+<!-- However, even if most of the indices have available existing implementation available to users, there would be hundreds of them and it will be burdensome to remember, classify, and compare between. -->
+<!-- There is a need for a framework to generally describe how indices can be constructed from spatio-temporal data. -->
 
-This paper proposes such data pipeline for constructing indices.
-The steps involved in the pipeline are general in nature and flexible to be adopted to most index construction for environmental data.
+<!-- This paper proposes such data pipeline for constructing indices. -->
+<!-- The steps involved in the pipeline are general in nature and flexible to be adopted to most index construction for environmental data. -->
 
 
 **Why index is useful, why people care about indices**
 
-**review indices, climate, drought, economic, UN and other indices**
+  - decision making: need to consider multi-facet for allocating resources, [...]
+  - to quantify concept without direct measure. 1) almost impossible to include all the items in the market, indices created from a basket of representative items are useful to characterise the market condition; 2) the concept of interest can't be directly measured, i.e. livability, human developement etc
+  
+Integrate multiple information to produce a single number summary (across time).
+
+
+
+
+**Define what is an index, what is not**
+    
+Indices quantify a concept of interest that is hard to measure using [...]. 
+In finance and economic, the behavior of stock market, indices like Dow Jones Industrial Average, S&P 500, and Nasdaq Composite uses a representative set of companies.
+Natural hazard are also indices difficult to define because ....
+Various drought, flood indices have been developed to characterise the severity and monitor from the perspective of meteorology, agricultural, hydrology, and also socio-economy. 
+Examples of indices are ubiquitous: economic indices for quantifying productibility (GDP?), inflation (CPI), [...]; Social development indices like Human Development Index and Global Liveability Index; diversity indices to characterise the richness, evenness and dominance in ecology
+    
+Despite many measurements are called indices, they are actually not indices. 
+A direct rate or transformation on a measured variable: birth & death rate computes the total number of new-borns and death per 1000 people. 
+Many remote sensing measures are not indices, i.e. Normalized Difference Vegetation Index (NDVI), despite being named as an index, is a mere statistical transformation: the difference of near-infrared (NIR) and red visible channel over its sum. 
+
+
+  <!-- - what is not:  -->
+  <!--   - variable transformation in remote sensing, i.e. NDVI is a variable transformation of near-infrared region (NIR) and red visible band.  -->
+  <!--   - Another set of measures that are not indices (climate index): Precipitation of driest month, Precipitation of warmest month. These are features -->
+
+
+- need think through: 
+  - is cash rate/ interest rate indices? employment rate? eocnomic indices?
+
+<!-- **review indices, climate, drought, economic, UN and other indices** -->
+
+<!--   - financial and economics index: stock market index (Dow, S&P 500, and Nasdaq), inflation index (CPI, PCE, PPI)  -->
+<!--   - indices in newly emerging policy areas such as industrial competitiveness, sustainable development, globalization and innovation. -->
+<!--   - Social development indices: Human Development Index (HDI): life expectancy + education + gini -->
+
 
 **What is the problem with current workflow on index construction**
 
-**who would benefit from this paper: 1) people proposing new indices; 2) people analysing index variation, compare between indices, 3) those making decisions from indices, 4) other statistician, how to modularise steps for anlaysis in your domain.**
+  - most indices are presented as calculated numerical or categorical values without open source code accompanied. 
+  
+  - This causes the problem that if analysts are not agreed with a certain step in the index construction, there is no room for experiment with other possibility.
+
+**who would benefit from this paper**
+
+  - domain scientists who propose new indices and [use multiple indices to compare]
+  - decision makers, towards understand the 
+  - statisticians, so as to [draw focus/ advocate] on statistical workflow 
 
 
 
@@ -146,7 +188,9 @@ mostly happen with raster data
 
 ## Scaling
 
-standardising
+A specific transformation on the scale of the data
+
+z-score standardising, min-max standardisation into [0, 1] or [0, 100], percentage change on the baseline
 close to variable transformation step
 
 ## Variable transformation
@@ -163,7 +207,12 @@ GAM, can you do additive model pairwise/ three-way
 sometimes called feature extraction in the machine learning community 
 With drought indices, the extraction of meaningful variables from the original data is usually supported by the water balance model, for example, in SPEI, the step that create $d$ out of precipitation and potential evapotranspiration (PET) has theoretical backup from [see paper.]
 
+Also include weighting
+
 ## Normalising
+
+The purpose of normalising is for cross-comparison.
+This step can get criticism from analysts for ...
 
 specifically for converting from a fitted distribution to normal score via reverse CDF function, non-parametric formula, or empirical approximation, a common step in many index: SPI, SSI, Z score. The purpose of normalising is to convert the index into a standardised series after all the steps for the ease of comparison.
 
