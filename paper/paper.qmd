@@ -75,15 +75,18 @@ Integrate multiple information to produce a single number summary (across time).
 
 **Define what is an index, what is not**
     
-Indices quantify a concept of interest that is hard to measure using [...]. 
+Indices quantify a concept of interest that is hard to measure using [...].
+over time.
 In finance and economic, the behavior of stock market, indices like Dow Jones Industrial Average, S&P 500, and Nasdaq Composite uses a representative set of companies.
 Natural hazard are also indices difficult to define because ....
 Various drought, flood indices have been developed to characterise the severity and monitor from the perspective of meteorology, agricultural, hydrology, and also socio-economy. 
 Examples of indices are ubiquitous: economic indices for quantifying productibility (GDP?), inflation (CPI), [...]; Social development indices like Human Development Index and Global Liveability Index; diversity indices to characterise the richness, evenness and dominance in ecology
     
-Despite many measurements are called indices, they are actually not indices. 
+Despite many measurements are called indices, they are actually not indices, but metrics. 
 A direct rate or transformation on a measured variable: birth & death rate computes the total number of new-borns and death per 1000 people. 
 Many remote sensing measures are not indices, i.e. Normalized Difference Vegetation Index (NDVI), despite being named as an index, is a mere statistical transformation: the difference of near-infrared (NIR) and red visible channel over its sum. 
+
+fire index
 
 
   <!-- - what is not:  -->
@@ -106,18 +109,33 @@ Many remote sensing measures are not indices, i.e. Normalized Difference Vegetat
   - most indices are presented as calculated numerical or categorical values without open source code accompanied. 
   
   - This causes the problem that if analysts are not agreed with a certain step in the index construction, there is no room for experiment with other possibility.
+  
+There has not yet been a standardised workflow on index construction. 
+For simple indices, users may be able to work out the calculation from the equations or workflow provided, while for more complicated construction, software is not even available for open-source consumption.
+Even when the software implementation is available, most indices are computed through a single index command, for example, the package `SPEI` provides two drought indices: SPI and SPEI through function `spi()` and `spei()`. 
+This software design focuses on the name of the index and includes all the steps in a single index function. 
+With this design, there is little room for modification. For example, fit a new distribution that is not provided in the initial code. 
+Also, when scaled to a large number of indices, it increases the cognitive load of remembering hundreds of index names. 
+A better approach is to modularise these steps and construct a pipeline for users to build indices through choosing different building blocks from each module.
+With this design, users focus on the operations involved in the index construction.
+If an operation from another index is useful, users can borrow it to modify an existing index.
+
+
 
 **who would benefit from this paper**
 
-  - domain scientists who propose new indices and [use multiple indices to compare]
+The article contributes a pipeline framework to construct general indices.
+
+  - domain scientists who propose new indices and directly use indices in analysis. [use multiple indices to compare]
   - decision makers, towards understand the 
-  - statisticians, so as to [draw focus/ advocate] on statistical workflow 
+  - statisticians, so as to [draw focus/ advocate] on statistical workflow and software design.
+  
+The rest of the paper is structured as follows: the concept of data pipeline in R is reviewed in @sec-data-pipeline-in-r.  @sec-a-pipeline-for-building-statistical-indices presents the data pipeline for index construction. @sec-incorporating-new-buliding-blocks-into-the-pipeline explains how to include a new building block in each pipeline module. 
+Examples are given in @sec-examples to demonstrate the index construction with the pipeline built. 
 
+# Data pipeline in R {#sec-data-pipeline-in-r}
 
-
-# Data pipeline in R
-
-## Tidy data
+## Tidy data {#sec-tidy-data}
 
 Before the concept of tidy data [@wickham_tidy_2014], tabular data arrive at data analysts in all different ways. 
 Different analysts would write customised scripts for analysing the specific data. 
@@ -131,7 +149,7 @@ It has to encompass the workflow of transformation from the raw data towards the
 
 
 
-## Data pipeline
+## Data pipeline {#sec-data-pipeline}
 
 Constructing a pipeline that divides a complex procedure into steps that can be concatenated has been adopted widely in the R community.
 
@@ -145,10 +163,11 @@ This pipeline also includes the transformation on spatial and temporal variables
 
 The data pipeline concept is further enhanced by the pipe operator (`%>%`) in R where a set of operations, or steps, can be chained together to form a set of instructions.
 
-A more recent data pipeline is tidymodels [@tidymodels], a set of packages for machine learning models following the tidyverse principles [@tidyverse]. \[expand on tidymodels\]
+A more recent data pipeline is tidymodels [@tidymodels], a set of packages for machine learning models following the tidyverse principles [@tidyverse]. 
+Steps: Exploratory data analysis (EDA), feature engineering, model tuning and selection, and model evaluation.
 
 
-# A pipeline for building natural hazard indices
+# A pipeline for building statistical indices {#sec-a-pipeline-for-building-statistical-indices}
 
 The construction of natural hazard indices also follows a set of steps, which is usually illustrated using a flowchart in the paper. 
 However, every researcher follows a certain design philosophy and steps taken in the index constructed by different researchers are not aligned. 
@@ -232,11 +251,11 @@ uniform workflow to work with index construction.
     -   index diagnostic
     -   uncertainty
 
-# Incorporating new methods into the pipeline 
+# Incorporating new buliding blocks into the pipeline {#sec-incorporating-new-buliding-blocks-into-the-pipeline}
 
 <!-- # [Extending the pipeline] a different name here: alternate a module with a different (method) -->
 
-# Examples
+# Examples {#sec-examples}
 
 ## Constructing Standardised Precipitation Index (SPI)
 

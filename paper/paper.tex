@@ -214,7 +214,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 spatio-temporal data \sep indices \sep 
 data pipeline
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, enhanced, frame hidden, interior hidden, boxrule=0pt, sharp corners, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced, breakable, frame hidden, interior hidden]}{\end{tcolorbox}}\fi
 
 \begin{itemize}
 \tightlist
@@ -253,8 +253,8 @@ Integrate multiple information to produce a single number summary
 \textbf{Define what is an index, what is not}
 
 Indices quantify a concept of interest that is hard to measure using
-{[}\ldots{]}. In finance and economic, the behavior of stock market,
-indices like Dow Jones Industrial Average, S\&P 500, and Nasdaq
+{[}\ldots{]}. over time. In finance and economic, the behavior of stock
+market, indices like Dow Jones Industrial Average, S\&P 500, and Nasdaq
 Composite uses a representative set of companies. Natural hazard are
 also indices difficult to define because \ldots. Various drought, flood
 indices have been developed to characterise the severity and monitor
@@ -266,12 +266,14 @@ Index; diversity indices to characterise the richness, evenness and
 dominance in ecology
 
 Despite many measurements are called indices, they are actually not
-indices. A direct rate or transformation on a measured variable: birth
-\& death rate computes the total number of new-borns and death per 1000
-people. Many remote sensing measures are not indices, i.e.~Normalized
-Difference Vegetation Index (NDVI), despite being named as an index, is
-a mere statistical transformation: the difference of near-infrared (NIR)
-and red visible channel over its sum.
+indices, but metrics. A direct rate or transformation on a measured
+variable: birth \& death rate computes the total number of new-borns and
+death per 1000 people. Many remote sensing measures are not indices,
+i.e.~Normalized Difference Vegetation Index (NDVI), despite being named
+as an index, is a mere statistical transformation: the difference of
+near-infrared (NIR) and red visible channel over its sum.
+
+fire index
 
 \begin{itemize}
 \tightlist
@@ -298,25 +300,56 @@ and red visible channel over its sum.
   other possibility.
 \end{itemize}
 
+There has not yet been a standardised workflow on index construction.
+For simple indices, users may be able to work out the calculation from
+the equations or workflow provided, while for more complicated
+construction, software is not even available for open-source
+consumption. Even when the software implementation is available, most
+indices are computed through a single index command, for example, the
+package \texttt{SPEI} provides two drought indices: SPI and SPEI through
+function \texttt{spi()} and \texttt{spei()}. This software design
+focuses on the name of the index and includes all the steps in a single
+index function. With this design, there is little room for modification.
+For example, fit a new distribution that is not provided in the initial
+code. Also, when scaled to a large number of indices, it increases the
+cognitive load of remembering hundreds of index names. A better approach
+is to modularise these steps and construct a pipeline for users to build
+indices through choosing different building blocks from each module.
+With this design, users focus on the operations involved in the index
+construction. If an operation from another index is useful, users can
+borrow it to modify an existing index.
+
 \textbf{who would benefit from this paper}
+
+The article contributes a pipeline framework to construct general
+indices.
 
 \begin{itemize}
 \tightlist
 \item
-  domain scientists who propose new indices and {[}use multiple indices
-  to compare{]}
+  domain scientists who propose new indices and directly use indices in
+  analysis. {[}use multiple indices to compare{]}
 \item
   decision makers, towards understand the
 \item
   statisticians, so as to {[}draw focus/ advocate{]} on statistical
-  workflow
+  workflow and software design.
 \end{itemize}
 
-\hypertarget{data-pipeline-in-r}{%
-\section{Data pipeline in R}\label{data-pipeline-in-r}}
+The rest of the paper is structured as follows: the concept of data
+pipeline in R is reviewed in Section~\ref{sec-data-pipeline-in-r}.
+Section~\ref{sec-a-pipeline-for-building-statistical-indices} presents
+the data pipeline for index construction.
+Section~\ref{sec-incorporating-new-buliding-blocks-into-the-pipeline}
+explains how to include a new building block in each pipeline module.
+Examples are given in Section~\ref{sec-examples} to demonstrate the
+index construction with the pipeline built.
 
-\hypertarget{tidy-data}{%
-\subsection{Tidy data}\label{tidy-data}}
+\hypertarget{sec-data-pipeline-in-r}{%
+\section{Data pipeline in R}\label{sec-data-pipeline-in-r}}
+
+\hypertarget{sec-tidy-data}{%
+\subsection{Tidy data}\label{sec-tidy-data}}
 
 Before the concept of tidy data (Wickham 2014), tabular data arrive at
 data analysts in all different ways. Different analysts would write
@@ -336,8 +369,8 @@ index construction is more complex than those in tidy data and the
 \texttt{dplyr} package. It has to encompass the workflow of
 transformation from the raw data towards the final index series.
 
-\hypertarget{data-pipeline}{%
-\subsection{Data pipeline}\label{data-pipeline}}
+\hypertarget{sec-data-pipeline}{%
+\subsection{Data pipeline}\label{sec-data-pipeline}}
 
 Constructing a pipeline that divides a complex procedure into steps that
 can be concatenated has been adopted widely in the R community.
@@ -367,11 +400,13 @@ can be chained together to form a set of instructions.
 
 A more recent data pipeline is tidymodels (Kuhn and Wickham 2020), a set
 of packages for machine learning models following the tidyverse
-principles (Wickham et al. 2019). {[}expand on tidymodels{]}
+principles (Wickham et al. 2019). Steps: Exploratory data analysis
+(EDA), feature engineering, model tuning and selection, and model
+evaluation.
 
-\hypertarget{a-pipeline-for-building-natural-hazard-indices}{%
-\section{A pipeline for building natural hazard
-indices}\label{a-pipeline-for-building-natural-hazard-indices}}
+\hypertarget{sec-a-pipeline-for-building-statistical-indices}{%
+\section{A pipeline for building statistical
+indices}\label{sec-a-pipeline-for-building-statistical-indices}}
 
 The construction of natural hazard indices also follows a set of steps,
 which is usually illustrated using a flowchart in the paper. However,
@@ -500,12 +535,12 @@ uniform workflow to work with index construction.
   \end{itemize}
 \end{itemize}
 
-\hypertarget{incorporating-new-methods-into-the-pipeline}{%
-\section{Incorporating new methods into the
-pipeline}\label{incorporating-new-methods-into-the-pipeline}}
+\hypertarget{sec-incorporating-new-buliding-blocks-into-the-pipeline}{%
+\section{Incorporating new buliding blocks into the
+pipeline}\label{sec-incorporating-new-buliding-blocks-into-the-pipeline}}
 
-\hypertarget{examples}{%
-\section{Examples}\label{examples}}
+\hypertarget{sec-examples}{%
+\section{Examples}\label{sec-examples}}
 
 \hypertarget{constructing-standardised-precipitation-index-spi}{%
 \subsection{Constructing Standardised Precipitation Index
