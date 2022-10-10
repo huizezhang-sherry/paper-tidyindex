@@ -66,50 +66,34 @@ bibliography: bibliography.bib
 **Why index is useful, why people care about indices**
 
   - decision making: need to consider multi-facet for allocating resources, [...]
-  - to quantify concept without direct measure. 1) almost impossible to include all the items in the market, indices created from a basket of representative items are useful to characterise the market condition; 2) the concept of interest can't be directly measured, i.e. livability, human developement etc
+  - to include or constructed to quantify a concept of interest: some papers on constructing tourism based climate indices etc
   
 Integrate multiple information to produce a single number summary (across time).
 
-
-
-
 **Define what is an index, what is not**
     
-Indices quantify a concept of interest that is hard to measure using [...].
-over time.
-In finance and economic, the behavior of stock market, indices like Dow Jones Industrial Average, S&P 500, and Nasdaq Composite uses a representative set of companies.
-Natural hazard are also indices difficult to define because ....
-Various drought, flood indices have been developed to characterise the severity and monitor from the perspective of meteorology, agricultural, hydrology, and also socio-economy. 
-Examples of indices are ubiquitous: economic indices for quantifying productibility (GDP?), inflation (CPI), [...]; Social development indices like Human Development Index and Global Liveability Index; diversity indices to characterise the richness, evenness and dominance in ecology
-    
-Despite many measurements are called indices, they are actually not indices, but metrics. 
-A direct rate or transformation on a measured variable: birth & death rate computes the total number of new-borns and death per 1000 people. 
-Many remote sensing measures are not indices, i.e. Normalized Difference Vegetation Index (NDVI), despite being named as an index, is a mere statistical transformation: the difference of near-infrared (NIR) and red visible channel over its sum. 
+Indices quantify a concept of interest with no direct measure across time.
+The concept of interest doesn't have direct measure can because it is impractical to measure the concept of interest at the population level. 
+For example, it would be nearly impossible to include all the available stocks in the market to characterise stock market behavior, indices like Dow Jones Industrial Average, S&P 500, and Nasdaq Composite select a representative set of stocks to measure the overall market behavior. 
+Also belong to this category is the economic indices like Consumer Price Index, where price changes of a basket of items are weighted to measure inflation. 
+The lack of direct measure could also due to the absence of a universal definition on the concept of interest. 
+Many natural and social concepts are fundamentally multi-facets and some indices combines measures from different domains to characterise the concept of interest. 
+This includes drought indices constructed from meteorological, agricultural, hydrological, and social-economic variables [give some names?]. 
+Social development indices like Human Development Index [ref] and Global Liveability Index [ref] measure various aspects on the quality of human capital and urban life.
 
-fire index
+Despite many measurements have index in its name, they cannot be technically classified as indices according to the definition given above. 
+A major reason for these measures to lose its index membership is that the underlying concept of interest is straight forward to measure once defined. 
+Sometime variables like precipitation of driest month or percentage of days when maximum temperature is below a certain percentile are classified as climate indices, however, precipitation and temperature can be directly measured by rain gauge and thermometer. 
+These variables are transformation on precipitation and temperature. 
+They can be used to construct indices but are not indices themselves. 
+What is also not indices are many remote sensing based drought measures as they are transformation on one or more remote sensor bands. 
+This includes Normalized Difference Vegetation Index (NDVI) [ref], a transformation difference over sum on near-infrared (NIR) and red visible channel, and Vegetation Condition Index [ref], a rescale of NDVI into [0, 1], among others.
 
-
-  <!-- - what is not:  -->
-  <!--   - variable transformation in remote sensing, i.e. NDVI is a variable transformation of near-infrared region (NIR) and red visible band.  -->
-  <!--   - Another set of measures that are not indices (climate index): Precipitation of driest month, Precipitation of warmest month. These are features -->
-
-
-- need think through: 
-  - is cash rate/ interest rate indices? employment rate? eocnomic indices?
-
-<!-- **review indices, climate, drought, economic, UN and other indices** -->
-
-<!--   - financial and economics index: stock market index (Dow, S&P 500, and Nasdaq), inflation index (CPI, PCE, PPI)  -->
-<!--   - indices in newly emerging policy areas such as industrial competitiveness, sustainable development, globalization and innovation. -->
-<!--   - Social development indices: Human Development Index (HDI): life expectancy + education + gini -->
-
+TODO: confirm the actual climate indices are indices by our definition
+Questions: need reference for stock market indices, CPI?
 
 **What is the problem with current workflow on index construction**
 
-  - most indices are presented as calculated numerical or categorical values without open source code accompanied. 
-  
-  - This causes the problem that if analysts are not agreed with a certain step in the index construction, there is no room for experiment with other possibility.
-  
 There has not yet been a standardised workflow on index construction. 
 For simple indices, users may be able to work out the calculation from the equations or workflow provided, while for more complicated construction, software is not even available for open-source consumption.
 Even when the software implementation is available, most indices are computed through a single index command, for example, the package `SPEI` provides two drought indices: SPI and SPEI through function `spi()` and `spei()`. 
@@ -127,6 +111,7 @@ If an operation from another index is useful, users can borrow it to modify an e
 The article contributes a pipeline framework to construct general indices.
 
   - domain scientists who propose new indices and directly use indices in analysis. [use multiple indices to compare]
+  - general scientists who uses indices as part of analysis, modelling process. Official indices are usually published in a public table with values calculated. Although methods of calculation are provided by the relevant index provider, raw data and scripts are usually not available for public consumption. The pipeline proposed in the paper opens up the possibility for general scientists to construct indices customised to their research purpose. 
   - decision makers, towards understand the 
   - statisticians, so as to [draw focus/ advocate] on statistical workflow and software design.
   
