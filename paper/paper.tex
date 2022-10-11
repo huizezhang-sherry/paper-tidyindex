@@ -214,7 +214,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 spatio-temporal data \sep indices \sep 
 data pipeline
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, interior hidden, sharp corners, enhanced, boxrule=0pt, breakable, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, interior hidden, frame hidden, enhanced, boxrule=0pt, breakable, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \newpage
 
@@ -223,62 +223,94 @@ data pipeline
 
 \textbf{Why index is useful, why people care about indices}
 
-Quantities that can't be directly measured is ubiquitous in our society
-and they can often be relevant for policy making, resource allocation,
-early prevention and operational purpose. For example, fire authority
-would be interested to quantify fire risk since bushfire can have a huge
-impact on monetary loss, health, and local ecosystem among others.
+Many variables relevant to decision making cannot be directly measured,
+however, they are crucial for resource allocation, early prevention, and
+other operational purpose. For example, fire authorities would be
+interested to quantify fire risk since bushfires can have a huge impact
+on monetary loss, health, and the local ecosystem among others.
 Climatologists would be interested in monitoring the change in global
-condition since variability in atmospheric and oceanic condition has a
-direct impact on the global weather and climate. Usually more than one
-variable is related to the concept of interest and they often needs to
-be integrated to make decisions. A commonly used approach here is to
-construct an index with the observable variables. This allows analysts
-to compare the quantity of interest across countries and also cross
-time.
+conditions since variability in atmospheric and oceanic conditions has a
+direct impact on global weather and climate. Usually, more than one
+variable is related to the concept of interest and they often need to be
+integrated to make decisions. In many domains, constructing an index is
+a common approach to characterise these unobservable quantities. The
+index approach allows researchers to compare the quantity of interest
+across countries and also cross time.
 
 \textbf{Define what is an index, what is not}
 
 The meaning of indices varies across disciplines and in this article, an
 index is defined as a tool to quantify a concept of interest that does
-not have direct measure. The concept of interest doesn't have direct
+not have a direct measure. The concept of interest doesn't have a direct
 measure can because it is impractical to measure the concept of interest
 at the population level. For example, it would be nearly impossible to
 include all the available stocks in the market to characterise stock
 market behavior, indices like Dow Jones Industrial Average, S\&P 500,
 and Nasdaq Composite select a representative set of stocks to measure
-the overall market behavior. Also belong to this category is the
-economic indices like Consumer Price Index, where price changes of a
+the overall market behavior. Also belonging to this category are the
+economic indices like the Consumer Price Index, where price changes of a
 basket of items are weighted to measure inflation. The lack of direct
-measure could also due to the absence of a universal definition on the
-concept of interest. Many natural and social concepts are fundamentally
-multi-facets and some indices combines measures from different domains
-to characterise the concept of interest. This includes drought indices
-constructed from meteorological, agricultural, hydrological, and
-social-economic variables {[}give some names?{]}. Social development
-indices like Human Development Index {[}ref{]} and Global Liveability
-Index {[}ref{]} measure various aspects on the quality of human capital
-and urban life.
+measure could also be due to the absence of a universal definition on
+the concept of interest. Many natural and social concepts are
+fundamentally multi-facets and some indices combine measures from
+different domains to characterise the concept of interest. This includes
+drought indices constructed from meteorological, agricultural,
+hydrological, and social-economic variables {[}give some names?{]}.
+Social development indices like Human Development Index (United Nations
+Development Programme 2022) and Global Liveability Index (Economist
+Intelligence Unit 2019) measure various aspects of the quality of human
+capital and urban life.
 
-Despite many measurements have index in its name, they cannot be
-technically classified as indices according to the definition given
-above. A major reason for these measures to lose its index membership is
-that the underlying concept of interest is straight forward to measure
-once defined. Sometime variables like precipitation of driest month or
-percentage of days when maximum temperature is below a certain
-percentile are classified as climate indices, however, precipitation and
-temperature can be directly measured by rain gauge and thermometer.
-These variables are transformation on precipitation and temperature.
-They can be used to construct indices but are not indices themselves.
-What is also not indices are many remote sensing based drought measures
-as they are transformation on one or more remote sensor bands. This
-includes Normalized Difference Vegetation Index (NDVI) {[}ref{]}, a
-transformation difference over sum on near-infrared (NIR) and red
-visible channel, and Vegetation Condition Index {[}ref{]}, a rescale of
-NDVI into {[}0, 1{]}, among others.
+Despite many measurements having the term \emph{index} in their name,
+they cannot be technically classified as indices according to the
+definition given above. A major reason for these measures to lose their
+index memberships is that the underlying concept of interest is
+straightforward to measure once defined. Sometimes variables like
+precipitation of the driest month or percentage of days when maximum
+temperature is below a certain percentile are classified as climate
+indices, however, precipitation and temperature can be directly measured
+by rain gauge and thermometer. These variables are transformation on
+precipitation and temperature. They can be used to construct indices but
+are not indices themselves. Similarly, a set of remote sensing indices
+should not be classified as indices, but variables, since they are
+measures of electromagnetic wave reflectance. This includes Normalized
+Difference Vegetation Index (NDVI) (Tucker 1979), derived from the ratio
+of difference over sum on two segments in the spectrum, also called
+band: near-infrared (NIR) and red. So are the ``indices'' derived from
+NDVI, e.g.~Vegetation Condition Index (Kogan 1995). Notice that this
+does not exclude all the construction derived from remotes sensor
+variables to be valid indices. For example, Vegetation Drought Response
+Index (Brown et al. 2008) is a valid index since it integrates climate,
+satellite, and biophysical variables to quantify vegetation stress.
 
-TODO: confirm the actual climate indices are indices by our definition
-Questions: need reference for stock market indices, CPI?
+TODO: clean up terminology:
+
+\begin{itemize}
+\tightlist
+\item
+  ``index'' only for valid indices
+\item
+  ``variable'' the most generic dump????
+\item
+  ``measure'' for item quantified by instruments or devices in standard
+  units
+\end{itemize}
+
+FYI:
+
+\begin{itemize}
+\tightlist
+\item
+  Vegetation Condition Index = (NDVI - NDVI\_min)/ (NDVI\_max -
+  NDVI\_min)
+\item
+  A measure is a variable, the variable itself is not an index.
+\item
+  Not all multivariate ``indices'' are indices (i.e.~those remote sensor
+  transformations), but generally they are. It is possible that an index
+  is constructed from a single variable (i.e.~SPI), but be careful on
+  whether it is variable or index.
+\end{itemize}
 
 \textbf{What is the problem with current workflow on index construction}
 
@@ -468,6 +500,8 @@ transformation step
 Restrict it to single variable, square root, log etc could be linearly,
 also non-linear
 
+A conversion of non-normal variables into (approximately) normal.
+
 GAM, can you do additive model pairwise/ three-way
 
 \hypertarget{temporal-processing}{%
@@ -557,10 +591,30 @@ data}\label{calculating-spei-with-raster-data}}
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-brown_vegetation_2008}{}}%
+Brown, Jesslyn F., Brian D. Wardlow, Tsegaye Tadesse, Michael J. Hayes,
+and Bradley C. Reed. 2008. {``The {Vegetation} {Drought} {Response}
+{Index} ({VegDRI}): {A} {New} {Integrated} {Approach} for {Monitoring}
+{Drought} {Stress} in {Vegetation}.''} \emph{GIScience \& Remote
+Sensing} 45 (1): 16--46.
+\url{https://doi.org/10.2747/1548-1603.45.1.16}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-buja_elements_1988}{}}%
 Buja, A, D Asimov, C Hurley, and JA McDonald. 1988. {``Elements of a
 Viewing Pipeline for Data Analysis.''} In \emph{Dynamic Graphics for
 Statistics}, 277--308. Wadsworth, Belmont.
+
+\leavevmode\vadjust pre{\hypertarget{ref-gli}{}}%
+Economist Intelligence Unit. 2019. {``The Global Liveability Index
+2019.''} The Economist.
+\url{https://www.cbeinternational.ca/pdf/Liveability-Free-report-2019.pdf}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-kogan_application_1995}{}}%
+Kogan, F. N. 1995. {``Application of Vegetation Index and Brightness
+Temperature for Drought Detection.''} \emph{Advances in Space Research},
+Natural {Hazards}: {Monitoring} and {Assessment} {Using} {Remote}
+{Sensing} {Technique}, 15 (11): 91--100.
+\url{https://doi.org/10.1016/0273-1177(95)00079-T}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-tidymodels}{}}%
 Kuhn, Max, and Hadley Wickham. 2020. \emph{Tidymodels: A Collection of
@@ -573,6 +627,16 @@ Julie Dickerson, Zach Cox, and Dianne Cook. 2000. {``Orca: {A}
 {Visualization} {Toolkit} for {High}-{Dimensional} {Data}.''}
 \emph{Journal of Computational and Graphical Statistics} 9 (3): 509--29.
 \url{https://www.jstor.org/stable/1390943}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-tucker_red_1979}{}}%
+Tucker, Compton J. 1979. {``Red and Photographic Infrared Linear
+Combinations for Monitoring Vegetation.''} \emph{Remote Sensing of
+Environment} 8 (2): 127--50.
+\url{https://doi.org/10.1016/0034-4257(79)90013-0}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-hdi}{}}%
+United Nations Development Programme. 2022. {``Human Development Report
+2021-22.''} New York. \url{http://report.hdr.undp.org}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-wickham_tidy_2014}{}}%
 Wickham, Hadley. 2014. {``Tidy {Data}.''} \emph{Journal of Statistical

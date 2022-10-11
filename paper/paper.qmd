@@ -61,13 +61,13 @@ bibliography: bibliography.bib
 
 **Why index is useful, why people care about indices**
 
-Quantities that can't be directly measured is ubiquitous in our society and they can often be relevant for policy making, resource allocation, early prevention and operational purpose.
-For example, fire authority would be interested to quantify fire risk since bushfire can have a huge impact on monetary loss, health, and local ecosystem among others.
-Climatologists would be interested in monitoring the change in global condition since variability in atmospheric and oceanic condition has a direct impact on the global weather and climate.
-Usually more than one variable is related to the concept of interest and they often needs to be integrated to make decisions.
+Many variables relevant to decision making cannot be directly measured, however, they are crucial for resource allocation, early prevention, and other operational purpose.
+For example, fire authorities would be interested to quantify fire risk since bushfires can have a huge impact on monetary loss, health, and the local ecosystem among others.
+Climatologists would be interested in monitoring the change in global conditions since variability in atmospheric and oceanic conditions has a direct impact on global weather and climate.
+Usually, more than one variable is related to the concept of interest and they often need to be integrated to make decisions.
 <!-- From a modelling perspective, these unobserved quantities are called latent variables and existing methods can incorporate these latent variables in the model structure.  -->
-A commonly used approach here is to construct an index with the observable variables.
-This allows analysts to compare the quantity of interest across countries and also cross time.
+In many domains, constructing an index is a common approach to characterise these unobservable quantities.
+The index approach allows researchers to compare the quantity of interest across countries and also cross time.
 
 
 <!--   - decision making: need to consider multi-facet for allocating resources, [...] -->
@@ -77,25 +77,38 @@ This allows analysts to compare the quantity of interest across countries and al
 
 **Define what is an index, what is not**
 
-The meaning of indices varies across disciplines and in this article, an index is defined as a tool to quantify a concept of interest that does not have direct measure.
-The concept of interest doesn't have direct measure can because it is impractical to measure the concept of interest at the population level. 
+The meaning of indices varies across disciplines and in this article, an index is defined as a tool to quantify a concept of interest that does not have a direct measure.
+The concept of interest doesn't have a direct measure can because it is impractical to measure the concept of interest at the population level. 
 For example, it would be nearly impossible to include all the available stocks in the market to characterise stock market behavior, indices like Dow Jones Industrial Average, S&P 500, and Nasdaq Composite select a representative set of stocks to measure the overall market behavior. 
-Also belong to this category is the economic indices like Consumer Price Index, where price changes of a basket of items are weighted to measure inflation. 
-The lack of direct measure could also due to the absence of a universal definition on the concept of interest. 
-Many natural and social concepts are fundamentally multi-facets and some indices combines measures from different domains to characterise the concept of interest. 
+Also belonging to this category are the economic indices like the Consumer Price Index, where price changes of a basket of items are weighted to measure inflation. 
+The lack of direct measure could also be due to the absence of a universal definition on the concept of interest. 
+Many natural and social concepts are fundamentally multi-facets and some indices combine measures from different domains to characterise the concept of interest. 
 This includes drought indices constructed from meteorological, agricultural, hydrological, and social-economic variables [give some names?]. 
-Social development indices like Human Development Index [ref] and Global Liveability Index [ref] measure various aspects on the quality of human capital and urban life.
+Social development indices like Human Development Index [@hdi] and Global Liveability Index [@gli] measure various aspects of the quality of human capital and urban life.
 
-Despite many measurements have index in its name, they cannot be technically classified as indices according to the definition given above. 
-A major reason for these measures to lose its index membership is that the underlying concept of interest is straight forward to measure once defined. 
-Sometime variables like precipitation of driest month or percentage of days when maximum temperature is below a certain percentile are classified as climate indices, however, precipitation and temperature can be directly measured by rain gauge and thermometer. 
+Despite many measurements having the term *index* in their name, they cannot be technically classified as indices according to the definition given above. 
+A major reason for these measures to lose their index memberships is that the underlying concept of interest is straightforward to measure once defined. 
+Sometimes variables like precipitation of the driest month or percentage of days when maximum temperature is below a certain percentile are classified as climate indices, however, precipitation and temperature can be directly measured by rain gauge and thermometer. 
 These variables are transformation on precipitation and temperature. 
 They can be used to construct indices but are not indices themselves. 
-What is also not indices are many remote sensing based drought measures as they are transformation on one or more remote sensor bands. 
-This includes Normalized Difference Vegetation Index (NDVI) [ref], a transformation difference over sum on near-infrared (NIR) and red visible channel, and Vegetation Condition Index [ref], a rescale of NDVI into [0, 1], among others.
+Similarly, a set of remote sensing indices should not be classified as indices, but variables, since they are measures of electromagnetic wave reflectance.
+This includes Normalized Difference Vegetation Index (NDVI) [@tucker_red_1979], derived from the ratio of difference over sum on two segments in the spectrum, also called band: near-infrared (NIR) and red.
+So are the "indices" derived from NDVI, e.g. Vegetation Condition Index [@kogan_application_1995]. 
+Notice that this does not exclude all the construction derived from remotes sensor variables to be valid indices.
+For example, Vegetation Drought Response Index [@brown_vegetation_2008] is a valid index since it integrates climate, satellite, and biophysical variables to quantify vegetation stress.
 
-TODO: confirm the actual climate indices are indices by our definition
-Questions: need reference for stock market indices, CPI?
+
+TODO: clean up terminology:
+
+  - "index" only for valid indices
+  - "variable" the most generic dump????
+  - "measure" for item quantified by instruments or devices in standard units
+
+FYI: 
+
+  - Vegetation Condition Index  = (NDVI - NDVI_min)/ (NDVI_max - NDVI_min)
+  - A measure is a variable, the variable itself is not an index. 
+  - Not all multivariate "indices" are indices (i.e. those remote sensor transformations), but generally they are. It is possible that an index is constructed from a single variable (i.e. SPI), but be careful on whether it is variable or index.
 
 **What is the problem with current workflow on index construction**
 
@@ -204,6 +217,8 @@ close to variable transformation step
 
 <!-- Take one or multiple variables to create a new variable,  -->
 Restrict it to single variable, square root, log etc could be linearly, also non-linear
+
+A conversion of non-normal variables into (approximately) normal.
 
 GAM, can you do additive model pairwise/ three-way
 
