@@ -37,11 +37,7 @@ keywords:
 bibliography: bibliography.bib  
 ---
 
-* indices, why do we need them, decision making
-* define what is an index, what is not even if they are called index
-* only very brief on indices in the introduction
-* potential audience + what do you think they should learn from this work. 
-
+\newpage
 
 # Introduction
 
@@ -65,14 +61,23 @@ bibliography: bibliography.bib
 
 **Why index is useful, why people care about indices**
 
-  - decision making: need to consider multi-facet for allocating resources, [...]
-  - to include or constructed to quantify a concept of interest: some papers on constructing tourism based climate indices etc
-  
-Integrate multiple information to produce a single number summary (across time).
+Quantities that can't be directly measured is ubiquitous in our society and they can often be relevant for policy making, resource allocation, early prevention and operational purpose.
+For example, fire authority would be interested to quantify fire risk since bushfire can have a huge impact on monetary loss, health, and local ecosystem among others.
+Climatologists would be interested in monitoring the change in global condition since variability in atmospheric and oceanic condition has a direct impact on the global weather and climate.
+Usually more than one variable is related to the concept of interest and they often needs to be integrated to make decisions.
+<!-- From a modelling perspective, these unobserved quantities are called latent variables and existing methods can incorporate these latent variables in the model structure.  -->
+A commonly used approach here is to construct an index with the observable variables.
+This allows analysts to compare the quantity of interest across countries and also cross time.
+
+
+<!--   - decision making: need to consider multi-facet for allocating resources, [...] -->
+<!--   - to include or constructed to quantify a concept of interest: some papers on constructing tourism based climate indices etc -->
+
+<!-- Integrate multiple information to produce a single number summary (across time). -->
 
 **Define what is an index, what is not**
-    
-Indices quantify a concept of interest with no direct measure across time.
+
+The meaning of indices varies across disciplines and in this article, an index is defined as a tool to quantify a concept of interest that does not have direct measure.
 The concept of interest doesn't have direct measure can because it is impractical to measure the concept of interest at the population level. 
 For example, it would be nearly impossible to include all the available stocks in the market to characterise stock market behavior, indices like Dow Jones Industrial Average, S&P 500, and Nasdaq Composite select a representative set of stocks to measure the overall market behavior. 
 Also belong to this category is the economic indices like Consumer Price Index, where price changes of a basket of items are weighted to measure inflation. 
@@ -162,9 +167,7 @@ The most popular indices (i.e. SPI, SPEI, etc) have existing software implementa
 
 constructing time series index should also be encapsulated in my framework
 
-
-
-reusable 
+Here we assume a concept of interest is determined, relevant variables/ indicators are identified and available to construct indices.
 
 ## Raw data
 
