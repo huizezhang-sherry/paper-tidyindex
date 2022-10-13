@@ -41,27 +41,16 @@ bibliography: bibliography.bib
 
 # Introduction
 
-<!-- Index construction is a way to summarise complicated information (used in environmental data). **it basically says nothing** -->
-<!-- The complexity of these information may involve a spatial distribution, a temporal scale that defines the frequency of the data, and a multivariate perspective that collects different climate variables. -->
-
-
-<!-- These indices are customised to distinct local weather condition and historical data availability. -->
-
-<!-- Various methods are proposed to extract multivariate information on the spatial coverage, across time. -->
 <!-- Each individual index follows its own data pipeline and it can be difficult to evaluate how an index can be affected by tweaking parameters in a certain step, rearranging the order of steps, using to different method.  -->
 
-<!-- Indices with readily available code to implement have more potential to be computed by researchers, i.e. the package `SPEI` [@SPEI] has implemented the SPI and SPEI index for calculating drought indices.  -->
-<!-- [Another package in a different domain].   -->
 <!-- However, even if most of the indices have available existing implementation available to users, there would be hundreds of them and it will be burdensome to remember, classify, and compare between. -->
-<!-- There is a need for a framework to generally describe how indices can be constructed from spatio-temporal data. -->
-
-<!-- This paper proposes such data pipeline for constructing indices. -->
-<!-- The steps involved in the pipeline are general in nature and flexible to be adopted to most index construction for environmental data. -->
 
 
 **Why index is useful, why people care about indices**
 
-Many concepts relevant to decision making cannot be directly measured, however, they are crucial for resource allocation, early prevention, and other operational purpose.
+*incorporate the following in why using index: multiple pieces of information (variables) that need to be taken into account*
+
+Many concepts relevant to decision making cannot be directly measured, however, they are crucial for resource allocation, early prevention, and other operational purpose. 
 For example, fire authorities would be interested to quantify fire risk since bushfires can have a huge impact on monetary loss, health, and the local ecosystem.
 Climatologists would be interested in monitoring the change in global climate since variability in atmospheric and oceanic conditions has a direct impact on global weather and climate.
 Usually this concept of interest is associated with more than one variables and these variables need to be integrated to make decisions on the subject matter.
@@ -69,15 +58,9 @@ Usually this concept of interest is associated with more than one variables and 
 A common approach to quantify concepts like these is to construct an index using these relevant variables. 
 This allows researchers to compare the quantity of interest across entities (i.e. countries, regions) and also cross time.
 
-
-<!--   - decision making: need to consider multi-facet for allocating resources, [...] -->
-<!--   - to include or constructed to quantify a concept of interest: some papers on constructing tourism based climate indices etc -->
-
-<!-- Integrate multiple information to produce a single number summary (across time). -->
-
 **Define what is an index, what is not**
 
-The meaning of indices varies across disciplines and in this article, an index is defined as a tool to quantify a concept of interest that does not have a direct measure.
+In this article, an index is defined as a tool to quantify a concept of interest that does not have a direct measure.
 The concept of interest doesn't have a direct measure can because it is impractical to measure at the population level. 
 For example, it would be nearly impossible to include all the available stocks in the market to characterise stock market behavior, so indices like Dow Jones Industrial Average, S&P 500, and Nasdaq Composite select a representative set of stocks to measure the overall market behavior. 
 Also belonging to this category are the economic indices like the Consumer Price Index, where price changes of a basket of items are weighted to measure inflation. 
@@ -85,6 +68,8 @@ The lack of direct measure could also because the concept itself is an unobserva
 Many natural hazard and social concepts falls into this category. 
 This includes drought indices constructed from meteorological, agricultural, hydrological, and social-economic variables, e.g. Standardised Precipitation Index (SPI) [@mckee1993relationship] and Aggregated Drought Index (ADI) [@keyantash_aggregate_2004] among others.
 Social development indices like Human Development Index [@hdi] and Global Liveability Index [@gli] measure various aspects of the quality of human capital and urban life.
+
+*still need to tweak the tone a bit: "they are called index, they are not the index we will talk about"*
 
 Despite many quantity having the term *index* in their name, they cannot be technically classified as indices according to the definition given above. 
 The reason for these quantities to lose their index memberships is that they are variables can be accurately measured given the instrument precision. 
@@ -97,18 +82,21 @@ So are the "indices" derived from NDVI, e.g. Vegetation Condition Index [@kogan_
 Notice that this does not exclude all the construction derived from remotes sensor variables to be valid indices.
 For example, Vegetation Drought Response Index [@brown_vegetation_2008] is a valid index since it integrates climate, satellite, and biophysical variables to quantify vegetation stress.
 
-FYI: 
+<!-- FYI:  -->
 
-  - Vegetation Condition Index  = (NDVI - NDVI_min)/ (NDVI_max - NDVI_min)
-  - A measure is a variable, but is not an index. 
-  - Not all multivariate quantities are indices (i.e. those remote sensor measures). It is possible that an index is constructed from a single variable (i.e. SPI).
-  - Indices is not a single/ set of measures
+<!--   - A measure is a variable, but is not an index.  -->
+<!--   - Not all multivariate quantities are indices (i.e. those remote sensor measures). It is possible that an index is constructed from a single variable (i.e. SPI). -->
+<!--   - Indices is not a single/ set of measures -->
 
-**What is the problem with current workflow on index construction**
+\newpage
+
+**What is the problem with current index construction**
+
+*indices constructed separately, but there are lots of are same [!], but hard to see from the current construction. "messy data are messy in there own way". Describe how they are same, so we can modular them*
 
 There has not yet been a standardised workflow on index construction. 
 For simple indices, users may be able to work out the calculation from the equations or workflow provided, while for more complicated construction, software is not even available for open-source consumption.
-Even when the software implementation is available, most indices are computed through a single index command, for example, the package `SPEI` provides two drought indices: SPI and SPEI through function `spi()` and `spei()`. 
+Even when the software implementation is available, most indices are computed through a single index command, [given examples but not too domain specific]. 
 This software design focuses on the name of the index and includes all the steps in a single index function. 
 With this design, there is little room for modification. For example, fit a new distribution that is not provided in the initial code. 
 Also, when scaled to a large number of indices, it increases the cognitive load of remembering hundreds of index names. 
@@ -120,13 +108,22 @@ If an operation from another index is useful, users can borrow it to modify an e
 
 **who would benefit from this paper**
 
-The article contributes a pipeline framework to construct general indices.
+*this work could be interested to scientists actively developing new indices*
 
   - domain scientists who propose new indices and directly use indices in analysis. [use multiple indices to compare]
-  - general scientists who uses indices as part of analysis, modelling process. Official indices are usually published in a public table with values calculated. Although methods of calculation are provided by the relevant index provider, raw data and scripts are usually not available for public consumption. The pipeline proposed in the paper opens up the possibility for general scientists to construct indices customised to their research purpose. 
-  - decision makers, towards understand the 
+  - general scientists who uses indices as part of analysis, modelling process. The pipeline proposed in the paper opens up the possibility for general scientists to construct indices customised to their research purpose. 
   - statisticians, so as to [draw focus/ advocate] on statistical workflow and software design.
   
+
+**what can be done if people adopt this pipeline/ why it is beneficial?**
+
+- transparency: official published, can decompose the indices, 
+- allow for calculation on uncertainty with randomization, 
+- compare indices,
+- tweak/ swap building blocks, 
+- create new indices based on combinations of existing steps.
+
+
 The rest of the paper is structured as follows: the concept of data pipeline in R is reviewed in @sec-data-pipeline-in-r.  @sec-a-pipeline-for-building-statistical-indices presents the data pipeline for index construction. @sec-incorporating-new-buliding-blocks-into-the-pipeline explains how to include a new building block in each pipeline module. 
 Examples are given in @sec-examples to demonstrate the index construction with the pipeline built. 
 
@@ -162,6 +159,11 @@ The data pipeline concept is further enhanced by the pipe operator (`%>%`) in R 
 
 A more recent data pipeline is tidymodels [@tidymodels], a set of packages for machine learning models following the tidyverse principles [@tidyverse]. 
 Steps: Exploratory data analysis (EDA), feature engineering, model tuning and selection, and model evaluation.
+
+- easy to operate properly: should be designed that users know what is approriate to do
+- promote good scientific methodology: should protect uses from doing stupid things,  doing right thing
+
+good statistical practice
 
 
 # A pipeline for building statistical indices {#sec-a-pipeline-for-building-statistical-indices}
@@ -207,12 +209,23 @@ A specific transformation on the scale of the data
 z-score standardising, min-max standardisation into [0, 1] or [0, 100], percentage change on the baseline
 close to variable transformation step
 
+## Normalising
+
+The purpose of normalising is for cross-comparison.
+This step can get criticism from analysts for ...
+
+specifically for converting from a fitted distribution to normal score via reverse CDF function, non-parametric formula, or empirical approximation, a common step in many index: SPI, SSI, Z score. The purpose of normalising is to convert the index into a standardised series after all the steps for the ease of comparison.
+
+Normalising is usually the last step
+
 ## Variable transformation
 
 <!-- Take one or multiple variables to create a new variable,  -->
 Restrict it to single variable, square root, log etc could be linearly, also non-linear
 
-A conversion of non-normal variables into (approximately) normal.
+change the shape of the variable
+
+<!-- A conversion of non-normal variables into (approximately) normal. wrong! -->
 
 GAM, can you do additive model pairwise/ three-way
 
@@ -225,12 +238,7 @@ With drought indices, the extraction of meaningful variables from the original d
 
 Also include weighting
 
-## Normalising
 
-The purpose of normalising is for cross-comparison.
-This step can get criticism from analysts for ...
-
-specifically for converting from a fitted distribution to normal score via reverse CDF function, non-parametric formula, or empirical approximation, a common step in many index: SPI, SSI, Z score. The purpose of normalising is to convert the index into a standardised series after all the steps for the ease of comparison.
 
 ## Benchmarking
 
