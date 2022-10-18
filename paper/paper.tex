@@ -214,7 +214,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 spatio-temporal data \sep indices \sep 
 data pipeline
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, sharp corners, frame hidden, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced, interior hidden, boxrule=0pt, breakable]}{\end{tcolorbox}}\fi
 
 \newpage
 
@@ -298,56 +298,48 @@ of are same {[}!{]}, but hard to see from the current construction.
 so we can modular them}
 
 Currently, index construction lacks structure. It is often up to the
-researchers to decide whether to provide open source code on the new
-indices, what would be the best user interface for the new indices, and
-how easily the new indices can be used by end users, along with other
-existing indices. This causes the problem that indices are often
-designed separately and many indices simply lump all the steps into a
-{[}single command function{]}. While this simplifies the amount of code
-needed to derive index values from a set of inputs, many problems arise
-when the code is adopted outside the research group that wrote the
-index. First of all, indices created by a single command provide little
-room for modification. For example, many indices involve a step to fit
-variables into a particular distribution. Index researchers may provide
-options for different fits, but it is generally hard to experiment with
-options outside the provided distributions. Also, many indices share
-similar or identical steps in part of their construction, a {[}single
-command function{]} eliminates the possibility to borrow codes written
-by others and forces researchers to rebuild the wheels when creating new
-indices. Lastly, users may wish to inspect intermediate results during
-the index construction to validate the output or to compare results with
-other indices, but {[}single command functions{]} do not support this
-demand unless the users can customise the source code as they need.
+researchers or research institutions to decide whether to provide open
+source code on the new indices, what would be the best user interface
+for the new indices, and how easily the new indices can be used by end
+users, along with other existing indices. Institutes like National
+Oceanic and Atmospheric Administration (NOAA) and United States Drought
+Monitor (USDM) moderate the indices in their domains. They provide
+public information to describe the methodology used in the calculation,
+publish the index values for public consumption while the source code
+used for computing is often not available for public consumption. For
+researchers, the level of varies. Some research groups provide open
+sourced code available for {[}explain situation with individual
+researchers{]} This causes the problem that computation on indices are
+not transparent and code design on indices are done separately.
+Researchers who wish to validate the calculation from large institutes
+need to reinvent the wheels that have already been built. Open source
+codes provide narrow margin for adjustment. {[}more here{]} Similar
+steps used by different indices are difficult to spot since they all
+hide under commands for calculating different indices. Lastly, these
+functions does not support inspecting intermediate results if users wish
+to check the output of a certain step.
 
 \textbf{what can be done if people adopt this pipeline/ why it is
 beneficial?}
 
-Ideally each command corresponds to a user action
+\emph{This week: need to extend each point of why it is beneficial
+further with more information?}
 
 While jumbled indices jumble in their own ways, perspicuous indices are
-all alike. A clear pipeline for indices construction brings transparency
-to the algorithm. Many often, official websites like National Oceanic
-and Atmospheric Administration (NOAA) will regularly updates the raw
-data and the indices calculated for users' consumption and provides
-description of the methodology. However, the source code and the scripts
-is usually not publicly available and there is no tool, or users need to
-be its own tool, to verify the calculation. Once a data pipeline is
-built, users can follow the steps in the index construction to validate
-the numbers published by the authorities. Once a data pipeline is
-constructed, it opens possibility to do statistics on indices. For
-example, bootstrap and other methods could be applied into the pipeline
-to calculate uncertainty on the index value with randomisation.
-Properties of existing indices can be examined through swapping the
-steps involved in the construction. For example, some indices prefer to
-standardise the input variables in the beginning of the workflow while
-other prefer to move the standardisation towards the end and directly
-apply it on the index value. A flexible pipline approach gives the
-freedom to construct the index in both ways by placing the
-standardisation step in different stages of the pipeline. The importance
-of the position of a single steps can be compared through indices
-constructed by placing the step at different stages of the pipeline.
-Also, the pipeline approach motivates new indices through combining
-existing steps from different indices.
+all alike. This paper proposes a data pipeline for index construction.
+{[}more on what we bring onto the table: construct indices through
+pipeline steps where each step corresponds to a single building
+block???{]}
+
+The pipeline framework provides an open source tool to construct indices
+in general. This is beneficial because it opens up the possibility to
+create, study, and use indices in a more principled way. More
+specifically, it enables researchers to 1) validate the indices
+calculated from external organisations, 2) unify various indices under
+the same framework for comparison, 3) swap or adjust individual steps in
+the index construction to study their contribution, 4) calculate
+uncertainty on indices, and finally, 5) inspire proposal of new indices
+from existing ones.
 
 \textbf{who would benefit from this paper}
 
