@@ -92,18 +92,58 @@ For example, Vegetation Drought Response Index [@brown_vegetation_2008] is a val
 
 **What is the problem with current index construction**
 
-*indices constructed separately, but there are lots of are same [!], but hard to see from the current construction. "messy data are messy in there own way". Describe how they are same, so we can modular them*
+*From last week: indices constructed separately, but there are lots of are same [!], but hard to see from the current construction. "messy data are messy in there own way". Describe how they are same, so we can modular them*
 
-There has not yet been a standardised workflow on index construction. 
-For simple indices, users may be able to work out the calculation from the equations or workflow provided, while for more complicated construction, software is not even available for open-source consumption.
-Even when the software implementation is available, most indices are computed through a single index command, [given examples but not too domain specific]. 
-This software design focuses on the name of the index and includes all the steps in a single index function. 
-With this design, there is little room for modification. For example, fit a new distribution that is not provided in the initial code. 
-Also, when scaled to a large number of indices, it increases the cognitive load of remembering hundreds of index names. 
-A better approach is to modularise these steps and construct a pipeline for users to build indices through choosing different building blocks from each module.
-With this design, users focus on the operations involved in the index construction.
-If an operation from another index is useful, users can borrow it to modify an existing index.
+Currently, index construction lacks structure. 
+It is often up to the researchers to decide whether to provide open source code on the new indices, what would be the best user interface for the new indices, and how easily the new indices can be used by end users, along with other existing indices. 
+This causes the problem that indices are often designed separately and many indices simply lump all the steps into a [single command function]. 
+While this simplifies the amount of code needed to derive index values from a set of inputs, many problems arise when the code is adopted outside the research group that wrote the index. 
+First of all, indices created by a single command provide little room for modification.
+For example, many indices involve a step to fit variables into a particular distribution.
+Index researchers may provide options for different fits, but it is generally hard to experiment with options outside the provided distributions.
+Also, many indices share similar or identical steps in part of their construction, a [single command function] eliminates the possibility to borrow codes written by others and forces researchers to rebuild the wheels when creating new indices.
+Lastly, users may wish to inspect intermediate results during the index construction to validate the output or to compare results with other indices, but [single command functions] do not support this demand unless the users can customise the source code as they need.
 
+
+<!-- indices are constructed separately in this design. -->
+<!-- Many steps are more or less similar when constructing indices, but this would be hard to observe from the current construction.  -->
+<!-- For example, many indices needs standardisation in its workflow, it can be used to rescale the input variables or the index series. -->
+<!-- But the current construction does not make it clear through its user interface but sweep it, along with all the other steps in the index construction, under a single function call.  -->
+
+
+<!-- There has not yet been a standardised workflow on index construction.  -->
+<!-- For simple indices, users may be able to work out the calculation from the equations or workflow provided, while for more complicated construction, software is not even available for open-source consumption. -->
+<!-- Even when the software implementation is available, most indices are computed through a single index command, [given examples but not too domain specific].  -->
+<!-- This software design focuses on the name of the index and includes all the steps in a single index function.  -->
+<!-- With this design, there is little room for modification. For example, fit a new distribution that is not provided in the initial code.  -->
+<!-- Also, when scaled to a large number of indices, it increases the cognitive load of remembering hundreds of index names.  -->
+<!-- A better approach is to modularise these steps and construct a pipeline for users to build indices through choosing different building blocks from each module. -->
+<!-- With this design, users focus on the operations involved in the index construction. -->
+<!-- If an operation from another index is useful, users can borrow it to modify an existing index. -->
+
+
+**what can be done if people adopt this pipeline/ why it is beneficial?**
+
+Ideally each command corresponds to a user action
+
+While jumbled indices jumble in their own ways, perspicuous indices are all alike. 
+A clear pipeline for indices construction brings transparency to the algorithm. 
+Many often, official websites like National Oceanic and Atmospheric Administration (NOAA) will regularly updates the raw data and the indices calculated for users' consumption and provides description of the methodology. 
+However, the source code and the scripts is usually not publicly available and there is no tool, or users need to be its own tool, to verify the calculation. 
+Once a data pipeline is built, users can follow the steps in the index construction to validate the numbers published by the authorities. 
+Once a data pipeline is constructed, it opens possibility to do statistics on indices.
+For example, bootstrap and other methods could be applied into the pipeline to calculate uncertainty on the index value with randomisation. 
+Properties of existing indices can be examined through swapping the steps involved in the construction. 
+For example, some indices prefer to standardise the input variables in the beginning of the workflow while other prefer to move the standardisation towards the end and directly apply it on the index value. 
+A flexible pipline approach gives the freedom to construct the index in both ways by placing the standardisation step in different stages of the pipeline. 
+The importance of the position of a single steps can be compared through indices constructed by placing the step at different stages of the pipeline. 
+Also, the pipeline approach motivates new indices through combining existing steps from different indices. 
+
+<!-- - transparency: official published, can decompose the indices,  -->
+<!-- - allow for calculation on uncertainty with randomization,  -->
+<!-- - compare indices, -->
+<!-- - tweak/ swap building blocks,  -->
+<!-- - create new indices based on combinations of existing steps. -->
 
 
 **who would benefit from this paper**
@@ -113,16 +153,6 @@ If an operation from another index is useful, users can borrow it to modify an e
   - domain scientists who propose new indices and directly use indices in analysis. [use multiple indices to compare]
   - general scientists who uses indices as part of analysis, modelling process. The pipeline proposed in the paper opens up the possibility for general scientists to construct indices customised to their research purpose. 
   - statisticians, so as to [draw focus/ advocate] on statistical workflow and software design.
-  
-
-**what can be done if people adopt this pipeline/ why it is beneficial?**
-
-- transparency: official published, can decompose the indices, 
-- allow for calculation on uncertainty with randomization, 
-- compare indices,
-- tweak/ swap building blocks, 
-- create new indices based on combinations of existing steps.
-
 
 The rest of the paper is structured as follows: the concept of data pipeline in R is reviewed in @sec-data-pipeline-in-r.  @sec-a-pipeline-for-building-statistical-indices presents the data pipeline for index construction. @sec-incorporating-new-buliding-blocks-into-the-pipeline explains how to include a new building block in each pipeline module. 
 Examples are given in @sec-examples to demonstrate the index construction with the pipeline built. 
