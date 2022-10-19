@@ -214,7 +214,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 spatio-temporal data \sep indices \sep 
 data pipeline
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced, interior hidden, boxrule=0pt, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, breakable, boxrule=0pt, frame hidden, interior hidden, enhanced, sharp corners]}{\end{tcolorbox}}\fi
 
 \newpage
 
@@ -292,32 +292,22 @@ biophysical variables to quantify vegetation stress.
 
 \textbf{What is the problem with current index construction}
 
-\emph{From last week: indices constructed separately, but there are lots
-of are same {[}!{]}, but hard to see from the current construction.
-``messy data are messy in there own way''. Describe how they are same,
-so we can modular them}
-
-Currently, index construction lacks structure. It is often up to the
-researchers or research institutions to decide whether to provide open
-source code on the new indices, what would be the best user interface
-for the new indices, and how easily the new indices can be used by end
-users, along with other existing indices. Institutes like National
-Oceanic and Atmospheric Administration (NOAA) and United States Drought
-Monitor (USDM) moderate the indices in their domains. They provide
-public information to describe the methodology used in the calculation,
-publish the index values for public consumption while the source code
-used for computing is often not available for public consumption. For
-researchers, the level of varies. Some research groups provide open
-sourced code available for {[}explain situation with individual
-researchers{]} This causes the problem that computation on indices are
-not transparent and code design on indices are done separately.
-Researchers who wish to validate the calculation from large institutes
-need to reinvent the wheels that have already been built. Open source
-codes provide narrow margin for adjustment. {[}more here{]} Similar
-steps used by different indices are difficult to spot since they all
-hide under commands for calculating different indices. Lastly, these
-functions does not support inspecting intermediate results if users wish
-to check the output of a certain step.
+Currently, index construction lacks standardised workflow. It is often
+up to researchers or research institutions to decide whether to provide
+open source code on the new indices, what would be the best user
+interface for other researchers to use the new indices, and how easily
+the new indices can be compared with other existing indices. This makes
+the computation lack transparency and indices cumbersome to experiment
+with. Researchers who wish to validate the indices calculated from large
+institutes need to reinvent the wheels themselves since the source code
+used for computing is often not available for public consumption. Open
+source codes provided by research groups has a narrow margin for
+exploring other options outside the provided. Similar steps used by
+different indices are difficult to spot since the design of user
+interface for indices often include all the steps under a single
+function call. And lastly, it is generally hard to inspect intermediate
+results during the index construction if users wish to check the output
+of a certain step.
 
 \textbf{what can be done if people adopt this pipeline/ why it is
 beneficial?}
@@ -325,46 +315,37 @@ beneficial?}
 \emph{This week: need to extend each point of why it is beneficial
 further with more information?}
 
-While jumbled indices jumble in their own ways, perspicuous indices are
-all alike. This paper proposes a data pipeline for index construction.
-{[}more on what we bring onto the table: construct indices through
-pipeline steps where each step corresponds to a single building
-block???{]}
-
-The pipeline framework provides an open source tool to construct indices
-in general. This is beneficial because it opens up the possibility to
-create, study, and use indices in a more principled way. More
-specifically, it enables researchers to 1) validate the indices
-calculated from external organisations, 2) unify various indices under
-the same framework for comparison, 3) swap or adjust individual steps in
-the index construction to study their contribution, 4) calculate
-uncertainty on indices, and finally, 5) inspire proposal of new indices
-from existing ones.
+While every jumbled indices jumble in their own ways, perspicuous
+indices are all alike. This paper proposes a data pipeline for index
+construction. By recognising the common steps shared by many indices, we
+develop a pipeline that breaks down index construction into multiple
+modules and allow operations in various modules to be combined like
+building blocks to construct indices. The pipeline approach is general
+in nature while adaptable to most index construction. It allows indices
+to be created, studied and compared in a structured tidy form and
+enables analysis on indices to be performed easily: More specifically,
+it enables researchers to 1) validate the indices calculated from
+external organisations, 2) unify various indices under the same
+framework for comparison, 3) swap or adjust individual steps in the
+index construction to study their contribution, 4) calculate uncertainty
+on indices through bootstrap or others, and finally, 5) inspire proposal
+of new indices from combining different steps in existing indices.
 
 \textbf{who would benefit from this paper}
 
-\emph{this work could be interested to scientists actively developing
-new indices}
+This work could be interested to researchers actively developing new
+indices to delivery new indices in an easy-to-reproduce design. It would
+also provide analysts who wish to compute a range of indices in their
+analysis a uniform interface to build relevant indices from raw data.
+For statistician and software developing engineers, this work frames the
+workflow of index construction and could motivates similar work in other
+workflow used in practice.
 
-\begin{itemize}
-\tightlist
-\item
-  domain scientists who propose new indices and directly use indices in
-  analysis. {[}use multiple indices to compare{]}
-\item
-  general scientists who uses indices as part of analysis, modelling
-  process. The pipeline proposed in the paper opens up the possibility
-  for general scientists to construct indices customised to their
-  research purpose.
-\item
-  statisticians, so as to {[}draw focus/ advocate{]} on statistical
-  workflow and software design.
-\end{itemize}
-
-The rest of the paper is structured as follows: the concept of data
-pipeline in R is reviewed in Section~\ref{sec-data-pipeline-in-r}.
-Section~\ref{sec-a-pipeline-for-building-statistical-indices} presents
-the data pipeline for index construction.
+The rest of the paper is structured as follows:
+Section~\ref{sec-data-pipeline-in-r} reviews the concept of data
+pipeline in R. The pipeline framework for index construction is
+presented in
+Section~\ref{sec-a-pipeline-for-building-statistical-indices}.
 Section~\ref{sec-incorporating-new-buliding-blocks-into-the-pipeline}
 explains how to include a new building block in each pipeline module.
 Examples are given in Section~\ref{sec-examples} to demonstrate the
