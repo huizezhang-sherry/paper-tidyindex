@@ -92,12 +92,12 @@ For example, Vegetation Drought Response Index [@brown_vegetation_2008] is a val
 
 **What is the problem with current index construction**
 
-Currently, index construction lacks standardised workflow. 
+Currently, index construction lacks a standardised workflow. 
 It is often up to researchers or research institutions to decide whether to provide open source code on the new indices, what would be the best user interface for other researchers to use the new indices, and how easily the new indices can be compared with other existing indices. 
 This makes the computation lack transparency and indices cumbersome to experiment with.
 Researchers who wish to validate the indices calculated from large institutes need to reinvent the wheels themselves since the source code used for computing is often not available for public consumption.
-Open source codes provided by research groups has a narrow margin for exploring other options outside the provided.
-Similar steps used by different indices are difficult to spot since the design of user interface for indices often include all the steps under a single function call.
+Open-source code provided by research groups has a narrow margin for exploring other options outside the provided.
+Similar steps used by different indices are difficult to spot since the design of the user interface for indices often includes all the steps under a single function call.
 And lastly, it is generally hard to inspect intermediate results during the index construction if users wish to check the output of a certain step. 
 
 <!-- Institutes like National Oceanic and Atmospheric Administration (NOAA) and United States Drought Monitor (USDM) moderate indices in their domains. -->
@@ -115,18 +115,18 @@ And lastly, it is generally hard to inspect intermediate results during the inde
 
 *This week: need to extend each point of why it is beneficial further with more information?*
 
-While every jumbled indices jumble in their own ways, perspicuous indices are all alike. 
+While every jumbled index jumbles in its own way, perspicuous indices are all alike. 
 This paper proposes a data pipeline for index construction. 
 By recognising the common steps shared by many indices, we develop a pipeline that breaks down index construction into multiple modules and allow operations in various modules to be combined like building blocks to construct indices.
-The pipeline approach is general in nature while adaptable to most index construction. 
-It allows indices to be created, studied and compared in a structured tidy form and enables analysis on indices to be performed easily: 
-More specifically, it enables researchers to 1) validate the indices calculated from external organisations, 2) unify various indices under the same framework for comparison, 3) swap or adjust individual steps in the index construction to study their contribution, 4) calculate uncertainty  on indices through bootstrap or others, and finally, 5) inspire proposal of new indices from combining different steps in existing indices. 
+The pipeline approach is general while adaptable to most index construction. 
+It allows indices to be created, studied, and compared in a structured tidy form and enables statistical analysis of indices to be performed easily: 
+More specifically, it enables researchers to 1) validate the indices calculated from external organisations, 2) unify various indices under the same framework for comparison, 3) swap or adjust individual steps in the index construction to study their contribution, 4) calculate uncertainty on indices through bootstrap or others, and finally, 5) inspire proposal of new indices from combining different steps in existing indices. 
 
 **who would benefit from this paper**
 
-This work could be interested to researchers actively developing new indices to delivery new indices in an easy-to-reproduce design. 
+This work could interests researchers actively developing new indices to deliver new indices in an easy-to-reproduce design. 
 It would also provide analysts who wish to compute a range of indices in their analysis a uniform interface to build relevant indices from raw data. 
-For statistician and software developing engineers, this work frames the workflow of index construction and could motivates similar work in other workflow used in practice.
+For statisticians and software developing engineers, this work frames the workflow of index construction and could motivate similar work in other workflow used in practice.
 
 
 The rest of the paper is structured as follows: @sec-data-pipeline-in-r reviews the concept of data pipeline in R. 
