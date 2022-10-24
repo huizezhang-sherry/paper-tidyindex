@@ -215,7 +215,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 spatio-temporal data \sep indices \sep 
 data pipeline
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, interior hidden, boxrule=0pt, breakable, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, interior hidden]}{\end{tcolorbox}}\fi
 
 \newpage
 
@@ -375,27 +375,25 @@ index construction with the pipeline built.
 \hypertarget{sec-tidy-data}{%
 \subsection{Tidy data}\label{sec-tidy-data}}
 
-As a programming language for data analysis, R provides a scripted
-environment for users to experiment with data without the complex
-abstraction a typical programming language requires. The flexible and
-intuitive workflow is paramount for data analysis since in a data
-analysis project, the full workflow of how data should be processed from
-the raw data to the final results is usually only consolidated till the
-end of the project and analysts need the freedom to quickly experiment
-with different ideas when working with data. This approach to data
-analysis is enhanced by the tidyverse suite where a collection of R
-packages are built for data science under the concept of tidy data. The
-tidy data principle (Wickham 2014) prescribes three simple rules for
-structuring tabular data: 1) Each variable forms a column, 2) Each
-observation forms a row, and; 3) Each type of observational unit forms a
-table. The packages built in the tidyverse suite provide operations that
-are direct actions on the data and users, even new users, can easily
-read from the code on what has been performed and what to expect after
-each operation. Researchers and analysts have a similar need for an
-intuitive and flexible process to construct indices since a similar
-workflow occurs where researchers experiment with many different
-indices, discover issues with the current ones, and experiment with
-potential ideas before finally arrive at a solution.
+As a scripted language for data analysis, R provides a interactive
+environment for users to code with data without the abstraction a
+typical programming language requires. This flexible environment is
+paramount for data analysis since in practice, data analysis involves
+trials and errors on different steps to solve the problems. Analysts
+need the freedom to quickly experiment with different ideas when working
+with data. The tidyverse suite provides a collection of R package for
+conducting data analysis. These tools directly operate on data, and
+users, even new users, can easily read from the code on what operation
+is performed on the data and what to expect as the output. All of these
+are built upon a simple prior knowledge of the tidy data principle
+(Wickham 2014), which prescribes three rules for structuring tabular
+data: 1) Each variable forms a column, 2) Each observation forms a row,
+and; 3) Each type of observational unit forms a table.
+
+Constructing indices also involves this working pattern of trails and
+errors on different options before finding the final solution. A tidy
+workflow will give researchers more flexibility to tune the steps as
+they wish and while maintain a readable and intuitive code base.
 
 \hypertarget{sec-data-pipeline}{%
 \subsection{Data pipeline}\label{sec-data-pipeline}}
