@@ -88,9 +88,12 @@ For example, Vegetation Drought Response Index [@brown_vegetation_2008] is a val
 <!--   - Not all multivariate quantities are indices (i.e. those remote sensor measures). It is possible that an index is constructed from a single variable (i.e. SPI). -->
 <!--   - Indices is not a single/ set of measures -->
 
-\newpage
 
 **What is the challenges with current index construction**
+
+*see if there is any paper describing this type of pains*
+
+*useful to reference tidy data and tidy model that makes the workflow on modelling tidy somewhere in introduction*
 
 Currently, index construction lacks a standardised workflow. 
 It is often up to researchers or research institutions to decide whether to provide open source code on the new indices, what would be the best user interface for other researchers to use the new indices, and how easily the new indices can be compared with other existing indices. 
@@ -101,13 +104,8 @@ This makes the computation lack transparency and indices cumbersome to experimen
   - Similar steps used by different indices are difficult to spot since the design of the user interface for indices often includes all the steps under a single function call; and
   - It is generally hard to inspect intermediate results during the index construction if users wish to check the output of a certain step. 
 
-TODO: see if there is any paper describing this type of pains
-
-
 <!-- Institutes like National Oceanic and Atmospheric Administration (NOAA) and United States Drought Monitor (USDM) moderate indices in their domains. -->
 <!-- They provide public information to describe the methodology used in the calculation, publish the index values for public consumption while the source code used for computing is often not available for public consumption.  -->
-
-TODO: useful to reference tidy data and tidy model that makes the workflow on modelling tidy somewhere in introduction
 
 
 <!-- For example, many indices involve a step to fit variables into a particular distribution. -->
@@ -119,14 +117,14 @@ TODO: useful to reference tidy data and tidy model that makes the workflow on mo
 
 **what can be done if people adopt this pipeline/ why it is beneficial?**
 
+*first sentence: tailor to their indices without thinking about the big picture*
+
 ~~While every jumbled index jumbles in its own way, [perspicuous] clearly-laied out indices are all alike.~~
 This paper proposes a data pipeline for index construction. 
 By recognising the common steps shared by many indices, we develop a pipeline that breaks down index construction into multiple modules and allow operations in various modules to be combined like building blocks to construct indices.
 The pipeline approach is general while adaptable to most index construction. 
 It allows indices to be created, studied, and compared in a structured tidy form and enables statistical analysis of indices to be performed easily: 
 More specifically, it enables researchers to 1) validate the indices calculated from external organisations, 2) unify various indices under the same framework for computing, 3) swap or adjust individual steps in the index construction to study their contribution, 4) calculate uncertainty on indices through bootstrap or others, 5) enhance existing indices through comparing and studying their statistical properties, and finally, 6) propose new indices from combining different steps in existing indices. 
-
-TODO: first sentence: tailor to their indices without thinking about the big picture
 
 
 **who would benefit from this paper**
@@ -140,19 +138,30 @@ The rest of the paper is structured as follows: @sec-data-pipeline-in-r reviews 
 The pipeline framework for index construction is presented in @sec-a-pipeline-for-building-statistical-indices.  @sec-incorporating-new-buliding-blocks-into-the-pipeline explains how to include a new building block in each pipeline module. 
 Examples are given in @sec-examples to demonstrate the index construction with the pipeline built. 
 
+\newpage
+
 # Data pipeline in R {#sec-data-pipeline-in-r}
 
 ## Tidy data {#sec-tidy-data}
 
-Before the concept of tidy data [@wickham_tidy_2014], tabular data arrive at data analysts in all different ways. 
-Different analysts would write customised scripts for analysing the specific data. 
-These scripts can be extended to other data analysed by the same people or group but this is not generalizable directly to another dataset. 
-When the tidy data concept comes, variables and values are arranged so that 1) Each variable forms a column, 2) Each observation forms a row, and; 3) Each type of observational unit forms a table.
-With this specific layout, wrangling on tabular data can be standardised into a grammar of data manipulation in `dplyr` [@dplyr]. 
+As a programming language for data analysis, R provides a scripted environment for users to experiment with data without the complex abstraction a typical programming language requires. 
+The flexible and intuitive workflow is paramount for data analysis since in a data analysis project, the full workflow of how data should be processed from the raw data to the final results is usually only consolidated till the end of the project and analysts need the freedom to quickly experiment with different ideas when working with data.
+This approach to data analysis is enhanced by the tidyverse suite where a collection of R packages are built for data science under the concept of tidy data. 
+The tidy data principle [@wickham_tidy_2014] prescribes three simple rules for structuring tabular data: 1) Each variable forms a column, 2) Each observation forms a row, and; 3) Each type of observational unit forms a table.
+The packages built in the tidyverse suite provide operations that are direct actions on the data and users, even new users, can easily read from the code on what has been performed and what to expect after each operation. 
+Researchers and analysts have a similar need for an intuitive and flexible process to construct indices since a similar workflow occurs where researchers experiment with many different indices, discover issues with the current ones, and experiment with potential ideas before finally arrive at a solution.
 
-A similar issue happens with index construction where researchers construct their own indices in their own ways and there has not yet been a tidy principle on index construction.
-Also, this tidy principle on index construction is more complex than those in tidy data and the `dplyr` package.
-It has to encompass the workflow of transformation from the raw data towards the final index series.
+<!-- Researchers working on index construction should consider adopt a workflow where operations on data can be clearly reflected by the code while flexible to experiment  -->
+
+<!-- Before the concept of tidy data [@wickham_tidy_2014], tabular data arrive at data analysts in all different ways.  -->
+<!-- Different analysts would write customised scripts for analysing the specific data.  -->
+<!-- These scripts can be extended to other data analysed by the same people or group but this is not generalizable directly to another dataset.  -->
+<!-- When the tidy data concept comes, variables and values are arranged so that 1) Each variable forms a column, 2) Each observation forms a row, and; 3) Each type of observational unit forms a table. -->
+<!-- With this specific layout, wrangling on tabular data can be standardised into a grammar of data manipulation in `dplyr` [@dplyr].  -->
+
+<!-- A similar issue happens with index construction where researchers construct their own indices in their own ways and there has not yet been a tidy principle on index construction. -->
+<!-- Also, this tidy principle on index construction is more complex than those in tidy data and the `dplyr` package. -->
+<!-- It has to encompass the workflow of transformation from the raw data towards the final index series. -->
 
 
 
