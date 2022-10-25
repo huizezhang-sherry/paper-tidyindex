@@ -215,7 +215,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 spatio-temporal data \sep indices \sep 
 data pipeline
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, sharp corners, breakable, borderline west={3pt}{0pt}{shadecolor}, frame hidden, enhanced, interior hidden]}{\end{tcolorbox}}\fi
 
 \newpage
 
@@ -378,19 +378,19 @@ index construction with the pipeline built.
 As a scripted language for data analysis, R provides a interactive
 environment for users to code with data without the abstraction a
 typical programming language requires. This flexible environment is
-paramount for data analysis since in practice, data analysis involves
-trials and errors on different steps to solve the problems. Analysts
-need the freedom to quickly experiment with different ideas when working
-with data. The tidyverse suite provides a collection of R package for
-conducting data analysis. These tools directly operate on data, and
-users, even new users, can easily read from the code on what operation
-is performed on the data and what to expect as the output. All of these
-are built upon a simple prior knowledge of the tidy data principle
-(Wickham 2014), which prescribes three rules for structuring tabular
-data: 1) Each variable forms a column, 2) Each observation forms a row,
-and; 3) Each type of observational unit forms a table.
+paramount for data analysis since in practice, data analysis is an
+iterative process that involves trials and errors to solve the problems.
+Analysts need the freedom to quickly experiment with different ideas
+when working with data. The tidyverse suite provides a collection of R
+package for conducting data analysis. These tools directly operate on
+data, and users, even new users, can easily read from the code on what
+operation is performed on the data and what to expect as the output. All
+of these are built upon a simple prior knowledge of the tidy data
+principle (Wickham 2014), which prescribes three rules to structure
+tabular data: 1) Each variable forms a column, 2) Each observation forms
+a row, and; 3) Each type of observational unit forms a table.
 
-Constructing indices also involves this working pattern of trails and
+Constructing indices also involves this working pattern of trials and
 errors on different options before finding the final solution. A tidy
 workflow will give researchers more flexibility to tune the steps as
 they wish and while maintain a readable and intuitive code base.
@@ -398,49 +398,39 @@ they wish and while maintain a readable and intuitive code base.
 \hypertarget{sec-data-pipeline}{%
 \subsection{Data pipeline}\label{sec-data-pipeline}}
 
-Constructing a pipeline that divides a complex procedure into steps that
-can be concatenated has been adopted widely in the R community.
-
-The data pipeline in interactive graphics is a set of steps that
-transform the raw data to the plots displayed on the screen. The initial
-pipeline proposed by Buja et al. (1988) involves the following steps:
-non-linear transformation, variables standardization, randomization,
-projection engine, and viewporting. The initial pipeline proposed by
-Buja et al. (1988) involves the following steps: non-linear
-transformation, variables standardization, randomization, projection
-engine, and viewporting. Another example in the early work of pipeline
-by Sutherland et al. (2000) describes a three-step pipeline: variable
-standardization, dimension reduction, and scaling data into the viewing
-window. This pipeline also includes the transformation on spatial and
-temporal variables, i.e.~computing time lag on temporal variables. This
-pipeline also includes the transformation on spatial and temporal
-variables, i.e.~computing time lag on temporal variables. Wickham et al.
+The concept of pipeline (and pipe) is not new concept to computing. It
+refers to a set of data processing elements connected in series, where
+the output of one element is the input of the next one. Wickham et al.
 (2009) argues that whether made explicit or not, pipeline has to be
-presented in every graphics program and breaking down graphic rendering
-into steps is also beneficial for understand the implementation and
-compare between different graphic systems.
+presented in every graphics program. The paper also argues that breaking
+down graphic rendering into steps is beneficial for understand the
+implementation and compare between different graphic systems. Both
+arguments are applicable to index construction. Papers that proposing
+new indices always present a workflow diagram to illustrate how data is
+transformed into the final indices, but not much implementation has
+explicitly present this this step-by-step transformation in the code
+design.
 
-The data pipeline concept is further enhanced by the pipe operator
-(\texttt{\%\textgreater{}\%}) in R where a set of operations, or steps,
-can be chained together to form a set of instructions.
-
-A more recent data pipeline is tidymodels (Kuhn and Wickham 2020), a set
-of packages for machine learning models following the tidyverse
-principles (Wickham et al. 2019). Steps: Exploratory data analysis
-(EDA), feature engineering, model tuning and selection, and model
-evaluation.
-
-\begin{itemize}
-\tightlist
-\item
-  easy to operate properly: should be designed that users know what is
-  approriate to do
-\item
-  promote good scientific methodology: should protect uses from doing
-  stupid things, doing right thing
-\end{itemize}
-
-good statistical practice
+To better understand the pipeline approach in statistic computing,
+examples in interactive graphics and machine learning models are given.
+In interactive graphics, the data pipeline is used to describe how the
+data is processed to be rendered on the screen. Examples of early work
+on building pipeline for interactive graphics includes Buja et al.
+(1988), Sutherland et al. (2000), and Xie, Hofmann, and Cheng (2014).
+Steps in these pipelines include non-linear transformation, variable
+standardization, randomization and dimension reduction. A more familiar
+example from tidymodels (Kuhn and Wickham 2020) presents a set of
+packages for machine learning models following the tidyverse principles
+(Wickham et al. 2019). The machine learning pipeline constitutes data
+resampling, feature engineering, model fitting, model tuning, and model
+evaluation each being responsible by a separate package. Before
+tidymodel, analysts who wish to fit different models need to learn the
+workflow of each individual algorithm and need to rewrite most of the
+model fitting, tuning, and evaluation code when switching from one model
+to another. The tidymodel approach unifies a wide range of models under
+a single pipeline where users can substitute different models while
+maintain the same pipeline. This allows users to easily experiment with
+different machine learning models a lot easier.
 
 \hypertarget{sec-a-pipeline-for-building-statistical-indices}{%
 \section{A pipeline for building statistical
@@ -684,6 +674,12 @@ Wickham, Hadley, Michael Lawrence, Dianne Cook, Andreas Buja, Heike
 Hofmann, and Deborah F. Swayne. 2009. {``The Plumbing of Interactive
 Graphics.''} \emph{Computational Statistics} 24 (2): 207--15.
 \url{https://doi.org/10.1007/s00180-008-0116-x}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-xie_reactive_2014}{}}%
+Xie, Yihui, Heike Hofmann, and Xiaoyue Cheng. 2014. {``Reactive
+{Programming} for {Interactive} {Graphics}.''} \emph{Statistical
+Science} 29 (2): 201--13.
+\url{https://www.jstor.org/stable/43288470?seq=1}.
 
 \end{CSLReferences}
 
