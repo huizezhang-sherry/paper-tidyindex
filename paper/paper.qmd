@@ -35,6 +35,8 @@ keywords:
   - indices
   - data pipeline
 bibliography: bibliography.bib  
+editor_options: 
+  chunk_output_type: inline
 ---
 
 \newpage
@@ -142,56 +144,113 @@ Examples are given in @sec-examples to demonstrate the index construction with t
 
 # Data pipeline in R {#sec-data-pipeline-in-r}
 
-## Tidy data {#sec-tidy-data}
+The concept of pipeline (and pipe) is not a new concept to computing. It refers to a set of data processing elements connected in series, where the output of one element is the input of the next one.
+@wickham_plumbing_2009 argues that whether made explicit or not, pipeline has to be presented in every graphics program.
+The paper also argues that breaking down graphic rendering into steps is beneficial for understand the implementation and compare between different graphic systems. 
 
-As a scripted language for data analysis, R provides a interactive environment for users to code with data without the abstraction a typical programming language requires. 
-This flexible environment is paramount for data analysis since in practice, data analysis is an iterative process that involves trials and errors to solve the problems.
-Analysts need the freedom to quickly experiment with different ideas when working with data.
+*The pipeline system would work partially because of an agreed data structure (tidy data) and [same input and output format] - why the pipeline approach would work.*
+
+
 The tidyverse suite provides a collection of R package for conducting data analysis.
 These tools directly operate on data, and users, even new users, can easily read from the code on what operation is performed on the data and what to expect as the output.
 All of these are built upon a simple prior knowledge of the tidy data principle [@wickham_tidy_2014], which prescribes three rules to structure tabular data: 1) Each variable forms a column, 2) Each observation forms a row, and; 3) Each type of observational unit forms a table.
 
 Constructing indices also involves this working pattern of trials and errors on different options before finding the final solution. A tidy workflow will give researchers more flexibility to tune the steps as they wish and while maintain a readable and intuitive code base.
 
-
-
-<!-- While data can be arranged in various different ways, maintaining a fixed representation gives a predictable output of operations on data.  -->
-
-<!-- Only when each step in the workflow has been mapped out, do data analysts need to consider those abstract concept of object oriented programming and functional programming to help them design the workflow.  -->
-<!-- how raw data should be processed to the final results can only be consolidated when  -->
-
-
-
-<!-- Before the concept of tidy data [@wickham_tidy_2014], tabular data arrive at data analysts in all different ways.  -->
-<!-- Different analysts would write customised scripts for analysing the specific data.  -->
-<!-- These scripts can be extended to other data analysed by the same people or group but this is not generalizable directly to another dataset.  -->
-<!-- When the tidy data concept comes, variables and values are arranged so that 1) Each variable forms a column, 2) Each observation forms a row, and; 3) Each type of observational unit forms a table. -->
-<!-- With this specific layout, wrangling on tabular data can be standardised into a grammar of data manipulation in `dplyr` [@dplyr].  -->
-
-<!-- A similar issue happens with index construction where researchers construct their own indices in their own ways and there has not yet been a tidy principle on index construction. -->
-<!-- Also, this tidy principle on index construction is more complex than those in tidy data and the `dplyr` package. -->
-<!-- It has to encompass the workflow of transformation from the raw data towards the final index series. -->
-
-## Data pipeline {#sec-data-pipeline}
-
-The concept of pipeline (and pipe) is not new concept to computing. It refers to a set of data processing elements connected in series, where the output of one element is the input of the next one.
-@wickham_plumbing_2009 argues that whether made explicit or not, pipeline has to be presented in every graphics program.
-The paper also argues that breaking down graphic rendering into steps is beneficial for understand the implementation and compare between different graphic systems. 
-Both arguments are applicable to index construction.
-Papers that proposing new indices always present a workflow diagram to illustrate how data is transformed into the final indices, but not much implementation has explicitly present this this step-by-step transformation in the code design.
-
 To better understand the pipeline approach in statistic computing, examples in interactive graphics and machine learning models are given.
 In interactive graphics, the data pipeline is used to describe how the data is processed to be rendered on the screen. 
 Examples of early work on building pipeline for interactive graphics includes @buja_elements_1988, @sutherland_orca_2000, and @xie_reactive_2014. 
 Steps in these pipelines include non-linear transformation, variable standardization, randomization and dimension reduction.
+
+
 A more familiar example from tidymodels [@tidymodels] presents a set of packages for machine learning models following the tidyverse principles [@tidyverse]. 
 The machine learning pipeline constitutes data resampling, feature engineering, model fitting, model tuning, and model evaluation each being responsible by a separate package. 
 Before tidymodel, analysts who wish to fit different models need to learn the workflow of each individual algorithm and need to rewrite most of the model fitting, tuning, and evaluation code when switching from one model to another. 
 The tidymodel approach unifies a wide range of models under a single pipeline where users can substitute different models while maintain the same pipeline.
 This allows users to easily experiment with different machine learning models a lot easier. 
 
+Both arguments are applicable to index construction.
+Papers that proposing new indices always present a workflow diagram to illustrate how data is transformed into the final indices, but not much implementation has explicitly present this this step-by-step transformation in the code design.
+
+\newpage
 
 # A pipeline for building statistical indices {#sec-a-pipeline-for-building-statistical-indices}
+
+## How does the pipeline constructin of an index look like? 
+
+Consider a commonly used drought index: Standardised Precipitation Index (SPI) [@spi]. Its construction involves the following steps: 1) aggregate monthly summed precipitation into a time scale $k$, 2) fit the aggregated series into a distribution to get the density values, and 3) convert the density values to normal quantiles. Using the pipeline approach, the index will be constructed as: 
+
+```{r eval = FALSE, echo = TRUE}
+DATA %>% 
+  ts_aggregate(scale = 12, col = prcp) %>% 
+  normalising(dist = "gamma", col = prcp, fit_method = "lmom") %>% 
+  augment(col = "prcp_agg")
+```
+
+*The exact code needs to be further turned: 1) use verb: ts_aggreate -> aggregate_ts?, normalising -> normalise, 2) using `var` instead of `col` since it may be confused with "color", 3) normalising -> fit? since technically this step is no longer to normalise the fitted density value into normal quantiles but a distribution fitting step.*
+
+Here the column `prcp` is first temporally *aggregated* with a time scale of 12. The output is then normalised with a gamma distribution, fitted using the L-moment. The `augment` step, following the verb in the `broom` package, accepts the fitted distributions and adds information about each month in the dataset to get the final index.
+
+```{r eval = FALSE, echo = FALSE}
+res <- w %>% 
+  ts_aggregate(scale = 12, date = ym, id = id, col = prcp) %>% 
+  normalising(dist = "gamma", date = ym, id = id, col = prcp,
+              method = "lmom") %>% 
+  augment(id = id, date = ym,  col = "prcp_agg")
+
+res <- res %>% 
+  rename(
+         pipeline_d = prcp_agg,
+         pipeline_idx = .index)
+
+data(wichita)
+wichita <- ts(wichita[,-c(1,2)], end=c(2011,10), frequency=12)
+spi12 <- spi(wichita[,'PRCP'], 12)
+from_SPI <- tibble(
+  ym = yearmonth(zoo::yearmon(zoo::index(wichita))), 
+  SPI_idx = as.vector(spi12$fitted)
+)
+
+compare <- res %>% left_join(from_SPI, by = "ym") 
+compare %>% 
+  ggplot(aes(x = SPI_idx, y = pipeline_idx)) + 
+  geom_point() + 
+  theme_bw() + 
+  theme(legend.position = "bottom", 
+        aspect.ratio = 1) +
+  ggtitle("Index values of Standardised Precipitation Index (SPI)", 
+          subtitle = "using wichita data from the SPEI package") + 
+  xlab("Calculated from a single command") + 
+  ylab("Calculated from pipeline")
+
+```
+
+
+```{r fig-toy-example, eval = TRUE, echo = FALSE}
+#| fig-align: center
+#| fig-cap: "this is the caption"
+#| out-height: 50%
+#| out-width: 50%
+knitr::include_graphics(here::here("figures/toy-example-spi.png"))
+```
+
+
+While the calculated index value from the pipeline approach is the same as those calculated using a single line command like `spi(DATA, ARGUMENTS)`, as shown in @fig-toy-example, the pipeline approach gives more flexibility to perform diagnostics on the intermediate steps and to extend on the initial index calculation. For example, model goodness of fit test can be checked after `normalising()` through:
+
+```{r eval = FALSE, echo = TRUE}
+normalising(dist = "gamma", col = d, fit_method = "lmom") %>% 
+  gof_test()
+```
+
+and bootstrap uncertainty on the index, with 100 boostrap samples, can be calculated using `n_boot = 100` in the `normalising()` as: 
+
+```{r eval = FALSE, echo = TRUE}
+normalising(dist = "gamma", col = d, fit_method = "lmom", n_boot = 100) 
+```
+
+## Pipeline steps for constructing indies
+
+*put a diagram here to summarise the pipeline*
 
 The construction of natural hazard indices also follows a set of steps, which is usually illustrated using a flowchart in the paper. 
 However, every researcher follows a certain design philosophy and steps taken in the index constructed by different researchers are not aligned. 
@@ -203,9 +262,11 @@ constructing time series index should also be encapsulated in my framework
 
 Here we assume a concept of interest is determined, relevant variables/ indicators are identified and available to construct indices.
 
-## Raw data
+each step as a point rather than subsection
 
-**Another section on original data directly downloaded, can have different spatial resolution, temporal granularity, data quality problem. After processing them and align them together they become the "raw data"**
+**Raw data**
+
+*Another section on original data directly downloaded, can have different spatial resolution, temporal granularity, data quality problem. After processing them and align them together they become the "raw data"*
 
 The data used to construct the natural hazard index usually have three dimensions, one for location, one for time, and one for multivariate. 
 Mathematically, it can be written as $X_{j, s, t}$, where $j = 1, 2, \cdots, J$ for variable, $s = 1, 2, \cdots, S$ for location, and $t = 1, 2, \cdots, T$ for time.
@@ -223,18 +284,18 @@ Sometimes, even a considerable amount of work is needed to align the spatial and
 
 A notation for different variables have different spatial and temporal granularity $X_{j_1, s_1, t_1}$???
 
-## Spatial aggregation
+**Spatial aggregation**
 
 mostly happen with raster data
 
-## Scaling
+**Scaling**
 
 A specific transformation on the scale of the data
 
 z-score standardising, min-max standardisation into [0, 1] or [0, 100], percentage change on the baseline
 close to variable transformation step
 
-## Normalising
+**Normalising**
 
 The purpose of normalising is for cross-comparison.
 This step can get criticism from analysts for ...
@@ -243,7 +304,7 @@ specifically for converting from a fitted distribution to normal score via rever
 
 Normalising is usually the last step
 
-## Variable transformation
+**Variable transformation**
 
 <!-- Take one or multiple variables to create a new variable,  -->
 Restrict it to single variable, square root, log etc could be linearly, also non-linear
@@ -254,9 +315,9 @@ change the shape of the variable
 
 GAM, can you do additive model pairwise/ three-way
 
-## Temporal processing
+**Temporal processing**
 
-## Dimension reduction
+**Dimension reduction**
 
 sometimes called feature extraction in the machine learning community 
 With drought indices, the extraction of meaningful variables from the original data is usually supported by the water balance model, for example, in SPEI, the step that create $d$ out of precipitation and potential evapotranspiration (PET) has theoretical backup from [see paper.]
@@ -265,11 +326,11 @@ Also include weighting
 
 
 
-## Benchmarking
+**Benchmarking**
 
 
 
-## Simplification
+**Simplification**
 
 Discretise the continuous index into a few labelled categories. For communicating the severity of natural hazard to general public.
 

@@ -49,6 +49,46 @@
   \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
 
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{241,243,245}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.40,0.45,0.13}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\ExtensionTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.07,0.07,0.07}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
@@ -215,7 +255,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 spatio-temporal data \sep indices \sep 
 data pipeline
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, sharp corners, breakable, borderline west={3pt}{0pt}{shadecolor}, frame hidden, enhanced, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, sharp corners, frame hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \newpage
 
@@ -372,44 +412,31 @@ index construction with the pipeline built.
 \hypertarget{sec-data-pipeline-in-r}{%
 \section{Data pipeline in R}\label{sec-data-pipeline-in-r}}
 
-\hypertarget{sec-tidy-data}{%
-\subsection{Tidy data}\label{sec-tidy-data}}
-
-As a scripted language for data analysis, R provides a interactive
-environment for users to code with data without the abstraction a
-typical programming language requires. This flexible environment is
-paramount for data analysis since in practice, data analysis is an
-iterative process that involves trials and errors to solve the problems.
-Analysts need the freedom to quickly experiment with different ideas
-when working with data. The tidyverse suite provides a collection of R
-package for conducting data analysis. These tools directly operate on
-data, and users, even new users, can easily read from the code on what
-operation is performed on the data and what to expect as the output. All
-of these are built upon a simple prior knowledge of the tidy data
-principle (Wickham 2014), which prescribes three rules to structure
-tabular data: 1) Each variable forms a column, 2) Each observation forms
-a row, and; 3) Each type of observational unit forms a table.
-
-Constructing indices also involves this working pattern of trials and
-errors on different options before finding the final solution. A tidy
-workflow will give researchers more flexibility to tune the steps as
-they wish and while maintain a readable and intuitive code base.
-
-\hypertarget{sec-data-pipeline}{%
-\subsection{Data pipeline}\label{sec-data-pipeline}}
-
-The concept of pipeline (and pipe) is not new concept to computing. It
+The concept of pipeline (and pipe) is not a new concept to computing. It
 refers to a set of data processing elements connected in series, where
 the output of one element is the input of the next one. Wickham et al.
 (2009) argues that whether made explicit or not, pipeline has to be
 presented in every graphics program. The paper also argues that breaking
 down graphic rendering into steps is beneficial for understand the
-implementation and compare between different graphic systems. Both
-arguments are applicable to index construction. Papers that proposing
-new indices always present a workflow diagram to illustrate how data is
-transformed into the final indices, but not much implementation has
-explicitly present this this step-by-step transformation in the code
-design.
+implementation and compare between different graphic systems.
+
+\emph{The pipeline system would work partially because of an agreed data
+structure (tidy data) and {[}same input and output format{]} - why the
+pipeline approach would work.}
+
+The tidyverse suite provides a collection of R package for conducting
+data analysis. These tools directly operate on data, and users, even new
+users, can easily read from the code on what operation is performed on
+the data and what to expect as the output. All of these are built upon a
+simple prior knowledge of the tidy data principle (Wickham 2014), which
+prescribes three rules to structure tabular data: 1) Each variable forms
+a column, 2) Each observation forms a row, and; 3) Each type of
+observational unit forms a table.
+
+Constructing indices also involves this working pattern of trials and
+errors on different options before finding the final solution. A tidy
+workflow will give researchers more flexibility to tune the steps as
+they wish and while maintain a readable and intuitive code base.
 
 To better understand the pipeline approach in statistic computing,
 examples in interactive graphics and machine learning models are given.
@@ -418,23 +445,107 @@ data is processed to be rendered on the screen. Examples of early work
 on building pipeline for interactive graphics includes Buja et al.
 (1988), Sutherland et al. (2000), and Xie, Hofmann, and Cheng (2014).
 Steps in these pipelines include non-linear transformation, variable
-standardization, randomization and dimension reduction. A more familiar
-example from tidymodels (Kuhn and Wickham 2020) presents a set of
-packages for machine learning models following the tidyverse principles
-(Wickham et al. 2019). The machine learning pipeline constitutes data
-resampling, feature engineering, model fitting, model tuning, and model
-evaluation each being responsible by a separate package. Before
-tidymodel, analysts who wish to fit different models need to learn the
-workflow of each individual algorithm and need to rewrite most of the
-model fitting, tuning, and evaluation code when switching from one model
-to another. The tidymodel approach unifies a wide range of models under
-a single pipeline where users can substitute different models while
-maintain the same pipeline. This allows users to easily experiment with
-different machine learning models a lot easier.
+standardization, randomization and dimension reduction.
+
+A more familiar example from tidymodels (Kuhn and Wickham 2020) presents
+a set of packages for machine learning models following the tidyverse
+principles (Wickham et al. 2019). The machine learning pipeline
+constitutes data resampling, feature engineering, model fitting, model
+tuning, and model evaluation each being responsible by a separate
+package. Before tidymodel, analysts who wish to fit different models
+need to learn the workflow of each individual algorithm and need to
+rewrite most of the model fitting, tuning, and evaluation code when
+switching from one model to another. The tidymodel approach unifies a
+wide range of models under a single pipeline where users can substitute
+different models while maintain the same pipeline. This allows users to
+easily experiment with different machine learning models a lot easier.
+
+Both arguments are applicable to index construction. Papers that
+proposing new indices always present a workflow diagram to illustrate
+how data is transformed into the final indices, but not much
+implementation has explicitly present this this step-by-step
+transformation in the code design.
+
+\newpage
 
 \hypertarget{sec-a-pipeline-for-building-statistical-indices}{%
 \section{A pipeline for building statistical
 indices}\label{sec-a-pipeline-for-building-statistical-indices}}
+
+\hypertarget{how-does-the-pipeline-constructin-of-an-index-look-like}{%
+\subsection{How does the pipeline constructin of an index look
+like?}\label{how-does-the-pipeline-constructin-of-an-index-look-like}}
+
+Consider a commonly used drought index: Standardised Precipitation Index
+(SPI) (McKee, Doesken, and Kleist 1993). Its construction involves the
+following steps: 1) aggregate monthly summed precipitation into a time
+scale \(k\), 2) fit the aggregated series into a distribution to get the
+density values, and 3) convert the density values to normal quantiles.
+Using the pipeline approach, the index will be constructed as:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{DATA }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{ts\_aggregate}\NormalTok{(}\AttributeTok{scale =} \DecValTok{12}\NormalTok{, }\AttributeTok{col =}\NormalTok{ prcp) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{normalising}\NormalTok{(}\AttributeTok{dist =} \StringTok{"gamma"}\NormalTok{, }\AttributeTok{col =}\NormalTok{ prcp, }\AttributeTok{fit\_method =} \StringTok{"lmom"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{augment}\NormalTok{(}\AttributeTok{col =} \StringTok{"prcp\_agg"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{The exact code needs to be further turned: 1) use verb:
+ts\_aggreate -\textgreater{} aggregate\_ts?, normalising -\textgreater{}
+normalise, 2) using \texttt{var} instead of \texttt{col} since it may be
+confused with ``color'', 3) normalising -\textgreater{} fit? since
+technically this step is no longer to normalise the fitted density value
+into normal quantiles but a distribution fitting step.}
+
+Here the column \texttt{prcp} is first temporally \emph{aggregated} with
+a time scale of 12. The output is then normalised with a gamma
+distribution, fitted using the L-moment. The \texttt{augment} step,
+following the verb in the \texttt{broom} package, accepts the fitted
+distributions and adds information about each month in the dataset to
+get the final index.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.5\textwidth,height=0.5\textheight]{../figures/toy-example-spi.png}
+
+}
+
+\caption{\label{fig-toy-example}this is the caption}
+
+\end{figure}
+
+While the calculated index value from the pipeline approach is the same
+as those calculated using a single line command like
+\texttt{spi(DATA,\ ARGUMENTS)}, as shown in
+Figure~\ref{fig-toy-example}, the pipeline approach gives more
+flexibility to perform diagnostics on the intermediate steps and to
+extend on the initial index calculation. For example, model goodness of
+fit test can be checked after \texttt{normalising()} through:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{normalising}\NormalTok{(}\AttributeTok{dist =} \StringTok{"gamma"}\NormalTok{, }\AttributeTok{col =}\NormalTok{ d, }\AttributeTok{fit\_method =} \StringTok{"lmom"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{gof\_test}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+and bootstrap uncertainty on the index, with 100 boostrap samples, can
+be calculated using \texttt{n\_boot\ =\ 100} in the
+\texttt{normalising()} as:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{normalising}\NormalTok{(}\AttributeTok{dist =} \StringTok{"gamma"}\NormalTok{, }\AttributeTok{col =}\NormalTok{ d, }\AttributeTok{fit\_method =} \StringTok{"lmom"}\NormalTok{, }\AttributeTok{n\_boot =} \DecValTok{100}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{pipeline-steps-for-constructing-indies}{%
+\subsection{Pipeline steps for constructing
+indies}\label{pipeline-steps-for-constructing-indies}}
+
+\emph{put a diagram here to summarise the pipeline}
 
 The construction of natural hazard indices also follows a set of steps,
 which is usually illustrated using a flowchart in the paper. However,
@@ -452,10 +563,11 @@ framework
 Here we assume a concept of interest is determined, relevant variables/
 indicators are identified and available to construct indices.
 
-\hypertarget{raw-data}{%
-\subsection{Raw data}\label{raw-data}}
+each step as a point rather than subsection
 
-\textbf{Another section on original data directly downloaded, can have
+\textbf{Raw data}
+
+\emph{Another section on original data directly downloaded, can have
 different spatial resolution, temporal granularity, data quality
 problem. After processing them and align them together they become the
 ``raw data''}
@@ -486,13 +598,11 @@ spatial and temporal extent of multivariate data.
 A notation for different variables have different spatial and temporal
 granularity \(X_{j_1, s_1, t_1}\)???
 
-\hypertarget{spatial-aggregation}{%
-\subsection{Spatial aggregation}\label{spatial-aggregation}}
+\textbf{Spatial aggregation}
 
 mostly happen with raster data
 
-\hypertarget{scaling}{%
-\subsection{Scaling}\label{scaling}}
+\textbf{Scaling}
 
 A specific transformation on the scale of the data
 
@@ -500,8 +610,7 @@ z-score standardising, min-max standardisation into {[}0, 1{]} or {[}0,
 100{]}, percentage change on the baseline close to variable
 transformation step
 
-\hypertarget{normalising}{%
-\subsection{Normalising}\label{normalising}}
+\textbf{Normalising}
 
 The purpose of normalising is for cross-comparison. This step can get
 criticism from analysts for \ldots{}
@@ -514,8 +623,7 @@ series after all the steps for the ease of comparison.
 
 Normalising is usually the last step
 
-\hypertarget{variable-transformation}{%
-\subsection{Variable transformation}\label{variable-transformation}}
+\textbf{Variable transformation}
 
 Restrict it to single variable, square root, log etc could be linearly,
 also non-linear
@@ -524,11 +632,9 @@ change the shape of the variable
 
 GAM, can you do additive model pairwise/ three-way
 
-\hypertarget{temporal-processing}{%
-\subsection{Temporal processing}\label{temporal-processing}}
+\textbf{Temporal processing}
 
-\hypertarget{dimension-reduction}{%
-\subsection{Dimension reduction}\label{dimension-reduction}}
+\textbf{Dimension reduction}
 
 sometimes called feature extraction in the machine learning community
 With drought indices, the extraction of meaningful variables from the
@@ -539,11 +645,9 @@ paper.{]}
 
 Also include weighting
 
-\hypertarget{benchmarking}{%
-\subsection{Benchmarking}\label{benchmarking}}
+\textbf{Benchmarking}
 
-\hypertarget{simplification}{%
-\subsection{Simplification}\label{simplification}}
+\textbf{Simplification}
 
 Discretise the continuous index into a few labelled categories. For
 communicating the severity of natural hazard to general public.
@@ -640,6 +744,12 @@ McKee, Thomas B, Nolan J Doesken, John Kleist, et al. 1993. {``The
 Relationship of Drought Frequency and Duration to Time Scales.''} In
 \emph{Proceedings of the 8th Conference on Applied Climatology},
 17:179--83. 22. Boston, MA, USA.
+
+\leavevmode\vadjust pre{\hypertarget{ref-spi}{}}%
+McKee, Thomas B, Nolan J Doesken, and John Kleist. 1993. {``The
+Relationship of Drought Frequency and Duration to Time Scales.''} In
+\emph{Proceedings of the 8th Conference of Applied Climatology},
+179--84. Anaheim, CA: American Meteorological Society.
 
 \leavevmode\vadjust pre{\hypertarget{ref-sutherland_orca_2000}{}}%
 Sutherland, Peter, Anthony Rossini, Thomas Lumley, Nicholas Lewin-Koh,
