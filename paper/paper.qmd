@@ -30,10 +30,10 @@ abstract: |
   - This allows all the indices to be constructed through a uniform data pipeline and different indices to vary on the details of each step in the data pipeline and their orders. 
   - The pipeline proposed aim to smooth the workflow of index construction through breaking down the complicated steps proposed by various indices into small building blocks shared by most of the indices.
   - The framework will be demonstrated with drought indices as examples, but appliable in general to environmental indices constructed from multivariate spatio-temporal data
-keywords: 
-  - spatio-temporal data
+keywords:
   - indices
   - data pipeline
+  - software design
 bibliography: bibliography.bib  
 editor_options: 
   chunk_output_type: inline
@@ -144,33 +144,37 @@ Examples are given in @sec-examples to demonstrate the index construction with t
 
 # Data pipeline in R {#sec-data-pipeline-in-r}
 
+**Why you should care about pipeline**
+
 The concept of pipeline (and pipe) is not a new concept to computing. It refers to a set of data processing elements connected in series, where the output of one element is the input of the next one.
 @wickham_plumbing_2009 argues that whether made explicit or not, pipeline has to be presented in every graphics program.
 The paper also argues that breaking down graphic rendering into steps is beneficial for understand the implementation and compare between different graphic systems. 
+The discussion on pipeline construction is well documented in early interactive graphics software: @buja_elements_1988, @sutherland_orca_2000, and @xie_reactive_2014 and their pipeline steps include non-linear transformation, variable standardization, randomization and dimension reduction.
 
-*The pipeline system would work partially because of an agreed data structure (tidy data) and [same input and output format] - why the pipeline approach would work.*
+**What is pipeline, its underlying software design philosophy, and how these are reflected in R**
 
+One of the most commonly known pipeline example is perhaps the Unix pipeline where programs can be concatenated with `|` to flow the output from the last program into the next program. 
+The pipeline design avoid writing a complicated program to solve a complex problem but building simple programs that do one thing well and work well together.
+This design philosophy is also embraced in the R community by the tidyverse principles. 
+In tidyverse, the flow from the previous program to the next is ensured through reusing the tidy data format [@wickham_tidy_2014], which prescribes three rules on how to layout tabular data.
+To solve a complicated data problem using tidyverse, one typically builds the solution using a collection of functions and these functions have a strong human centered design with intuitive naming and easy to reference through autocomplete.
 
-The tidyverse suite provides a collection of R package for conducting data analysis.
-These tools directly operate on data, and users, even new users, can easily read from the code on what operation is performed on the data and what to expect as the output.
-All of these are built upon a simple prior knowledge of the tidy data principle [@wickham_tidy_2014], which prescribes three rules to structure tabular data: 1) Each variable forms a column, 2) Each observation forms a row, and; 3) Each type of observational unit forms a table.
+**A proper pipeline example in R: tidymodel**
 
-Constructing indices also involves this working pattern of trials and errors on different options before finding the final solution. A tidy workflow will give researchers more flexibility to tune the steps as they wish and while maintain a readable and intuitive code base.
-
-To better understand the pipeline approach in statistic computing, examples in interactive graphics and machine learning models are given.
-In interactive graphics, the data pipeline is used to describe how the data is processed to be rendered on the screen. 
-Examples of early work on building pipeline for interactive graphics includes @buja_elements_1988, @sutherland_orca_2000, and @xie_reactive_2014. 
-Steps in these pipelines include non-linear transformation, variable standardization, randomization and dimension reduction.
-
-
-A more familiar example from tidymodels [@tidymodels] presents a set of packages for machine learning models following the tidyverse principles [@tidyverse]. 
+A pipeline example in R that adopts the tidyverse principle is the tidymodel suite [@tidymodels] for building machine learning models. 
 The machine learning pipeline constitutes data resampling, feature engineering, model fitting, model tuning, and model evaluation each being responsible by a separate package. 
 Before tidymodel, analysts who wish to fit different models need to learn the workflow of each individual algorithm and need to rewrite most of the model fitting, tuning, and evaluation code when switching from one model to another. 
 The tidymodel approach unifies a wide range of models under a single pipeline where users can substitute different models while maintain the same pipeline.
 This allows users to easily experiment with different machine learning models a lot easier. 
 
+**Constructing indices would also benefit from pipeline and embracing the aforementioned design philosophy.**
+
+*more work here*
+
 Both arguments are applicable to index construction.
 Papers that proposing new indices always present a workflow diagram to illustrate how data is transformed into the final indices, but not much implementation has explicitly present this this step-by-step transformation in the code design.
+Constructing indices also involves this working pattern of trials and errors on different options before finding the final solution. A tidy workflow will give researchers more flexibility to tune the steps as they wish and while maintain a readable and intuitive code base.
+
 
 \newpage
 
