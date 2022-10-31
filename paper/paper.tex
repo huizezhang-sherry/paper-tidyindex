@@ -255,7 +255,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indices \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, enhanced, interior hidden, breakable, frame hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, interior hidden, frame hidden, boxrule=0pt, sharp corners, enhanced, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \newpage
 
@@ -414,65 +414,69 @@ index construction with the pipeline built.
 
 \textbf{Why you should care about pipeline}
 
-The concept of pipeline (and pipe) is not a new concept to computing. It
-refers to a set of data processing elements connected in series, where
-the output of one element is the input of the next one. Wickham et al.
-(2009) argues that whether made explicit or not, pipeline has to be
-presented in every graphics program. The paper also argues that breaking
-down graphic rendering into steps is beneficial for understand the
-implementation and compare between different graphic systems. The
-discussion on pipeline construction is well documented in early
-interactive graphics software: Buja et al. (1988), Sutherland et al.
-(2000), and Xie, Hofmann, and Cheng (2014) and their pipeline steps
-include non-linear transformation, variable standardization,
-randomization and dimension reduction.
+Data pipeline is not a new concept to computing. It refers to a set of
+data processing elements connected in series, where the output of one
+element is the input of the next one. Wickham et al. (2009) argues that
+whether made explicit or not, the pipeline has to be presented in every
+graphics program. The paper also argues that breaking down graphic
+rendering into steps is beneficial for understanding the implementation
+and comparing between different graphic systems. The discussion on
+pipeline construction is well documented in early interactive graphics
+software: Buja et al. (1988), Sutherland et al. (2000), and Xie,
+Hofmann, and Cheng (2014) and their pipeline steps include non-linear
+transformation, variable standardization, randomization and dimension
+reduction.
 
 \textbf{What is pipeline, its underlying software design philosophy, and
 how these are reflected in R}
 
-One of the most commonly known pipeline example is perhaps the Unix
+One of the most commonly known pipeline examples is perhaps the Unix
 pipeline where programs can be concatenated with \texttt{\textbar{}} to
-flow the output from the last program into the next program. The
-pipeline design avoid writing a complicated program to solve a complex
-problem but building simple programs that do one thing well and work
-well together. This design philosophy is also embraced in the R
-community by the tidyverse principles. In tidyverse, the flow from the
-previous program to the next is ensured through reusing the tidy data
-format (Wickham 2014), which prescribes three rules on how to layout
-tabular data. To solve a complicated data problem using tidyverse, one
-typically builds the solution using a collection of functions and these
-functions have a strong human centered design with intuitive naming and
-easy to reference through autocomplete.
+flow the output from the last program into the next program, i.e.~
 
-\textbf{A proper pipeline example in R: tidymodel}
+\begin{verbatim}
+command 1 | command 2 | command 3 | ...
+\end{verbatim}
 
-A pipeline example in R that adopts the tidyverse principle is the
-tidymodel suite (Kuhn and Wickham 2020) for building machine learning
-models. The machine learning pipeline constitutes data resampling,
-feature engineering, model fitting, model tuning, and model evaluation
-each being responsible by a separate package. Before tidymodel, analysts
-who wish to fit different models need to learn the workflow of each
-individual algorithm and need to rewrite most of the model fitting,
-tuning, and evaluation code when switching from one model to another.
-The tidymodel approach unifies a wide range of models under a single
-pipeline where users can substitute different models while maintain the
-same pipeline. This allows users to easily experiment with different
-machine learning models a lot easier.
+To solve a complex problem, the Unix system builds simple programs that
+do one thing well and work well together. This design is also reflected
+in the tidyverse ecosystem in R. To solve a complicated data problem
+using tidyverse, analysts typically build the solution using a
+collection of tools from the tidyverse toolbox. The data object can flow
+smoothly from one command to the next, safeguarded by the tidy data
+format (Wickham 2014), which prescribes three rules on how to lay out
+tabular data. The tidyverse tools also embrace a strong human-centered
+design where function names are intuitive and easy to reference through
+autocomplete. With the tidyverse design principle in mind, the tidymodel
+suite enables analysts to build machine learning models through the data
+pipeline. It includes typical tasks required in machine learning like
+data resampling, feature engineering, model fitting, model tuning, and
+model evaluation. An advantage of tidymodel pipeline over separate
+software for individual models is that analysts no longer need to write
+model-specific syntax to work with each model, but pipeline-specific
+syntax that is applicable to all the models implemented in tidymodel.
+This allows users to easily experiment with a collection of machine
+learning models.
 
 \textbf{Constructing indices would also benefit from pipeline and
 embracing the aforementioned design philosophy.}
 
-\emph{more work here}
-
-Both arguments are applicable to index construction. Papers that
-proposing new indices always present a workflow diagram to illustrate
-how data is transformed into the final indices, but not much
-implementation has explicitly present this this step-by-step
-transformation in the code design. Constructing indices also involves
-this working pattern of trials and errors on different options before
-finding the final solution. A tidy workflow will give researchers more
-flexibility to tune the steps as they wish and while maintain a readable
-and intuitive code base.
+In index construction, data pipeline is often presented in a workflow
+diagram in the research paper to illustrate how the raw data is
+transformed into the final indices. This agrees with Wickham's argument
+on the presence of the data pipeline, however, more often than not, the
+pipeline is not made explicit in the software. Often the time, all the
+steps are lumped into a single wrapper function, rather than being split
+into smaller, modulated functions. This increases the cost of
+maintaining and understanding the code base, gives analysts little
+freedom to customise the indices for specific needs, and hinders reusing
+existing code for building new indices. A pipeline approach unites a
+range of indices under a single data pipeline and analysts can compose
+indices from pipeline steps like building Legos from individual bricks.
+In this workflow, analysts are not limited by indices that have been
+already proposed and can easily combine pipeline steps to compose novel
+indices. Analysis of the indices (i.e.~calculation of uncertainty) is
+also feasible by adding external code into the pipeline.
 
 \newpage
 
@@ -741,11 +745,6 @@ Temperature for Drought Detection.''} \emph{Advances in Space Research},
 Natural {Hazards}: {Monitoring} and {Assessment} {Using} {Remote}
 {Sensing} {Technique}, 15 (11): 91--100.
 \url{https://doi.org/10.1016/0273-1177(95)00079-T}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-tidymodels}{}}%
-Kuhn, Max, and Hadley Wickham. 2020. \emph{Tidymodels: A Collection of
-Packages for Modeling and Machine Learning Using Tidyverse Principles.}
-\url{https://www.tidymodels.org}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-mckee1993relationship}{}}%
 McKee, Thomas B, Nolan J Doesken, John Kleist, et al. 1993. {``The
