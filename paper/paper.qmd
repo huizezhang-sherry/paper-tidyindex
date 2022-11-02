@@ -184,18 +184,29 @@ In this workflow, analysts are not limited by indices that have been already pro
 
 ## How does the pipeline constructin of an index look like? 
 
-Consider a commonly used drought index: Standardised Precipitation Index (SPI) [@spi]. Its construction involves the following steps: 1) aggregate monthly summed precipitation into a time scale $k$, 2) fit the aggregated series into a distribution to get the density values, and 3) convert the density values to normal quantiles. Using the pipeline approach, the index will be constructed as: 
+Consider a commonly used drought index: Standardised Precipitation Index (SPI) [@spi]. Its construction involves: 1) aggregating monthly precipitation (`prcp`) with a time scale, 2) fitting the aggregated series with a chosen distribution to get density values, and 3) converting the density values to normal quantiles. Under the pipeline approach, SPI will be constructed as: 
 
 ```{r eval = FALSE, echo = TRUE}
 DATA %>% 
-  ts_aggregate(scale = 12, col = prcp) %>% 
-  normalising(dist = "gamma", col = prcp, fit_method = "lmom") %>% 
-  augment(col = "prcp_agg")
+  aggregate(scale = 12, var = prcp) %>% 
+  normalise(dist = gamma, var = prcp, fit_method = lmom) %>% 
+  augment(var = .agg_prcp)
 ```
 
-*The exact code needs to be further turned: 1) use verb: ts_aggreate -> aggregate_ts?, normalising -> normalise, 2) using `var` instead of `col` since it may be confused with "color", 3) normalising -> fit? since technically this step is no longer to normalise the fitted density value into normal quantiles but a distribution fitting step.*
+<!-- *FWI:*  -->
 
-Here the column `prcp` is first temporally *aggregated* with a time scale of 12. The output is then normalised with a gamma distribution, fitted using the L-moment. The `augment` step, following the verb in the `broom` package, accepts the fitted distributions and adds information about each month in the dataset to get the final index.
+<!--   - *verbs as name for each step: `aggregate`, `normalise`* -->
+<!--   - *use NSE for variable name: `prcp`, `c(tavg, prcp)`* -->
+<!--   - *created variables are prefixed with dot: `.agg_prcp`* -->
+<!--   - *avoid string and use function to avoid "gamma" vs. "gam": `gamma()`, `lmom()`* -->
+
+Here each command corresponds to one step described above with additional arguments specific to the step. 
+The pipeline construction produces the same index value as command like `spi(...)`, as shown in @fig-toy-example, but with additional benefit:
+
+  - Multiple scales and multiple distributions can be fitted using the `c(...)` syntax to compare index values constructed from different parameterisations; 
+  - Intermediate results can be checked after each step; and
+  - Additional steps and analysis can be wired into the workflow for index diagnostics and customised user need.
+
 
 ```{r eval = FALSE, echo = FALSE}
 res <- w %>% 
@@ -220,38 +231,23 @@ from_SPI <- tibble(
 compare <- res %>% left_join(from_SPI, by = "ym") 
 compare %>% 
   ggplot(aes(x = SPI_idx, y = pipeline_idx)) + 
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") + 
   geom_point() + 
   theme_bw() + 
   theme(legend.position = "bottom", 
         aspect.ratio = 1) +
-  ggtitle("Index values of Standardised Precipitation Index (SPI)", 
-          subtitle = "using wichita data from the SPEI package") + 
-  xlab("Calculated from a single command") + 
-  ylab("Calculated from pipeline")
-
+  xlab("Index values from `spi()` in package `SPEI`") + 
+  ylab("Index values from pipeline") + 
+  theme(panel.grid.minor = element_blank())
 ```
 
 
 ```{r fig-toy-example, eval = TRUE, echo = FALSE}
 #| fig-align: center
-#| fig-cap: "this is the caption"
-#| out-height: 50%
-#| out-width: 50%
+#| fig-cap: "Standardised Precipitation Index (SPI) calculated using two approaches: the pipeline construction (y-axis) and the function `spi()` from the `SPEI` package (x-axis), using the `wichita` data from the package `SPEI`. All the points align diagnally, indicating the same numerical result from both approaches."
+#| out-height: 70%
+#| out-width: 70%
 knitr::include_graphics(here::here("figures/toy-example-spi.png"))
-```
-
-
-While the calculated index value from the pipeline approach is the same as those calculated using a single line command like `spi(DATA, ARGUMENTS)`, as shown in @fig-toy-example, the pipeline approach gives more flexibility to perform diagnostics on the intermediate steps and to extend on the initial index calculation. For example, model goodness of fit test can be checked after `normalising()` through:
-
-```{r eval = FALSE, echo = TRUE}
-normalising(dist = "gamma", col = d, fit_method = "lmom") %>% 
-  gof_test()
-```
-
-and bootstrap uncertainty on the index, with 100 boostrap samples, can be calculated using `n_boot = 100` in the `normalising()` as: 
-
-```{r eval = FALSE, echo = TRUE}
-normalising(dist = "gamma", col = d, fit_method = "lmom", n_boot = 100) 
 ```
 
 ## Pipeline steps for constructing indies

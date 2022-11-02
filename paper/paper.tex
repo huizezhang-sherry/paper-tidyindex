@@ -255,7 +255,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indices \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, interior hidden, frame hidden, boxrule=0pt, sharp corners, enhanced, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, interior hidden, borderline west={3pt}{0pt}{shadecolor}, frame hidden, breakable, sharp corners, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \newpage
 
@@ -489,69 +489,53 @@ indices}\label{sec-a-pipeline-for-building-statistical-indices}}
 like?}\label{how-does-the-pipeline-constructin-of-an-index-look-like}}
 
 Consider a commonly used drought index: Standardised Precipitation Index
-(SPI) (McKee, Doesken, and Kleist 1993). Its construction involves the
-following steps: 1) aggregate monthly summed precipitation into a time
-scale \(k\), 2) fit the aggregated series into a distribution to get the
-density values, and 3) convert the density values to normal quantiles.
-Using the pipeline approach, the index will be constructed as:
+(SPI) (McKee, Doesken, and Kleist 1993). Its construction involves: 1)
+aggregating monthly precipitation (\texttt{prcp}) with a time scale, 2)
+fitting the aggregated series with a chosen distribution to get density
+values, and 3) converting the density values to normal quantiles. Under
+the pipeline approach, SPI will be constructed as:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{DATA }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{ts\_aggregate}\NormalTok{(}\AttributeTok{scale =} \DecValTok{12}\NormalTok{, }\AttributeTok{col =}\NormalTok{ prcp) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{normalising}\NormalTok{(}\AttributeTok{dist =} \StringTok{"gamma"}\NormalTok{, }\AttributeTok{col =}\NormalTok{ prcp, }\AttributeTok{fit\_method =} \StringTok{"lmom"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{augment}\NormalTok{(}\AttributeTok{col =} \StringTok{"prcp\_agg"}\NormalTok{)}
+  \FunctionTok{aggregate}\NormalTok{(}\AttributeTok{scale =} \DecValTok{12}\NormalTok{, }\AttributeTok{var =}\NormalTok{ prcp) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{normalise}\NormalTok{(}\AttributeTok{dist =}\NormalTok{ gamma, }\AttributeTok{var =}\NormalTok{ prcp, }\AttributeTok{fit\_method =}\NormalTok{ lmom) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{augment}\NormalTok{(}\AttributeTok{var =}\NormalTok{ .agg\_prcp)}
 \end{Highlighting}
 \end{Shaded}
 
-\emph{The exact code needs to be further turned: 1) use verb:
-ts\_aggreate -\textgreater{} aggregate\_ts?, normalising -\textgreater{}
-normalise, 2) using \texttt{var} instead of \texttt{col} since it may be
-confused with ``color'', 3) normalising -\textgreater{} fit? since
-technically this step is no longer to normalise the fitted density value
-into normal quantiles but a distribution fitting step.}
+Here each command corresponds to one step described above with
+additional arguments specific to the step. The pipeline construction
+produces the same index value as command like \texttt{spi(...)}, as
+shown in Figure~\ref{fig-toy-example}, but with additional benefit:
 
-Here the column \texttt{prcp} is first temporally \emph{aggregated} with
-a time scale of 12. The output is then normalised with a gamma
-distribution, fitted using the L-moment. The \texttt{augment} step,
-following the verb in the \texttt{broom} package, accepts the fitted
-distributions and adds information about each month in the dataset to
-get the final index.
+\begin{itemize}
+\tightlist
+\item
+  Multiple scales and multiple distributions can be fitted using the
+  \texttt{c(...)} syntax to compare index values constructed from
+  different parameterisations;
+\item
+  Intermediate results can be checked after each step; and
+\item
+  Additional steps and analysis can be wired into the workflow for index
+  diagnostics and customised user need.
+\end{itemize}
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.5\textwidth,height=0.5\textheight]{../figures/toy-example-spi.png}
+{\centering \includegraphics[width=0.7\textwidth,height=0.7\textheight]{../figures/toy-example-spi.png}
 
 }
 
-\caption{\label{fig-toy-example}this is the caption}
+\caption{\label{fig-toy-example}Standardised Precipitation Index (SPI)
+calculated using two approaches: the pipeline construction (y-axis) and
+the function \texttt{spi()} from the \texttt{SPEI} package (x-axis),
+using the \texttt{wichita} data from the package \texttt{SPEI}. All the
+points align diagnally, indicating the same numerical result from both
+approaches.}
 
 \end{figure}
-
-While the calculated index value from the pipeline approach is the same
-as those calculated using a single line command like
-\texttt{spi(DATA,\ ARGUMENTS)}, as shown in
-Figure~\ref{fig-toy-example}, the pipeline approach gives more
-flexibility to perform diagnostics on the intermediate steps and to
-extend on the initial index calculation. For example, model goodness of
-fit test can be checked after \texttt{normalising()} through:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{normalising}\NormalTok{(}\AttributeTok{dist =} \StringTok{"gamma"}\NormalTok{, }\AttributeTok{col =}\NormalTok{ d, }\AttributeTok{fit\_method =} \StringTok{"lmom"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{gof\_test}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
-
-and bootstrap uncertainty on the index, with 100 boostrap samples, can
-be calculated using \texttt{n\_boot\ =\ 100} in the
-\texttt{normalising()} as:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{normalising}\NormalTok{(}\AttributeTok{dist =} \StringTok{"gamma"}\NormalTok{, }\AttributeTok{col =}\NormalTok{ d, }\AttributeTok{fit\_method =} \StringTok{"lmom"}\NormalTok{, }\AttributeTok{n\_boot =} \DecValTok{100}\NormalTok{) }
-\end{Highlighting}
-\end{Shaded}
 
 \hypertarget{pipeline-steps-for-constructing-indies}{%
 \subsection{Pipeline steps for constructing
