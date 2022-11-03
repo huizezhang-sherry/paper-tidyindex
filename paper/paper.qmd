@@ -39,8 +39,6 @@ editor_options:
   chunk_output_type: inline
 ---
 
-\newpage
-
 # Introduction
 
 <!-- Each individual index follows its own data pipeline and it can be difficult to evaluate how an index can be affected by tweaking parameters in a certain step, rearranging the order of steps, using to different method.  -->
@@ -119,9 +117,6 @@ This makes the computation lack transparency and indices cumbersome to experimen
 
 **what can be done if people adopt this pipeline/ why it is beneficial?**
 
-*first sentence: tailor to their indices without thinking about the big picture*
-
-~~While every jumbled index jumbles in its own way, [perspicuous] clearly-laied out indices are all alike.~~
 This paper proposes a data pipeline for index construction. 
 By recognising the common steps shared by many indices, we develop a pipeline that breaks down index construction into multiple modules and allow operations in various modules to be combined like building blocks to construct indices.
 The pipeline approach is general while adaptable to most index construction. 
@@ -140,9 +135,9 @@ The rest of the paper is structured as follows: @sec-data-pipeline-in-r reviews 
 The pipeline framework for index construction is presented in @sec-a-pipeline-for-building-statistical-indices.  @sec-incorporating-new-buliding-blocks-into-the-pipeline explains how to include a new building block in each pipeline module. 
 Examples are given in @sec-examples to demonstrate the index construction with the pipeline built. 
 
-\newpage
+# Data pipeline {#sec-data-pipeline-in-r}
 
-# Data pipeline in R {#sec-data-pipeline-in-r}
+*Think about if there is another word for data pipeline*
 
 **Why you should care about pipeline**
 
@@ -184,12 +179,13 @@ In this workflow, analysts are not limited by indices that have been already pro
 
 ## How does the pipeline constructin of an index look like? 
 
-Consider a commonly used drought index: Standardised Precipitation Index (SPI) [@spi]. Its construction involves: 1) aggregating monthly precipitation (`prcp`) with a time scale, 2) fitting the aggregated series with a chosen distribution to get density values, and 3) converting the density values to normal quantiles. Under the pipeline approach, SPI will be constructed as: 
+Consider a commonly used drought index: Standardized Precipitation-Evapotranspiration Index (SPEI)  [@spei]. Its construction involves: 1) calculating potential evapotranspiration (PET) from average temperature, `tavg`, and its difference, `d`, with precipitation, `prcp`, 2) aggregating difference series with a time scale, 3) fitting the aggregated series with a chosen distribution to get density values, and 4) converting the density values to normal quantiles. Under the pipeline approach, SPEI will be constructed as: 
 
 ```{r eval = FALSE, echo = TRUE}
 DATA %>% 
-  aggregate(scale = 12, var = prcp) %>% 
-  normalise(dist = gamma, var = prcp, fit_method = lmom) %>% 
+  trans_pet(method = thornthwaite, col = tavg) %>% 
+  aggregate(scale = 12, var = d) %>% 
+  normalise(dist = gamma, fit_method = lmom) %>% 
   augment(var = .agg_prcp)
 ```
 
@@ -200,59 +196,34 @@ DATA %>%
 <!--   - *created variables are prefixed with dot: `.agg_prcp`* -->
 <!--   - *avoid string and use function to avoid "gamma" vs. "gam": `gamma()`, `lmom()`* -->
 
+*Change the examples to two scales values, compare how indices look like*
+
 Here each command corresponds to one step described above with additional arguments specific to the step. 
-The pipeline construction produces the same index value as command like `spi(...)`, as shown in @fig-toy-example, but with additional benefit:
+The pipeline construction produces the same index value as command like `spei(...)`, as shown in @fig-toy-example, but with additional benefit:
 
   - Multiple scales and multiple distributions can be fitted using the `c(...)` syntax to compare index values constructed from different parameterisations; 
   - Intermediate results can be checked after each step; and
   - Additional steps and analysis can be wired into the workflow for index diagnostics and customised user need.
-
-
-```{r eval = FALSE, echo = FALSE}
-res <- w %>% 
-  ts_aggregate(scale = 12, date = ym, id = id, col = prcp) %>% 
-  normalising(dist = "gamma", date = ym, id = id, col = prcp,
-              method = "lmom") %>% 
-  augment(id = id, date = ym,  col = "prcp_agg")
-
-res <- res %>% 
-  rename(
-         pipeline_d = prcp_agg,
-         pipeline_idx = .index)
-
-data(wichita)
-wichita <- ts(wichita[,-c(1,2)], end=c(2011,10), frequency=12)
-spi12 <- spi(wichita[,'PRCP'], 12)
-from_SPI <- tibble(
-  ym = yearmonth(zoo::yearmon(zoo::index(wichita))), 
-  SPI_idx = as.vector(spi12$fitted)
-)
-
-compare <- res %>% left_join(from_SPI, by = "ym") 
-compare %>% 
-  ggplot(aes(x = SPI_idx, y = pipeline_idx)) + 
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed") + 
-  geom_point() + 
-  theme_bw() + 
-  theme(legend.position = "bottom", 
-        aspect.ratio = 1) +
-  xlab("Index values from `spi()` in package `SPEI`") + 
-  ylab("Index values from pipeline") + 
-  theme(panel.grid.minor = element_blank())
-```
-
+  
+  
+  *everyone is providing single command function, this is also the same for spi*
+  
+  *may not worthwhile if only one index, as long as start changing*
+  
+  *just want to calculate index, single function is fine*
 
 ```{r fig-toy-example, eval = TRUE, echo = FALSE}
 #| fig-align: center
-#| fig-cap: "Standardised Precipitation Index (SPI) calculated using two approaches: the pipeline construction (y-axis) and the function `spi()` from the `SPEI` package (x-axis), using the `wichita` data from the package `SPEI`. All the points align diagnally, indicating the same numerical result from both approaches."
-#| out-height: 70%
-#| out-width: 70%
-knitr::include_graphics(here::here("figures/toy-example-spi.png"))
+#| fig-cap: "Standardised Precipitation Evapotranspiration Index (SPEI) calculated with two distribution fits in Step 3 described above: generalised logistic (`glogist`) and generalised extreme value (`gev`) distribution, using the `wichita` data from the package `SPEI`."
+#| out-height: 30%
+#| out-width: 100%
+knitr::include_graphics(here::here("figures/toy-example-spei.png"))
 ```
 
-## Pipeline steps for constructing indies
 
-*put a diagram here to summarise the pipeline*
+\newpage
+
+## Pipeline steps for constructing indies
 
 The construction of natural hazard indices also follows a set of steps, which is usually illustrated using a flowchart in the paper. 
 However, every researcher follows a certain design philosophy and steps taken in the index constructed by different researchers are not aligned. 
@@ -264,7 +235,14 @@ constructing time series index should also be encapsulated in my framework
 
 Here we assume a concept of interest is determined, relevant variables/ indicators are identified and available to construct indices.
 
-each step as a point rather than subsection
+```{r}
+#| fig-align: center
+#| fig-cap: "Diagram of pipeline steps for index construction."
+#| out-height: 90%
+#| out-width: 90%
+knitr::include_graphics(here::here("figures/pipeline-steps.png"))
+```
+
 
 **Raw data**
 

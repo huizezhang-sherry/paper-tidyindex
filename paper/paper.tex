@@ -36,7 +36,6 @@
   \KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{xcolor}
-\usepackage[normalem]{ulem}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
@@ -255,9 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indices \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, interior hidden, borderline west={3pt}{0pt}{shadecolor}, frame hidden, breakable, sharp corners, boxrule=0pt]}{\end{tcolorbox}}\fi
-
-\newpage
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, enhanced, boxrule=0pt, interior hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -365,26 +362,21 @@ with:
 \textbf{what can be done if people adopt this pipeline/ why it is
 beneficial?}
 
-\emph{first sentence: tailor to their indices without thinking about the
-big picture}
-
-\sout{While every jumbled index jumbles in its own way,
-{[}perspicuous{]} clearly-laied out indices are all alike.} This paper
-proposes a data pipeline for index construction. By recognising the
-common steps shared by many indices, we develop a pipeline that breaks
-down index construction into multiple modules and allow operations in
-various modules to be combined like building blocks to construct
-indices. The pipeline approach is general while adaptable to most index
-construction. It allows indices to be created, studied, and compared in
-a structured tidy form and enables statistical analysis of indices to be
-performed easily: More specifically, it enables researchers to 1)
-validate the indices calculated from external organisations, 2) unify
-various indices under the same framework for computing, 3) swap or
-adjust individual steps in the index construction to study their
-contribution, 4) calculate uncertainty on indices through bootstrap or
-others, 5) enhance existing indices through comparing and studying their
-statistical properties, and finally, 6) propose new indices from
-combining different steps in existing indices.
+This paper proposes a data pipeline for index construction. By
+recognising the common steps shared by many indices, we develop a
+pipeline that breaks down index construction into multiple modules and
+allow operations in various modules to be combined like building blocks
+to construct indices. The pipeline approach is general while adaptable
+to most index construction. It allows indices to be created, studied,
+and compared in a structured tidy form and enables statistical analysis
+of indices to be performed easily: More specifically, it enables
+researchers to 1) validate the indices calculated from external
+organisations, 2) unify various indices under the same framework for
+computing, 3) swap or adjust individual steps in the index construction
+to study their contribution, 4) calculate uncertainty on indices through
+bootstrap or others, 5) enhance existing indices through comparing and
+studying their statistical properties, and finally, 6) propose new
+indices from combining different steps in existing indices.
 
 \textbf{who would benefit from this paper}
 
@@ -407,10 +399,10 @@ explains how to include a new building block in each pipeline module.
 Examples are given in Section~\ref{sec-examples} to demonstrate the
 index construction with the pipeline built.
 
-\newpage
-
 \hypertarget{sec-data-pipeline-in-r}{%
-\section{Data pipeline in R}\label{sec-data-pipeline-in-r}}
+\section{Data pipeline}\label{sec-data-pipeline-in-r}}
+
+\emph{Think about if there is another word for data pipeline}
 
 \textbf{Why you should care about pipeline}
 
@@ -488,25 +480,32 @@ indices}\label{sec-a-pipeline-for-building-statistical-indices}}
 \subsection{How does the pipeline constructin of an index look
 like?}\label{how-does-the-pipeline-constructin-of-an-index-look-like}}
 
-Consider a commonly used drought index: Standardised Precipitation Index
-(SPI) (McKee, Doesken, and Kleist 1993). Its construction involves: 1)
-aggregating monthly precipitation (\texttt{prcp}) with a time scale, 2)
+Consider a commonly used drought index: Standardized
+Precipitation-Evapotranspiration Index (SPEI) (Vicente-Serrano,
+Beguería, and López-Moreno 2010). Its construction involves: 1)
+calculating potential evapotranspiration (PET) from average temperature,
+\texttt{tavg}, and its difference, \texttt{d}, with precipitation,
+\texttt{prcp}, 2) aggregating difference series with a time scale, 3)
 fitting the aggregated series with a chosen distribution to get density
-values, and 3) converting the density values to normal quantiles. Under
-the pipeline approach, SPI will be constructed as:
+values, and 4) converting the density values to normal quantiles. Under
+the pipeline approach, SPEI will be constructed as:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{DATA }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{aggregate}\NormalTok{(}\AttributeTok{scale =} \DecValTok{12}\NormalTok{, }\AttributeTok{var =}\NormalTok{ prcp) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{normalise}\NormalTok{(}\AttributeTok{dist =}\NormalTok{ gamma, }\AttributeTok{var =}\NormalTok{ prcp, }\AttributeTok{fit\_method =}\NormalTok{ lmom) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{trans\_pet}\NormalTok{(}\AttributeTok{method =}\NormalTok{ thornthwaite, }\AttributeTok{col =}\NormalTok{ tavg) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{aggregate}\NormalTok{(}\AttributeTok{scale =} \DecValTok{12}\NormalTok{, }\AttributeTok{var =}\NormalTok{ d) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{normalise}\NormalTok{(}\AttributeTok{dist =}\NormalTok{ gamma, }\AttributeTok{fit\_method =}\NormalTok{ lmom) }\SpecialCharTok{\%\textgreater{}\%} 
   \FunctionTok{augment}\NormalTok{(}\AttributeTok{var =}\NormalTok{ .agg\_prcp)}
 \end{Highlighting}
 \end{Shaded}
 
+\emph{Change the examples to two scales values, compare how indices look
+like}
+
 Here each command corresponds to one step described above with
 additional arguments specific to the step. The pipeline construction
-produces the same index value as command like \texttt{spi(...)}, as
+produces the same index value as command like \texttt{spei(...)}, as
 shown in Figure~\ref{fig-toy-example}, but with additional benefit:
 
 \begin{itemize}
@@ -522,26 +521,32 @@ shown in Figure~\ref{fig-toy-example}, but with additional benefit:
   diagnostics and customised user need.
 \end{itemize}
 
+\emph{everyone is providing single command function, this is also the
+same for spi}
+
+\emph{may not worthwhile if only one index, as long as start changing}
+
+\emph{just want to calculate index, single function is fine}
+
 \begin{figure}
 
-{\centering \includegraphics[width=0.7\textwidth,height=0.7\textheight]{../figures/toy-example-spi.png}
+{\centering \includegraphics[width=1\textwidth,height=0.3\textheight]{../figures/toy-example-spei.png}
 
 }
 
-\caption{\label{fig-toy-example}Standardised Precipitation Index (SPI)
-calculated using two approaches: the pipeline construction (y-axis) and
-the function \texttt{spi()} from the \texttt{SPEI} package (x-axis),
-using the \texttt{wichita} data from the package \texttt{SPEI}. All the
-points align diagnally, indicating the same numerical result from both
-approaches.}
+\caption{\label{fig-toy-example}Standardised Precipitation
+Evapotranspiration Index (SPEI) calculated with two distribution fits in
+Step 3 described above: generalised logistic (\texttt{glogist}) and
+generalised extreme value (\texttt{gev}) distribution , using the
+\texttt{wichita} data from the package \texttt{SPEI}.}
 
 \end{figure}
+
+\newpage
 
 \hypertarget{pipeline-steps-for-constructing-indies}{%
 \subsection{Pipeline steps for constructing
 indies}\label{pipeline-steps-for-constructing-indies}}
-
-\emph{put a diagram here to summarise the pipeline}
 
 The construction of natural hazard indices also follows a set of steps,
 which is usually illustrated using a flowchart in the paper. However,
@@ -559,7 +564,15 @@ framework
 Here we assume a concept of interest is determined, relevant variables/
 indicators are identified and available to construct indices.
 
-each step as a point rather than subsection
+\begin{figure}
+
+{\centering \includegraphics[width=0.9\textwidth,height=0.9\textheight]{../figures/pipeline-steps.png}
+
+}
+
+\caption{Diagram of pipeline steps for index construction.}
+
+\end{figure}
 
 \textbf{Raw data}
 
@@ -736,12 +749,6 @@ Relationship of Drought Frequency and Duration to Time Scales.''} In
 \emph{Proceedings of the 8th Conference on Applied Climatology},
 17:179--83. 22. Boston, MA, USA.
 
-\leavevmode\vadjust pre{\hypertarget{ref-spi}{}}%
-McKee, Thomas B, Nolan J Doesken, and John Kleist. 1993. {``The
-Relationship of Drought Frequency and Duration to Time Scales.''} In
-\emph{Proceedings of the 8th Conference of Applied Climatology},
-179--84. Anaheim, CA: American Meteorological Society.
-
 \leavevmode\vadjust pre{\hypertarget{ref-sutherland_orca_2000}{}}%
 Sutherland, Peter, Anthony Rossini, Thomas Lumley, Nicholas Lewin-Koh,
 Julie Dickerson, Zach Cox, and Dianne Cook. 2000. {``Orca: {A}
@@ -758,6 +765,13 @@ Environment} 8 (2): 127--50.
 \leavevmode\vadjust pre{\hypertarget{ref-hdi}{}}%
 United Nations Development Programme. 2022. {``Human Development Report
 2021-22.''} New York. \url{http://report.hdr.undp.org}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-spei}{}}%
+Vicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno.
+2010. {``A {Multiscalar} {Drought} {Index} {Sensitive} to {Global}
+{Warming}: {The} {Standardized} {Precipitation} {Evapotranspiration}
+{Index}.''} \emph{Journal of Climate} 23 (7): 1696--1718.
+\url{https://journals.ametsoc.org/view/journals/clim/23/7/2009jcli2909.1.xml}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-wickham_tidy_2014}{}}%
 Wickham, Hadley. 2014. {``Tidy {Data}.''} \emph{Journal of Statistical
