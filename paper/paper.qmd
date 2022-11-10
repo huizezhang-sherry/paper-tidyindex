@@ -183,7 +183,7 @@ Consider a commonly used drought index: Standardized Precipitation-Evapotranspir
 
 ```{r eval = FALSE, echo = TRUE}
 DATA %>% 
-  trans_pet(method = thornthwaite, col = tavg) %>% 
+  trans_pet(method = thornthwaite, var = tavg) %>% 
   aggregate(scale = 12, var = d) %>% 
   normalise(dist = gamma, fit_method = lmom) %>% 
   augment(var = .agg_prcp)
@@ -239,7 +239,7 @@ Here we assume a concept of interest is determined, relevant variables/ indicato
 #| fig-align: center
 #| fig-cap: "Diagram of pipeline steps for index construction."
 #| out-height: 90%
-#| out-width: 90%
+#| out-width: 100%
 knitr::include_graphics(here::here("figures/pipeline-steps.png"))
 ```
 
