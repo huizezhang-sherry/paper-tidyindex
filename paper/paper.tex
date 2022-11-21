@@ -4,7 +4,9 @@
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
-]{article}
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
 
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
@@ -17,7 +19,6 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-  \setmathfont[]{Latin Modern Math}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -37,7 +38,7 @@
 \makeatother
 \usepackage{xcolor}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
-\setcounter{secnumdepth}{5}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
@@ -137,10 +138,8 @@
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
-\usepackage{arxiv}
-\usepackage{orcidlink}
 \usepackage{amsmath}
-\usepackage[T1]{fontenc}
+\KOMAoption{captions}{tableheading}
 \makeatletter
 \makeatother
 \makeatletter
@@ -210,13 +209,9 @@
   pdfcreator={LaTeX via pandoc}}
 
 \title{Demo arXiv template}
-\author{
-\textbf{H. Sherry Zhang}~\orcidlink{0000-0002-7122-1463}\\Department of
-Econometrics and Business Statistics\\Monash University\\Melbourne,
-VIC\\\href{mailto:huize.zhang@monash.edu}{huize.zhang@monash.edu}\\\\\\
-\textbf{Collaborators}\\Department of Econometrics and Business
-Statistics\\Monash University\\Melbourne, VIC\\}
+\author{H. Sherry Zhang \and Collaborators}
 \date{}
+
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -249,12 +244,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
   multivariate spatio-temporal data
 \end{itemize}
 \end{abstract}
-{\bfseries \emph Keywords}
-\def\sep{\textbullet\ }
-indexes \sep data pipeline \sep 
-software design
-
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, sharp corners, breakable, frame hidden, enhanced, boxrule=0pt, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, sharp corners, interior hidden, enhanced, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -470,8 +460,6 @@ already proposed and can easily combine pipeline steps to compose novel
 indexes. Analysis of the indexes (i.e.~calculation of uncertainty) is
 also feasible by adding external code into the pipeline.
 
-\newpage
-
 \hypertarget{sec-a-pipeline-for-building-statistical-indexes}{%
 \section{A pipeline for building statistical
 indexes}\label{sec-a-pipeline-for-building-statistical-indexes}}
@@ -548,114 +536,213 @@ generalised extreme value (\texttt{gev}) distribution, using the
 \subsection{Pipeline steps for constructing
 indies}\label{pipeline-steps-for-constructing-indies}}
 
-The construction of natural hazard indexes also follows a set of steps,
-which is usually illustrated using a flowchart in the paper.
+\emph{constructing time series index should also be encapsulated in the
+framework}
 
-\begin{itemize}
-\tightlist
-\item
-  constructing time series index should also be encapsulated in the
-  framework
-\end{itemize}
+Figure~\ref{fig-pipeline-steps} presents the index construction pipeline
+from the raw data to the final indexes. The available intermediate steps
+include temporal processing, spatial aggregation, variable
+transformation, scaling, dimension reduction, normalising, benchmarking,
+and simplification. These steps do not have to be arranged in sequence
+and not all the steps are required to present in every index
+construction. Spatial aggregation and temporal processing are operations
+of the data in space and time Variable transformation, scaling, and
+dimension reduction concerns operations on the multivariate aspect of
+the data. Normalisation, benchmarking, and simplification can be viewed
+as the ``post-processing'' of indexes, which addresses the
+cross-comparison across different indexes and time, and index
+communication.
 
-Here we assume a concept of interest is determined, relevant variables/
-indicators are identified and available to construct indexes.
+More steps are involved before the mathematical construction of indexes.
+This includes 1) defining a concept of interest, being useful for
+decision making and 2) finding the relevant and measurable variables to
+characterise the concept. These choices define the scope of the indexes
+and the data availability for constructing an index but not the
+construction itself, hence not included in the pipeline framework. The
+framework proposed in this paper assumes the objective of an index has
+been defined and relevant variables have been collected and quality
+controlled.
 
-Before the mathmetical construction of indexes
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{include\_graphics}\NormalTok{(here}\SpecialCharTok{::}\FunctionTok{here}\NormalTok{(}\StringTok{"figures/pipeline{-}steps.png"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics[width=1\textwidth,height=0.9\textheight]{../figures/pipeline-steps.png}
 
 }
 
-\caption{Diagram of pipeline steps for index construction.}
+\caption{\label{fig-pipeline-steps}Diagram of pipeline steps for index
+construction.}
 
 \end{figure}
 
 \textbf{Raw data}
 
-\emph{Another section on original data directly downloaded, can have
-different spatial resolution, temporal granularity, data quality
+\emph{Discussion: whether we should allow raw data to have different
+spatial/ temporal resolution: This would require the notation
+\(\mathbf{s}\) and \(\mathbf{t}\) to depend on \(p\)}
+
+\emph{Initially my thought was to raw data only after aligning the
+resolution: Another section on original data directly downloaded, can
+have different spatial resolution, temporal granularity, data quality
 problem. After processing them and align them together they become the
 ``raw data''}
 
-The data used to construct the natural hazard index usually have three
-dimensions, one for location, one for time, and one for multivariate.
-Mathematically, it can be written as \(X_{j, s, t}\), where
-\(j = 1, 2, \cdots, J\) for variable, \(s = 1, 2, \cdots, S\) for
-location, and \(t = 1, 2, \cdots, T\) for time.
-
-The location \(s\) can refer to vector points or areas characterised by
-longitude-latitude coordinates, or raster cells obtained from satellite
-images.
-
-The time dimension \(t\) can be daily, weekly, biweekly (14-16 days),
-monthly, or even quarterly
-
-Variables
-
-This multidimensional array structure is commonly used in geospatial
-analysis
-
-Given the variety of data sources at different spatial resolution and
-temporal granularity, the raw data may first come in multiple pieces.
-Sometimes, even a considerable amount of work is needed to align the
-spatial and temporal extent of multivariate data.
-
-A notation for different variables have different spatial and temporal
-granularity \(X_{j_1, s_1, t_1}\)???
-
-\textbf{Spatial aggregation}
-
-mostly happen with raster data
-
-\textbf{Scaling}
-
-A specific transformation on the scale of the data
-
-z-score standardising, min-max standardisation into {[}0, 1{]} or {[}0,
-100{]}, percentage change on the baseline close to variable
-transformation step
-
-\textbf{Normalising}
-
-The purpose of normalising is for cross-comparison. This step can get
-criticism from analysts for \ldots{}
-
-specifically for converting from a fitted distribution to normal score
-via reverse CDF function, non-parametric formula, or empirical
-approximation, a common step in many index: SPI, SSI, Z score. The
-purpose of normalising is to convert the index into a standardised
-series after all the steps for the ease of comparison.
-
-Normalising is usually the last step
-
-\textbf{Variable transformation}
-
-Restrict it to single variable, square root, log etc could be linearly,
-also non-linear
-
-change the shape of the variable
-
-GAM, can you do additive model pairwise/ three-way
+Once variables are collected, they can have different spatial resolution
+and temporal granularity. Let \(\mathbf{x}(\mathbf{s};\mathbf{t})\)
+denote the raw data that contain the spatial, temporal, and multivariate
+aspect: the spatial component
+\(\mathbf{s} = (s_1, s_2, \cdots, s_n)^\prime\) is defined in the 2D
+space: \(\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2\), the
+temporal component \(\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime\) is
+defined in the 1D space:
+\(\mathbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}\). Expanding on the
+multivariate aspect, the data can be written as
+\(\mathbf{x}(\mathbf{s}; \mathbf{t}) = (x_1(\mathbf{s}; \mathbf{t}), x_2(\mathbf{s}; \mathbf{t}), \cdots, x_P(\mathbf{s}; \mathbf{t}))^\prime\)
 
 \textbf{Temporal processing}
 
+Temporal processing concerns the operations on the temporal aspect of
+the data. It can be represented by
+\(f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t}))\), where
+\(\psi \in \Psi \subseteq \mathbb{R}^{d_{\psi}}\) is the parameters
+associated with the temporal operation and \(d_{\psi}\) is the number of
+parameter of \(\psi\).
+
+\begin{itemize}
+\tightlist
+\item
+  purpose is to aggregate across time, smooth?
+\end{itemize}
+
+An example of temporal processing is to aggregate the data,
+\(x(s_i; t_j)\), into \(k\)-month sum. This can be used to reflect how
+the accumulated values change across time. In the drought index SPI,
+precipitation can be aggregated at different scales to reflect
+short-term, mid-term, and long-term drought severity. With \(\psi = k\),
+the aggregated series can be written as
+\(x(s_i;t_{j^\prime}) = \sum_{j = j^\prime-k+1}^{j^\prime}x(s_i; t_j)\)
+where \(j^\prime\) is the time index after the aggregation.
+
+\textbf{Spatial aggregation}
+
+Sometimes, it can be beneficial to borrow information from nearby
+spatial locations or there is the need to combine raster data from
+satellite images with vector ground measures. Spatial aggregation can be
+written as \(g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t}))\), where
+\(\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}\) is the spatial
+operation parameters and \(d_{\theta}\) is the number of parameter of
+\(\theta\).
+
+\begin{itemize}
+\item
+  \(\theta\) can be a constant or a derived from the data
+\item
+  3 by 3 aggregation, another purpose: the spatial grid is too fine,
+  aggregate to higher level.
+\end{itemize}
+
+\textbf{Variable transformation}
+
+A variable transformation changes the shape of the variable. It can be
+written as \(h_{\tau}(x(\mathbf{s};\mathbf{t}))\), where
+\(\tau \in T \subseteq \mathbb{R}^{d_{\tau}}\) is the potential
+parameter in the transformation, if any, and \(d_{\tau}\) is the number
+of parameter of \(\tau\). Variable transformation involve square root
+transformation, log transformation, and also include those non-linear
+transformation.
+
+\textbf{Scaling}
+
+Scaling is a specific variable transformation on the scale of the data.
+The purpose to treat scaling as a separate step from variable
+transformation is to make the step explicit. Scaling is usually in the
+form of \([x(s_i;t_j) - \alpha]/\gamma\). For example,
+\(\alpha = \bar{x}(s; t)\) and \(\gamma = \sigma(s; t)\) is used in a
+z-score standardisation to standardise the data by the its mean and
+standard deviation across all time and all space units and
+\(\alpha = \min[x(s_i, t_j)]\) and
+\(\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]\) is used to
+standardise the variable into a unit interval.
+
 \textbf{Dimension reduction}
 
-sometimes called feature extraction in the machine learning community
-With drought indexes, the extraction of meaningful variables from the
-original data is usually supported by the water balance model, for
-example, in SPEI, the step that create \(d\) out of precipitation and
-potential evapotranspiration (PET) has theoretical backup from {[}see
-paper.{]}
+When multiple variables are collected in space and time to construct
+indices, they are often summarised with dimension reduction. Dimension
+reduction
+\(x_{p^*}(\mathbf{s}; \mathbf{t}) \rightarrow x_p(\mathbf{s}; \mathbf{t})\),
+where \(p^* = 1, 2, \cdots, P^*\), \(p = 1, 2, \cdots, P\), and
+\(P^* < P\). The most commonly used dimension reduction
+techniquePprincipal Component Analysis (PCA), also called Empirical
+Orthogonal Function (EOF), can be written as
+\(x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t})\)
+where \(\lambda_p\) is the loading of the PC1, derived from maximising
+the variance of the data given the constraint
+\(\sum_{p=1}^P\lambda_p^2 = 1\).
 
-Also include weighting
+\textbf{Normalising}
+
+The purpose of normalising is for cross-comparison using the normal
+score. This step can get criticism from analysts for \ldots{}
+
+This step is usually in the end of the pipeline when the data have been
+processed into a univariate series. When the data are not distributed
+normally, a distributed is usually fitted before converting to the
+normal score via the normal reverse CDF function: \(\Phi^{-1}(.)\):
+\(\Phi^{-1}[F_{\eta}(x(\mathbf{s}; \mathbf{t}))]\), where
+\(\eta \in H \subseteq \mathbb{R}^{d_{\eta}}\) is the distribution
+parameter and \(d_{\eta}\) is the number of parameter of \(\eta\).
+Sometimes, to account for the monthly variation in the data, the fitting
+is done separately for each month and the noramlising step can be
+written as \(\Phi^{-1}[F_{\eta}^m(x(\mathbf{s};t_{j^*}))]\), where
+\(j^*\) is all the indexes that satisfy \(j^* \mod 12 = m\) for each
+\(m = 0, 1,\cdots, 11\).
+
+\begin{itemize}
+\tightlist
+\item
+  In some cases, the distibution and inverse normal can be multivariate,
+  i.e.~use copula.
+\end{itemize}
 
 \textbf{Benchmarking}
 
+Benchmarking sets a constant value to allow the constructed index to be
+compared across time. Here we denote it with \(u[x(s_i, t_j)]\) where
+\(u\) is a scalar of interest in the index constructed, could be a
+constant or a function of the data, i.e.~mean.
+
 \textbf{Simplification}
+
+In public communication, indexes are often delivered in categorical
+grades, along with its underlying numerical values. The simplification
+step prescribes how the continuous index values are converted into the
+discrete grades. This process can be written with the piece-wise
+function:
+
+\[
+\begin{cases}
+C_0 & c_1 \leq (s_i; t_j) < c_0 \\
+C_1 & c_2 \leq x(s_i; t_j) < c_1 \\
+C_2 & c_3 \leq x(s_i; t_j) < c_2 \\
+\cdots \\
+C_z & c_z \leq x(s_i; t_j)
+\end{cases}
+\]
+
+where \(C_0, C_1,\cdots ,C_z\) are the categories and
+\(c_0, c_1, \cdots, c_z\) are the threshold value in each category. In
+SPI, drought are sorted into four categories: mild drought:
+\([-0.99, 0]\); moderate drought: \([-1.49, -1]\); severe drought:
+\([-1.99, -1.5]\), and extreme drought: \([-\infty, -2]\). In this case,
+\(C_0, C_1, C_2, C_3\) are the drought categories: mild, moderate,
+severe, and extreme drought (\(z = 3\)) and
+\(c_0 =0, c_1 = -1, c_2 = -1.5, c_3 = -2\) are the cutoff value for each
+class.
 
 Discretise the continuous index into a few labelled categories. For
 communicating the severity of natural hazard to general public.
