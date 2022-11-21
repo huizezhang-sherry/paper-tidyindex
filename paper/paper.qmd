@@ -23,15 +23,15 @@ author:
         city: Melbourne, VIC
         country: Australia
 abstract: |
-  - Indices, useful, quantify severity, early monitoring, 
-  - A huge number of indices have been proposed by domain experts, however, a large majority of them are not being adopted, reused, and compared in research or in practice. 
-  - One of the reasons for this is the plenty of indices are quite complex and there is no obvious easy-to-use implementation to apply them to user's data. 
-  - The paper describes a general pipeline framework to construct indices from spatio-temporal data, 
-  - This allows all the indices to be constructed through a uniform data pipeline and different indices to vary on the details of each step in the data pipeline and their orders. 
-  - The pipeline proposed aim to smooth the workflow of index construction through breaking down the complicated steps proposed by various indices into small building blocks shared by most of the indices.
-  - The framework will be demonstrated with drought indices as examples, but appliable in general to environmental indices constructed from multivariate spatio-temporal data
+  - indexes, useful, quantify severity, early monitoring, 
+  - A huge number of indexes have been proposed by domain experts, however, a large majority of them are not being adopted, reused, and compared in research or in practice. 
+  - One of the reasons for this is the plenty of indexes are quite complex and there is no obvious easy-to-use implementation to apply them to user's data. 
+  - The paper describes a general pipeline framework to construct indexes from spatio-temporal data, 
+  - This allows all the indexes to be constructed through a uniform data pipeline and different indexes to vary on the details of each step in the data pipeline and their orders. 
+  - The pipeline proposed aim to smooth the workflow of index construction through breaking down the complicated steps proposed by various indexes into small building blocks shared by most of the indexes.
+  - The framework will be demonstrated with drought indexes as examples, but appliable in general to environmental indexes constructed from multivariate spatio-temporal data
 keywords:
-  - indices
+  - indexes
   - data pipeline
   - software design
 bibliography: bibliography.bib  
@@ -43,10 +43,10 @@ editor_options:
 
 <!-- Each individual index follows its own data pipeline and it can be difficult to evaluate how an index can be affected by tweaking parameters in a certain step, rearranging the order of steps, using to different method.  -->
 
-<!-- However, even if most of the indices have available existing implementation available to users, there would be hundreds of them and it will be burdensome to remember, classify, and compare between. -->
+<!-- However, even if most of the indexes have available existing implementation available to users, there would be hundreds of them and it will be burdensome to remember, classify, and compare between. -->
 
 
-**Why index is useful, why people care about indices**
+**Why index is useful, why people care about indexes**
 
 *incorporate the following in why using index: multiple pieces of information (variables) that need to be taken into account*
 
@@ -62,31 +62,31 @@ This allows researchers to compare the quantity of interest across entities (i.e
 
 In this article, an index is defined as a tool to quantify a concept of interest that does not have a direct measure.
 The concept of interest doesn't have a direct measure can because it is impractical to measure at the population level. 
-For example, it would be nearly impossible to include all the available stocks in the market to characterise stock market behavior, so indices like Dow Jones Industrial Average, S&P 500, and Nasdaq Composite select a representative set of stocks to measure the overall market behavior. 
-Also belonging to this category are the economic indices like the Consumer Price Index, where price changes of a basket of items are weighted to measure inflation. 
+For example, it would be nearly impossible to include all the available stocks in the market to characterise stock market behavior, so indexes like Dow Jones Industrial Average, S&P 500, and Nasdaq Composite select a representative set of stocks to measure the overall market behavior. 
+Also belonging to this category are the economic indexes like the Consumer Price Index, where price changes of a basket of items are weighted to measure inflation. 
 The lack of direct measure could also because the concept itself is an unobservable human construction, rather than a physical quantity that can be measured.
 Many natural hazard and social concepts falls into this category. 
-This includes drought indices constructed from meteorological, agricultural, hydrological, and social-economic variables, e.g. Standardised Precipitation Index (SPI) [@mckee1993relationship] and Aggregated Drought Index (ADI) [@keyantash_aggregate_2004] among others.
-Social development indices like Human Development Index [@hdi] and Global Liveability Index [@gli] measure various aspects of the quality of human capital and urban life.
+This includes drought indexes constructed from meteorological, agricultural, hydrological, and social-economic variables, e.g. Standardised Precipitation Index (SPI) [@mckee1993relationship] and Aggregated Drought Index (ADI) [@keyantash_aggregate_2004] among others.
+Social development indexes like Human Development Index [@hdi] and Global Liveability Index [@gli] measure various aspects of the quality of human capital and urban life.
 
 *still need to tweak the tone a bit: "they are called index, they are not the index we will talk about"*
 
-Despite many quantity having the term *index* in their name, they cannot be technically classified as indices according to the definition given above. 
+Despite many quantity having the term *index* in their name, they cannot be technically classified as indexes according to the definition given above. 
 The reason for these quantities to lose their index memberships is that they are variables can be accurately measured given the instrument precision. 
 This includes quantities like precipitation of the driest month or percentage of days when maximum temperature is below 10th percentile. 
 They are measures of precipitation and percentage of days under specific conditions (dries month, maximum temperature below 10th percentile).
-They are variables, or indicators, that can be used to construct indices but are not indices themselves. 
-Similarly, a set of remote sensing indices are not indices, since they are measures of electromagnetic wave reflectance.
+They are variables, or indicators, that can be used to construct indexes but are not indexes themselves. 
+Similarly, a set of remote sensing indexes are not indexes, since they are measures of electromagnetic wave reflectance.
 This includes Normalized Difference Vegetation Index (NDVI) [@tucker_red_1979], derived from the ratio of difference over sum on two segments in the spectrum, also called band: near-infrared (NIR) and red.
-So are the "indices" derived from NDVI, e.g. Vegetation Condition Index [@kogan_application_1995]. 
-Notice that this does not exclude all the construction derived from remotes sensor variables to be valid indices.
+So are the "indexes" derived from NDVI, e.g. Vegetation Condition Index [@kogan_application_1995]. 
+Notice that this does not exclude all the construction derived from remotes sensor variables to be valid indexes.
 For example, Vegetation Drought Response Index [@brown_vegetation_2008] is a valid index since it integrates climate, satellite, and biophysical variables to quantify vegetation stress.
 
 <!-- FYI:  -->
 
 <!--   - A measure is a variable, but is not an index.  -->
-<!--   - Not all multivariate quantities are indices (i.e. those remote sensor measures). It is possible that an index is constructed from a single variable (i.e. SPI). -->
-<!--   - Indices is not a single/ set of measures -->
+<!--   - Not all multivariate quantities are indexes (i.e. those remote sensor measures). It is possible that an index is constructed from a single variable (i.e. SPI). -->
+<!--   - indexes is not a single/ set of measures -->
 
 
 **What is the challenges with current index construction**
@@ -96,43 +96,43 @@ For example, Vegetation Drought Response Index [@brown_vegetation_2008] is a val
 *useful to reference tidy data and tidy model that makes the workflow on modelling tidy somewhere in introduction*
 
 Currently, index construction lacks a standardised workflow. 
-It is often up to researchers or research institutions to decide whether to provide open source code on the new indices, what would be the best user interface for other researchers to use the new indices, and how easily the new indices can be compared with other existing indices. 
-This makes the computation lack transparency and indices cumbersome to experiment with: 
+It is often up to researchers or research institutions to decide whether to provide open source code on the new indexes, what would be the best user interface for other researchers to use the new indexes, and how easily the new indexes can be compared with other existing indexes. 
+This makes the computation lack transparency and indexes cumbersome to experiment with: 
   
-  - Researchers who wish to validate the indices calculated from large institutes need to reinvent the wheels themselves since the source code used for computing is often not available for public consumption;
+  - Researchers who wish to validate the indexes calculated from large institutes need to reinvent the wheels themselves since the source code used for computing is often not available for public consumption;
   - Open-source code provided by research groups has a narrow margin for exploring other options outside the provided;
-  - Similar steps used by different indices are difficult to spot since the design of the user interface for indices often includes all the steps under a single function call; and
+  - Similar steps used by different indexes are difficult to spot since the design of the user interface for indexes often includes all the steps under a single function call; and
   - It is generally hard to inspect intermediate results during the index construction if users wish to check the output of a certain step. 
 
-<!-- Institutes like National Oceanic and Atmospheric Administration (NOAA) and United States Drought Monitor (USDM) moderate indices in their domains. -->
+<!-- Institutes like National Oceanic and Atmospheric Administration (NOAA) and United States Drought Monitor (USDM) moderate indexes in their domains. -->
 <!-- They provide public information to describe the methodology used in the calculation, publish the index values for public consumption while the source code used for computing is often not available for public consumption.  -->
 
 
-<!-- For example, many indices involve a step to fit variables into a particular distribution. -->
+<!-- For example, many indexes involve a step to fit variables into a particular distribution. -->
 <!-- Index researchers may provide options for different fits, but it is generally hard to experiment with options outside the provided distributions. -->
 
-<!-- For example, many indices needs standardisation in its workflow, it can be used to rescale the input variables or the index series. -->
+<!-- For example, many indexes needs standardisation in its workflow, it can be used to rescale the input variables or the index series. -->
 <!-- But the current construction does not make it clear through its user interface but sweep it, along with all the other steps in the index construction, under a single function call.  -->
 
 
 **what can be done if people adopt this pipeline/ why it is beneficial?**
 
 This paper proposes a data pipeline for index construction. 
-By recognising the common steps shared by many indices, we develop a pipeline that breaks down index construction into multiple modules and allow operations in various modules to be combined like building blocks to construct indices.
+By recognising the common steps shared by many indexes, we develop a pipeline that breaks down index construction into multiple modules and allow operations in various modules to be combined like building blocks to construct indexes.
 The pipeline approach is general while adaptable to most index construction. 
-It allows indices to be created, studied, and compared in a structured tidy form and enables statistical analysis of indices to be performed easily: 
-More specifically, it enables researchers to 1) validate the indices calculated from external organisations, 2) unify various indices under the same framework for computing, 3) swap or adjust individual steps in the index construction to study their contribution, 4) calculate uncertainty on indices through bootstrap or others, 5) enhance existing indices through comparing and studying their statistical properties, and finally, 6) propose new indices from combining different steps in existing indices. 
+It allows indexes to be created, studied, and compared in a structured tidy form and enables statistical analysis of indexes to be performed easily: 
+More specifically, it enables researchers to 1) validate the indexes calculated from external organisations, 2) unify various indexes under the same framework for computing, 3) swap or adjust individual steps in the index construction to study their contribution, 4) calculate uncertainty on indexes through bootstrap or others, 5) enhance existing indexes through comparing and studying their statistical properties, and finally, 6) propose new indexes from combining different steps in existing indexes. 
 
 
 **who would benefit from this paper**
 
-This work is of interest to researchers actively developing new indices since it encourages new indices to be delivered in an easy-to-reproduce design. 
-It would also provide analysts who wish to compute a range of indices in their analysis a uniform interface to build relevant indices from raw data. 
+This work is of interest to researchers actively developing new indexes since it encourages new indexes to be delivered in an easy-to-reproduce design. 
+It would also provide analysts who wish to compute a range of indexes in their analysis a uniform interface to build relevant indexes from raw data. 
 For statisticians and software developing engineers, this work frames the process of index construction in a more user-oriented workflow and could motivate similar research for other process in scientific computing.
 
 
 The rest of the paper is structured as follows: @sec-data-pipeline-in-r reviews the concept of data pipeline in R. 
-The pipeline framework for index construction is presented in @sec-a-pipeline-for-building-statistical-indices.  @sec-incorporating-new-buliding-blocks-into-the-pipeline explains how to include a new building block in each pipeline module. 
+The pipeline framework for index construction is presented in @sec-a-pipeline-for-building-statistical-indexes.  @sec-incorporating-new-buliding-blocks-into-the-pipeline explains how to include a new building block in each pipeline module. 
 Examples are given in @sec-examples to demonstrate the index construction with the pipeline built. 
 
 # Data pipeline {#sec-data-pipeline-in-r}
@@ -164,18 +164,18 @@ It includes typical tasks required in machine learning like data resampling, fea
 An advantage of tidymodel pipeline over separate software for individual models is that analysts no longer need to write model-specific syntax to work with each model, but pipeline-specific syntax that is applicable to all the models implemented in tidymodel.
 This allows users to easily experiment with a collection of machine learning models. 
 
-**Constructing indices would also benefit from pipeline and embracing the aforementioned design philosophy.**
+**Constructing indexes would also benefit from pipeline and embracing the aforementioned design philosophy.**
 
-In index construction, data pipeline is often presented in a workflow diagram in the research paper to illustrate how the raw data is transformed into the final indices. 
+In index construction, data pipeline is often presented in a workflow diagram in the research paper to illustrate how the raw data is transformed into the final indexes. 
 This agrees with Wickham's argument on the presence of the data pipeline, however, more often than not, the pipeline is not made explicit in the software.
 Often the time, all the steps are lumped into a single wrapper function, rather than being split into smaller, modulated functions. 
-This increases the cost of maintaining and understanding the code base, gives analysts little freedom to customise the indices for specific needs, and hinders reusing existing code for building new indices.
-A pipeline approach unites a range of indices under a single data pipeline and analysts can compose indices from pipeline steps like building Legos from individual bricks.
-In this workflow, analysts are not limited by indices that have been already proposed and can easily combine pipeline steps to compose novel indices.  Analysis of the indices (i.e. calculation of uncertainty) is also feasible by adding external code into the pipeline.
+This increases the cost of maintaining and understanding the code base, gives analysts little freedom to customise the indexes for specific needs, and hinders reusing existing code for building new indexes.
+A pipeline approach unites a range of indexes under a single data pipeline and analysts can compose indexes from pipeline steps like building Legos from individual bricks.
+In this workflow, analysts are not limited by indexes that have been already proposed and can easily combine pipeline steps to compose novel indexes.  Analysis of the indexes (i.e. calculation of uncertainty) is also feasible by adding external code into the pipeline.
 
 \newpage
 
-# A pipeline for building statistical indices {#sec-a-pipeline-for-building-statistical-indices}
+# A pipeline for building statistical indexes {#sec-a-pipeline-for-building-statistical-indexes}
 
 ## How does the pipeline constructin of an index look like? 
 
@@ -196,7 +196,7 @@ DATA %>%
 <!--   - *created variables are prefixed with dot: `.agg_prcp`* -->
 <!--   - *avoid string and use function to avoid "gamma" vs. "gam": `gamma()`, `lmom()`* -->
 
-*Change the examples to two scales values, compare how indices look like*
+*Change the examples to two scales values, compare how indexes look like*
 
 Here each command corresponds to one step described above with additional arguments specific to the step. 
 The pipeline construction produces the same index value as command like `spei(...)`, as shown in @fig-toy-example, but with additional benefit:
@@ -225,15 +225,14 @@ knitr::include_graphics(here::here("figures/toy-example-spei.png"))
 
 ## Pipeline steps for constructing indies
 
-The construction of natural hazard indices also follows a set of steps, which is usually illustrated using a flowchart in the paper. 
-However, every researcher follows a certain design philosophy and steps taken in the index constructed by different researchers are not aligned. 
-This discourages experiment with multiple indices. Initiate a new workflow when computing a new index.
+The construction of natural hazard indexes also follows a set of steps, which is usually illustrated using a flowchart in the paper. 
 
-The most popular indices (i.e. SPI, SPEI, etc) have existing software implementation (`SPEI`) to be applied to a different set of data.
+* constructing time series index should also be encapsulated in the framework
 
-constructing time series index should also be encapsulated in my framework
+Here we assume a concept of interest is determined, relevant variables/ indicators are identified and available to construct indexes.
 
-Here we assume a concept of interest is determined, relevant variables/ indicators are identified and available to construct indices.
+
+Before the mathmetical construction of indexes
 
 ```{r}
 #| fig-align: center
@@ -300,7 +299,7 @@ GAM, can you do additive model pairwise/ three-way
 **Dimension reduction**
 
 sometimes called feature extraction in the machine learning community 
-With drought indices, the extraction of meaningful variables from the original data is usually supported by the water balance model, for example, in SPEI, the step that create $d$ out of precipitation and potential evapotranspiration (PET) has theoretical backup from [see paper.]
+With drought indexes, the extraction of meaningful variables from the original data is usually supported by the water balance model, for example, in SPEI, the step that create $d$ out of precipitation and potential evapotranspiration (PET) has theoretical backup from [see paper.]
 
 Also include weighting
 
