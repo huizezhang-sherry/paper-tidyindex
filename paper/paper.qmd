@@ -231,6 +231,9 @@ Spatial aggregation and temporal processing are operations of the data in space 
 Variable transformation, scaling, and dimension reduction concerns operations on the multivariate aspect of the data.
 Normalisation, benchmarking, and simplification can be viewed as the "post-processing" of indexes, which addresses the cross-comparison across different indexes and time, and index communication.
 
+  - divide into pre and post-processing
+
+
 More steps are involved before the mathematical construction of indexes. 
 This includes 1) defining a concept of interest, being useful for decision making and 2) finding the relevant and measurable variables to characterise the concept. 
 These choices define the scope of the indexes and the data availability for constructing an index but not the construction itself, hence not included in the pipeline framework. 
@@ -284,6 +287,10 @@ Sometimes, it can be beneficial to borrow information from nearby spatial locati
 
 **Variable transformation**
 
+Variable transformation can be necessary for different reasons: 1) to change the shape of the variable, 2) to stablise the variance. 
+
+mention modelling? -> satisfy model assumption
+
 A variable transformation changes the shape of the variable. It can be written as $h_{\tau}(x(\symbf{s};\symbf{t}))$, where $\tau \in T \subseteq \mathbb{R}^{d_{\tau}}$ is the potential parameter in the transformation, if any, and $d_{\tau}$ is the number of parameter of $\tau$.
 Variable transformation involve square root transformation, log transformation, and also include those non-linear transformation.
 
@@ -298,10 +305,12 @@ Variable transformation involve square root transformation, log transformation, 
 
 **Scaling**
 
-Scaling is a specific variable transformation on the scale of the data. 
-The purpose to treat scaling as a separate step from variable transformation is to make the step explicit. 
-Scaling is usually in the form of $[x(s_i;t_j) - \alpha]/\gamma$. For example, $\alpha = \bar{x}(s; t)$ and $\gamma = \sigma(s; t)$ is used in a z-score standardisation to standardise the data by the its mean and standard deviation across all time and all space units and $\alpha = \min[x(s_i, t_j)]$ and $\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]$ is used to standardise the variable into a unit interval.
 
+Sometimes, scaling, as a specific type of variable transformation, is merged into dimension reduction as a pre-step, i.e. transform the covariance matrix into correlation matrix before applying the Principal Component Analysis (PCA), but it worth to be separated into its own step to make it explicit.
+Its main different from variable transformation is that it can be written in the form of $$[x(s_i;t_j) - \alpha]/\gamma.$$ 
+For example, In a z-score standardisation, $\alpha = \bar{x}(s; t)$ and $\gamma = \sigma(s; t)$ are used to standardise the data by the its mean and standard deviation across all time and all space units
+Another example is to scale the variable into a unit interval, which can be written as $\alpha = \min[x(s_i, t_j)]$ and $\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]$.
+While being a common technique in data pre-processing, scaling has an impact on the outliers of the data and analysts need to be cautious on checking its effect.
 
 <!-- z-score standardising, min-max standardisation into [0, 1] or [0, 100], percentage change on the baseline -->
 <!-- close to variable transformation step -->
@@ -316,8 +325,7 @@ When multiple variables are collected in space and time to construct indices, th
 **Normalising**
 
 The purpose of normalising is for cross-comparison using the normal score.
-This step can get criticism from analysts for ...
-
+This step can get criticism from analysts for being unnecessarily forcing the scale to the normal scale.
 This step is usually in the end of the pipeline when the data have been processed into a univariate series. 
 When the data are not distributed normally, a distributed is usually fitted before converting to the normal score via the normal reverse CDF function: $\Phi^{-1}(.)$: $\Phi^{-1}[F_{\eta}(x(\symbf{s}; \symbf{t}))]$, where $\eta \in H \subseteq \mathbb{R}^{d_{\eta}}$ is the distribution parameter and $d_{\eta}$ is the number of parameter of $\eta$. 
 Sometimes, to account for the monthly variation in the data, the fitting is done separately for each month and the noramlising step can be written as $\Phi^{-1}[F_{\eta}^m(x(\symbf{s};t_{j^*}))]$, where $j^*$ is all the indexes that satisfy $j^* \mod 12 = m$ for each $m = 0, 1,\cdots, 11$.
@@ -336,7 +344,7 @@ Here we denote it with $u[x(s_i, t_j)]$ where $u$ is a scalar of interest in the
 
 **Simplification**
 
-In public communication, indexes are often delivered in categorical grades, along with its underlying numerical values. The simplification step prescribes how the continuous index values are converted into the discrete grades. This process can be written with the piece-wise function: 
+In public communication, indexes are often delivered in categorical grades, along with its underlying numerical values. The simplification step, sometimes can also be called discretisation, prescribes how the continuous index values are converted into the discrete grades. This process can be written with the piece-wise function: 
 
 $$
 \begin{cases}
