@@ -254,7 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indexes \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable, sharp corners, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, boxrule=0pt, interior hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -573,7 +573,7 @@ construction.}
 
 \end{figure}
 
-\textbf{Raw data}
+\textbf{Notation}
 
 Let \(\mathbf{x}(\mathbf{s};\mathbf{t})\) denote the raw data with
 spatial, temporal, and multivariate aspect: the spatial dimension
@@ -638,7 +638,7 @@ it is separated into own step to make the scaling operation explicit in
 the pipeline. The key difference between the two steps is that variable
 transformation typically changes the shape of the data while scaling
 only changes the data scale and can usually be written in the form of
-\[[x(s_i;t_j) - \alpha]/\gamma.\] For example, A z-score standardisation
+\[[x(s_i;t_j) - \alpha]/\gamma.\] For example, a z-score standardisation
 can be written in the above form with \(\alpha = \bar{x}(s; t)\) and
 \(\gamma = \sigma(s; t)\), a min-max standardisation uses
 \(\alpha = \min[x(s_i, t_j)]\) and
@@ -676,6 +676,10 @@ written as
 \(x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t})\)
 where \(\lambda_p\) is the loading of the PC1, derived from maximising
 the data variance given the constraint \(\sum_{p=1}^P\lambda_p^2 = 1\).
+
+\textbf{Distribution fit}
+
+\[F_{\eta}(x(\mathbf{s}; \mathbf{t}))\]
 
 \textbf{Normalising}
 

@@ -246,7 +246,7 @@ knitr::include_graphics(here::here("figures/pipeline-steps.png"))
 ```
 
 
-**Raw data**
+**Notation**
 
 <!-- *Discussion: whether we should allow raw data to have different spatial/ temporal resolution: This would require the notation $\mathbf{s}$ and $\mathbf{t}$ to depend on $p$* -->
 
@@ -256,17 +256,7 @@ knitr::include_graphics(here::here("figures/pipeline-steps.png"))
 
 Let $\mathbf{x}(\mathbf{s};\mathbf{t})$ denote the raw data with spatial, temporal, and multivariate aspect: the spatial dimension $\mathbf{s} =  (s_1, s_2, \cdots, s_n)^\prime$ is defined in the 2D space: $\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2$, the temporal dimension $\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime$ is defined in the 1D space: $\mathbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}$. When more than one variable are invovled, the multivariate data can also be written as: $\mathbf{x}(\mathbf{s}; \mathbf{t}) = (x_1(\mathbf{s}; \mathbf{t}), x_2(\mathbf{s}; \mathbf{t}), \cdots, x_P(\mathbf{s}; \mathbf{t}))^\prime$.
 
-
-<!-- The location $s$ can refer to vector points or areas characterised by longitude-latitude coordinates, or raster cells obtained from satellite images. -->
-
-<!-- The time dimension $t$ can be daily, weekly, biweekly (14-16 days), monthly, or even quarterly -->
-
-<!-- Variables -->
-
-<!-- This multidimensional array structure is commonly used in geospatial analysis -->
-
-<!-- Given the variety of data sources at different spatial resolution and temporal granularity, the raw data may first come in multiple pieces.  -->
-<!-- Sometimes, even a considerable amount of work is needed to align the spatial and temporal extent of multivariate data. -->
+  <!-- * all the different choice in each step will affect the final index series ot make decision, i.e. $k$ in temporal aggregation, to assess drought in different scale: short-term, mid-term, long-term. -->
 
 **Temporal processing**
 
@@ -285,9 +275,6 @@ In the pipeline, spatial aggregation can be written as $$g_{\mathcal{\theta}}(x(
 
 <!-- Another common use of spatial processing is to integrate satellite imagaries with ground measures, also merge satellite imagaries with different resolutions.  -->
 
-
- <!-- - $\theta$ can be a constant or a derived from the data -->
-
  <!-- - 3 by 3 aggregation, another purpose: the spatial grid is too fine, aggregate to higher level. -->
 
 \newpage 
@@ -301,7 +288,7 @@ Variable tranformation is a general notion of a functional transformation on the
 
 While scaling can be seen as a specific type of variable tranformation, it is separated into own step to make the scaling operation explicit in the pipeline.
 The key difference between the two steps is that variable transformation typically changes the shape of the data while scaling only changes the data scale and can usually be written in the form of $$[x(s_i;t_j) - \alpha]/\gamma.$$
-For example, A z-score standardisation can be written in the above form with $\alpha = \bar{x}(s; t)$ and $\gamma = \sigma(s; t)$, a min-max standardisation uses $\alpha = \min[x(s_i, t_j)]$ and $\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]$.
+For example, a z-score standardisation can be written in the above form with $\alpha = \bar{x}(s; t)$ and $\gamma = \sigma(s; t)$, a min-max standardisation uses $\alpha = \min[x(s_i, t_j)]$ and $\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]$.
 @fig-scale-var-trans-compare shows a collection of variable pre-processing operations and uses color to differentiate whether the operation is a variable transformation or a scaling step. All the scaling operations in green results in the same shape as the original data.
 
 <!-- Take one or multiple variables to create a new variable,  -->
@@ -382,6 +369,10 @@ While multivariate information can be collected on a concept, they need to be su
 <!-- sometimes called feature extraction in the machine learning community  -->
 <!-- With drought indexes, the extraction of meaningful variables from the original data is usually supported by the water balance model, for example, in SPEI, the step that create $d$ out of precipitation and potential evapotranspiration (PET) has theoretical backup from [see paper.] -->
 
+**Distribution fit**
+
+$$F_{\eta}(x(\mathbf{s}; \mathbf{t}))$$
+
 **Normalising**
 
 The purpose of normalising is for cross-comparison using the normal score.
@@ -391,9 +382,6 @@ When the data are not distributed normally, a distributed is usually fitted befo
 Sometimes, to account for the monthly variation in the data, the fitting is done separately for each month and the noramlising step can be written as $\Phi^{-1}[F_{\eta}^m(x(\mathbf{s};t_{j^*}))]$, where $j^*$ is all the indexes that satisfy $j^* \mod 12 = m$ for each $m = 0, 1,\cdots, 11$.
 
 - In some cases, the distibution and inverse normal can be multivariate, i.e. use copula. 
-
-<!-- specifically for converting from a fitted distribution to normal score via reverse CDF function, non-parametric formula, or empirical approximation, a common step in many index: SPI, SSI, Z score. The purpose of normalising is to convert the index into a standardised series after all the steps for the ease of comparison. -->
-
 
 **Benchmarking**
 
