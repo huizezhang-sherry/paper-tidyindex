@@ -254,7 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indexes \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, boxrule=0pt, interior hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, breakable, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, frame hidden, breakable, boxrule=0pt, sharp corners, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -594,7 +594,7 @@ construction.}
 
 \emph{Discussion: whether we should allow raw data to have different
 spatial/ temporal resolution: This would require the notation
-\(\symbf{s}\) and \(\symbf{t}\) to depend on \(p\)}
+\(\mathbf{s}\) and \(\mathbf{t}\) to depend on \(p\)}
 
 \emph{Initially my thought was to raw data only after aligning the
 resolution: Another section on original data directly downloaded, can
@@ -603,22 +603,22 @@ problem. After processing them and align them together they become the
 ``raw data''}
 
 Once variables are collected, they can have different spatial resolution
-and temporal granularity. Let \(\symbf{x}(\symbf{s};\symbf{t})\) denote
-the raw data that contain the spatial, temporal, and multivariate
+and temporal granularity. Let \(\mathbf{x}(\mathbf{s};\mathbf{t})\)
+denote the raw data that contain the spatial, temporal, and multivariate
 aspect: the spatial component
-\(\symbf{s} = (s_1, s_2, \cdots, s_n)^\prime\) is defined in the 2D
-space: \(\symbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2\), the
-temporal component \(\symbf{t} = (t_1, t_2, \cdots, t_J)^\prime\) is
+\(\mathbf{s} = (s_1, s_2, \cdots, s_n)^\prime\) is defined in the 2D
+space: \(\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2\), the
+temporal component \(\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime\) is
 defined in the 1D space:
-\(\symbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}\). Expanding on the
+\(\mathbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}\). Expanding on the
 multivariate aspect, the data can be written as
-\(\symbf{x}(\symbf{s}; \symbf{t}) = (x_1(\symbf{s}; \symbf{t}), x_2(\symbf{s}; \symbf{t}), \cdots, x_P(\symbf{s}; \symbf{t}))^\prime\)
+\(\mathbf{x}(\mathbf{s}; \mathbf{t}) = (x_1(\mathbf{s}; \mathbf{t}), x_2(\mathbf{s}; \mathbf{t}), \cdots, x_P(\mathbf{s}; \mathbf{t}))^\prime\)
 
 \textbf{Temporal processing}
 
 Temporal processing concerns the operations on the temporal aspect of
 the data. It can be represented by
-\(f_{\mathcal{\psi}}(x(\symbf{s};\symbf{t}))\), where
+\(f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t}))\), where
 \(\psi \in \Psi \subseteq \mathbb{R}^{d_{\psi}}\) is the parameters
 associated with the temporal operation and \(d_{\psi}\) is the number of
 parameter of \(\psi\).
@@ -643,7 +643,7 @@ where \(j^\prime\) is the time index after the aggregation.
 Sometimes, it can be beneficial to borrow information from nearby
 spatial locations or there is the need to combine raster data from
 satellite images with vector ground measures. Spatial aggregation can be
-written as \(g_{\mathcal{\theta}}(x(\symbf{s};\symbf{t}))\), where
+written as \(g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t}))\), where
 \(\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}\) is the spatial
 operation parameters and \(d_{\theta}\) is the number of parameter of
 \(\theta\).
@@ -664,7 +664,7 @@ change the shape of the variable, 2) to stablise the variance.
 mention modelling? -\textgreater{} satisfy model assumption
 
 A variable transformation changes the shape of the variable. It can be
-written as \(h_{\tau}(x(\symbf{s};\symbf{t}))\), where
+written as \(h_{\tau}(x(\mathbf{s};\mathbf{t}))\), where
 \(\tau \in T \subseteq \mathbb{R}^{d_{\tau}}\) is the potential
 parameter in the transformation, if any, and \(d_{\tau}\) is the number
 of parameter of \(\tau\). Variable transformation involve square root
@@ -693,12 +693,12 @@ of the data and analysts need to be cautious on checking its effect.
 When multiple variables are collected in space and time to construct
 indices, they are often summarised with dimension reduction. Dimension
 reduction
-\(x_{p^*}(\symbf{s}; \symbf{t}) \rightarrow x_p(\symbf{s}; \symbf{t})\),
+\(x_{p^*}(\mathbf{s}; \mathbf{t}) \rightarrow x_p(\mathbf{s}; \mathbf{t})\),
 where \(p^* = 1, 2, \cdots, P^*\), \(p = 1, 2, \cdots, P\), and
 \(P^* < P\). The most commonly used dimension reduction
 techniquePprincipal Component Analysis (PCA), also called Empirical
 Orthogonal Function (EOF), can be written as
-\(x_{p^*}(\symbf{s}; \symbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\symbf{s};\symbf{t})\)
+\(x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t})\)
 where \(\lambda_p\) is the loading of the PC1, derived from maximising
 the variance of the data given the constraint
 \(\sum_{p=1}^P\lambda_p^2 = 1\).
@@ -712,12 +712,12 @@ of the pipeline when the data have been processed into a univariate
 series. When the data are not distributed normally, a distributed is
 usually fitted before converting to the normal score via the normal
 reverse CDF function: \(\Phi^{-1}(.)\):
-\(\Phi^{-1}[F_{\eta}(x(\symbf{s}; \symbf{t}))]\), where
+\(\Phi^{-1}[F_{\eta}(x(\mathbf{s}; \mathbf{t}))]\), where
 \(\eta \in H \subseteq \mathbb{R}^{d_{\eta}}\) is the distribution
 parameter and \(d_{\eta}\) is the number of parameter of \(\eta\).
 Sometimes, to account for the monthly variation in the data, the fitting
 is done separately for each month and the noramlising step can be
-written as \(\Phi^{-1}[F_{\eta}^m(x(\symbf{s};t_{j^*}))]\), where
+written as \(\Phi^{-1}[F_{\eta}^m(x(\mathbf{s};t_{j^*}))]\), where
 \(j^*\) is all the indexes that satisfy \(j^* \mod 12 = m\) for each
 \(m = 0, 1,\cdots, 11\).
 
