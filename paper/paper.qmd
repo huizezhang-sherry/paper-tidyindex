@@ -36,8 +36,13 @@ keywords:
   - software design
 bibliography: bibliography.bib  
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, echo = FALSE)
+
+```
 
 # Introduction
 
@@ -228,9 +233,9 @@ knitr::include_graphics(here::here("figures/toy-example-spei.png"))
 @fig-pipeline-steps presents the index construction pipeline from the raw data to the final indexes. 
 The available intermediate steps include temporal processing, spatial aggregation, variable transformation, scaling, dimension reduction, normalising, benchmarking, and simplification. 
 These steps do not have to be arranged in sequence and not all the steps are required to present in every index construction. 
-Spatial aggregation and temporal processing are operations of the data in space and time 
+Spatial aggregation and temporal processing are operations of the data in space and time. 
 Variable transformation, scaling, and dimension reduction concerns operations on the multivariate aspect of the data.
-Normalisation, benchmarking, and simplification can be viewed as the "post-processing" of indexes, which addresses the cross-comparison across different indexes and time, and index communication.
+Normalisation, benchmarking, and simplification can be viewed as the post-processing of indexes, which addresses the cross-comparison across different indexes and time, and index communication.
 
   - divide into pre and post-processing
 
@@ -308,13 +313,74 @@ Variable transformation involve square root transformation, log transformation, 
 
 
 Sometimes, scaling, as a specific type of variable transformation, is merged into dimension reduction as a pre-step, i.e. transform the covariance matrix into correlation matrix before applying the Principal Component Analysis (PCA), but it worth to be separated into its own step to make it explicit.
-Its main different from variable transformation is that it can be written in the form of $$[x(s_i;t_j) - \alpha]/\gamma.$$ 
+Its main different from variable transformation is that scaling does not change the shape of the data and it can usually be written in the form of $$[x(s_i;t_j) - \alpha]/\gamma.$$
+@fig-scale-var-trans-compare shows a range of operations on a simulated variable. 
 For example, In a z-score standardisation, $\alpha = \bar{x}(s; t)$ and $\gamma = \sigma(s; t)$ are used to standardise the data by the its mean and standard deviation across all time and all space units
 Another example is to scale the variable into a unit interval, which can be written as $\alpha = \min[x(s_i, t_j)]$ and $\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]$.
 While being a common technique in data pre-processing, scaling has an impact on the outliers of the data and analysts need to be cautious on checking its effect.
 
 <!-- z-score standardising, min-max standardisation into [0, 1] or [0, 100], percentage change on the baseline -->
 <!-- close to variable transformation step -->
+
+
+```{r fig-scale-var-trans-compare}
+#| fig-cap: "Comparison of scaling and variable transformation."
+#| fig-height: 8
+#| fig-width: 12
+library(tidyverse)
+library(latex2exp)
+set.seed(123)
+x <- rgamma(n = 1000, shape = 1, scale = 2)
+
+
+trans_df <- tibble(origin = x, 
+       `z-score` = (x - mean(x)/ sd(x)), 
+       qudratic = x^2,
+       log = log(x),
+       `square root` = sqrt(x),
+       `cubic root` = x^(1/3),
+       minmax = (x - min(x))/ (max(x) - min(x)),
+       boxcox = (x^0.5 - 1)/0.5,
+       centering = x - mean(x)
+       ) %>% 
+  mutate(id = row_number(),
+         ) %>% 
+  pivot_longer(-id, names_to = "var", values_to = "value") %>% 
+  mutate(category = ifelse(
+    var %in% c("origin", "z-score", "minmax", "centering"),
+    "Scaling", "Var. Trans.")
+    ) 
+
+latex_df <- tibble(
+  var = c("origin", "z-score", "qudratic", "log", "square root", "cubic root",
+          "minmax", "boxcox", "centering"),
+  latex = c(
+           r"($x$)",
+           r"($\frac{x - \bar{x}}{sd(x)}$)",
+           r"($x^2$)",
+           r"($log(x)$)",
+           r"($\sqrt{x}$)",
+           r"($x^{1/3}$)",
+           r"($\frac{x - min(x)}{max(x) - min(x)}$)",
+           r"($\frac{x^{0.5} - 1}{0.5}$)",
+           r"($x - \bar{x}$)"
+         )
+) %>% 
+  left_join(trans_df %>% group_by(var) %>% summarise(max = max(value)))
+
+trans_df %>% 
+  ggplot() +
+  geom_density(aes(x = value, color = category, y = after_stat(scaled))) + 
+  geom_label(data = latex_df, 
+             aes(x = 0.8 * max, y = 0.8, label = TeX(latex, output = "character")), 
+             parse = TRUE) + 
+  facet_wrap(vars(var), scales = "free") + 
+  scale_color_brewer(palette = "Dark2") + 
+  theme_bw() + 
+  theme(legend.position = "bottom")
+```
+
+
 
 **Dimension reduction**
 

@@ -254,7 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indexes \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, frame hidden, breakable, boxrule=0pt, sharp corners, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, frame hidden, boxrule=0pt, enhanced, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -678,15 +678,29 @@ merged into dimension reduction as a pre-step, i.e.~transform the
 covariance matrix into correlation matrix before applying the Principal
 Component Analysis (PCA), but it worth to be separated into its own step
 to make it explicit. Its main different from variable transformation is
-that it can be written in the form of \[[x(s_i;t_j) - \alpha]/\gamma.\]
-For example, In a z-score standardisation, \(\alpha = \bar{x}(s; t)\)
-and \(\gamma = \sigma(s; t)\) are used to standardise the data by the
-its mean and standard deviation across all time and all space units
-Another example is to scale the variable into a unit interval, which can
-be written as \(\alpha = \min[x(s_i, t_j)]\) and
-\(\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]\). While being a common
-technique in data pre-processing, scaling has an impact on the outliers
-of the data and analysts need to be cautious on checking its effect.
+that scaling does not change the shape of the data and it can usually be
+written in the form of \[[x(s_i;t_j) - \alpha]/\gamma.\]
+Figure~\ref{fig-scale-var-trans-compare} shows a range of operations on
+a simulated variable. For example, In a z-score standardisation,
+\(\alpha = \bar{x}(s; t)\) and \(\gamma = \sigma(s; t)\) are used to
+standardise the data by the its mean and standard deviation across all
+time and all space units Another example is to scale the variable into a
+unit interval, which can be written as \(\alpha = \min[x(s_i, t_j)]\)
+and \(\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]\). While being a
+common technique in data pre-processing, scaling has an impact on the
+outliers of the data and analysts need to be cautious on checking its
+effect.
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-scale-var-trans-compare-1.pdf}
+
+}
+
+\caption{\label{fig-scale-var-trans-compare}Comparison of scaling and
+variable transformation.}
+
+\end{figure}
 
 \textbf{Dimension reduction}
 
