@@ -254,7 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indexes \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, enhanced, breakable, borderline west={3pt}{0pt}{shadecolor}, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, breakable, sharp corners, enhanced, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -624,6 +624,8 @@ different levels. In the pipeline, spatial aggregation can be written as
 operation parameters and \(d_{\theta}\) is the number of parameter of
 \(\theta\). {[}GIVEN AN EXAMPLE{]}
 
+collect ground and satellite image -\textgreater{} merge
+
 \newpage
 
 \textbf{Variable transformation }
@@ -686,23 +688,22 @@ written as
 where \(\lambda_p\) is the loading of the PC1, derived from maximising
 the data variance given the constraint \(\sum_{p=1}^P\lambda_p^2 = 1\).
 
+weighting
+
 \textbf{Distribution fit}
 
-\[F_{\eta}(x(\mathbf{s}; \mathbf{t}))\]
+\emph{modell fit? }
 
-\textbf{Normalising}
-
-The purpose of normalising is for cross-comparison using the normal
-score. This step can get criticism from analysts for being unnecessarily
-forcing the scale to the normal scale. This step is usually in the end
-of the pipeline when the data have been processed into a univariate
-series. When the data are not distributed normally, a distributed is
-usually fitted before converting to the normal score via the normal
-reverse CDF function: \(\Phi^{-1}(.)\):
-\[\Phi^{-1}[F_{\eta}(x(\mathbf{s}; \mathbf{t}))],\] where
+\[F_{\eta}(x(\mathbf{s}; \mathbf{t})),\] where
 \(\eta \in H \subseteq \mathbb{R}^{d_{\eta}}\) is the distribution
 parameter and \(d_{\eta}\) is the number of parameter of \(\eta\).
-Sometimes, to account for the monthly variation in the data, the fitting
+
+Considerations need to be given on selecting the best distribution to
+fit, Various discussion on the fitting methods and goodness of fit.
+Potentially, more care about how much difference each combination give
+in terms of the index value.
+
+sometimes, to account for the monthly variation in the data, the fitting
 is done separately for each month and the noramlising step can be
 written as \(\Phi^{-1}[F_{\eta}^m(x(\mathbf{s};t_{j^*}))]\), where
 \(j^*\) is all the indexes that satisfy \(j^* \mod 12 = m\) for each
@@ -714,6 +715,39 @@ written as \(\Phi^{-1}[F_{\eta}^m(x(\mathbf{s};t_{j^*}))]\), where
   In some cases, the distibution and inverse normal can be multivariate,
   i.e.~use copula.
 \end{itemize}
+
+\textbf{Normalising}
+
+This step maps the univariate series into a different scale, typically
+for the ease of comparison. For example, a normal scale, {[}0, 1{]},
+{[}0, 100{]} may be favored to report certain indexes. In drought
+indexes, i.e.~SPI or SPEI, the quantiles from the fitted distribution is
+converted into the normal scale via the normal reverse CDF function:
+\(\Phi^{-1}(.)\).
+
+Normalising is usually used in the end of the pipeline and its main
+difference from the scaling step is that here the change of scale also
+changes the distribution of the variable. While being commonly used,
+this step can get criticism from analysts for forcing the data into the
+decided scale, which can be either unnecessary or inaccurately
+exaggerate or downplay the outliers. Also, the use of normal scale needs
+to be interpreted with caution. Figure~\ref{fig-normalising} illustrates
+the normal density not being directly proportional to its probability of
+occurrence. This is concerning, especially at the extreme values, where
+a normal density of -5 and -4 has magnitudes of difference into its
+probability of occurrence (1 in 3,000,000 and 1 in 31,000,
+respectively).
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-normalising-1.pdf}
+
+}
+
+\caption{\label{fig-normalising}scatterplot of quantile vs.~its density
+values.}
+
+\end{figure}
 
 \textbf{Benchmarking}
 

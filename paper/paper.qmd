@@ -272,6 +272,8 @@ Sometimes, information from neighbouring spatial locations can also be borrowed 
 This involves interpolating data from observed locations to the unobserved and aggregating data into different levels.
 In the pipeline, spatial aggregation can be written as $$g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})),$$ where $\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}$ is the spatial operation parameters and $d_{\theta}$ is the number of parameter of $\theta$. [GIVEN AN EXAMPLE]
 
+
+collect ground and satellite image -> merge
 <!-- $x(s_i^\prime;t_j) = \sum_{i \in \Omega}x(s_i; t_j)$ -->
 
 
@@ -368,22 +370,56 @@ trans_df %>%
 
 While multivariate information can be collected on a concept, they need to be summarised into a single number for the final index. Dimension reduction step $$x_{p^*}(\mathbf{s}; \mathbf{t}) \rightarrow x_p(\mathbf{s}; \mathbf{t}),$$ where $p^* = 1, 2, \cdots, P^*$ and $p = 1, 2, \cdots, P$, reduces the variable dimension from $P$ to $P^*$. The most commonly used dimension reduction technique Principal Component Analysis (PCA), also called Empirical Orthogonal Function (EOF) in earth science, can be written as $x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t})$ where $\lambda_p$ is the loading of the PC1, derived from maximising the data variance given the constraint $\sum_{p=1}^P\lambda_p^2 = 1$.
 
+weighting
+
 <!-- sometimes called feature extraction in the machine learning community  -->
 <!-- With drought indexes, the extraction of meaningful variables from the original data is usually supported by the water balance model, for example, in SPEI, the step that create $d$ out of precipitation and potential evapotranspiration (PET) has theoretical backup from [see paper.] -->
 
 **Distribution fit**
 
-$$F_{\eta}(x(\mathbf{s}; \mathbf{t}))$$
+*modell fit? *
+
+
+
+$$F_{\eta}(x(\mathbf{s}; \mathbf{t})),$$ where $\eta \in H \subseteq \mathbb{R}^{d_{\eta}}$ is the distribution parameter and $d_{\eta}$ is the number of parameter of $\eta$. 
+
+Considerations need to be given on selecting the best distribution to fit, 
+Various discussion on the fitting methods and goodness of fit. 
+Potentially, more care about how much difference each combination give in terms of the index value. 
+
+sometimes, to account for the monthly variation in the data, the fitting is done separately for each month and the noramlising step can be written as $\Phi^{-1}[F_{\eta}^m(x(\mathbf{s};t_{j^*}))]$, where $j^*$ is all the indexes that satisfy $j^* \mod 12 = m$ for each $m = 0, 1,\cdots, 11$.
+
+- In some cases, the distibution and inverse normal can be multivariate, i.e. use copula. 
 
 **Normalising**
 
-The purpose of normalising is for cross-comparison using the normal score.
-This step can get criticism from analysts for being unnecessarily forcing the scale to the normal scale.
-This step is usually in the end of the pipeline when the data have been processed into a univariate series. 
-When the data are not distributed normally, a distributed is usually fitted before converting to the normal score via the normal reverse CDF function: $\Phi^{-1}(.)$: $$\Phi^{-1}[F_{\eta}(x(\mathbf{s}; \mathbf{t}))],$$ where $\eta \in H \subseteq \mathbb{R}^{d_{\eta}}$ is the distribution parameter and $d_{\eta}$ is the number of parameter of $\eta$. 
-Sometimes, to account for the monthly variation in the data, the fitting is done separately for each month and the noramlising step can be written as $\Phi^{-1}[F_{\eta}^m(x(\mathbf{s};t_{j^*}))]$, where $j^*$ is all the indexes that satisfy $j^* \mod 12 = m$ for each $m = 0, 1,\cdots, 11$.
+This step maps the univariate series into a different scale, typically for the ease of comparison. For example, a normal scale, [0, 1], [0, 100] may be favored to report certain indexes. In drought indexes, i.e. SPI or SPEI, the quantiles from the fitted distribution is converted into the normal scale via the normal reverse CDF function: $\Phi^{-1}(.)$. 
 
-- In some cases, the distibution and inverse normal can be multivariate, i.e. use copula. 
+Normalising is usually used in the end of the pipeline and its main difference from the scaling step is that here the change of scale also changes the distribution of the variable. 
+While being commonly used, this step can get criticism from analysts for forcing the data into the decided scale, which can be either unnecessary or inaccurately exaggerate or downplay the outliers. Also, the use of normal scale needs to be interpreted with caution. @fig-normalising illustrates the normal density not being directly proportional to its probability of occurrence. This is concerning, especially at the extreme values, where a normal density of -5 and -4 has magnitudes of difference into its probability of occurrence (1 in 3,000,000 and 1 in 31,000, respectively).
+
+
+```{r fig-normalising}
+#| fig-cap: "scatterplot of quantile vs. its density values."
+library(tidyverse)
+all <- tibble(x = seq(-5, 5, 0.01), y = pnorm(x)) 
+dt <- tibble(x = c(-5, -4), y = pnorm(x)) 
+label <- tibble(x = c(-5, -4), y = pnorm(x), 
+                label = c("a chance \nof 1 in \n 3,488,556", "a chance \nof 1 in \n 31,574"))
+
+dt %>% 
+  ggplot() + 
+  geom_point(aes(x= x, y =y)) + 
+  geom_line(data = all, aes(x = x, y =y)) + 
+  ggrepel::geom_label_repel(
+    data = label, aes(x = x, y = y, label =label), 
+    nudge_y = 0.2, arrow = arrow(length = unit(0.08, "inches")), min.segment.length = 0) + 
+  scale_x_continuous(breaks = seq(-5, 5, 1)) + 
+  xlab("Density") + 
+  ylab("Quantile") + 
+  theme_bw() + 
+  theme(panel.grid.minor = element_blank())
+```
 
 **Benchmarking**
 
