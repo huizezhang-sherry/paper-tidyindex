@@ -254,7 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indexes \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, boxrule=0pt, interior hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, enhanced, breakable, borderline west={3pt}{0pt}{shadecolor}, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -548,19 +548,18 @@ indies}\label{pipeline-steps-for-constructing-indies}}
 
 An overview of the pipeline is given in Figure~\ref{fig-pipeline-steps}
 to illustrate the construction from raw data to the final indexes. The
-available intermediate steps include temporal processing, spatial
-aggregation, variable transformation, scaling, dimension reduction,
-normalising, benchmarking, and simplification. These steps are not
-required to be arranged in a fixed order and not all the steps have to
-appear when constructing each index. The pipeline includes modules for
-operations in the spatial, temporal, and multivariate aspect of the
-data, as well as modules for comparing and communicating indexes
-(benchmarking and simplification). While the pipeline starts with the
-raw data, steps prior to this, i.e.~define a useful concept to construct
-the index, collect high quality data relevant for measuring the concept,
-are also cricial to the sucess of an index. The framework proposed in
-this paper assumes the objective of an index has been defined and
-relevant variables have been collected and quality controlled.
+pipeline includes modules for operations in the spatial, temporal, and
+multivariate aspect of the data: temporal processing, spatial
+aggregation, variable transformation, scaling, dimension reduction, and
+normalising, as well as modules for comparing and communicating indexes
+(benchmarking and simplification). These steps are not required to be
+arranged in a fixed order and not all the steps have to appear when
+constructing each index. While the pipeline starts with the raw data,
+steps prior to this, i.e.~define a useful concept to construct the
+index, collect high quality data relevant for measuring the concept, are
+also cricial to the sucess of an index. The framework proposed in this
+paper assumes the objective of an index has been defined and relevant
+variables have been collected and quality controlled.
 
 \begin{figure}
 
@@ -582,27 +581,37 @@ space: \(\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2\), the
 temporal dimension \(\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime\) is
 defined in the 1D space:
 \(\mathbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}\). When more than
-one variable are invovled, the multivariate data can also be written as:
+one variable are involved, the multivariate data can also be written as:
 \(\mathbf{x}(\mathbf{s}; \mathbf{t}) = (x_1(\mathbf{s}; \mathbf{t}), x_2(\mathbf{s}; \mathbf{t}), \cdots, x_P(\mathbf{s}; \mathbf{t}))^\prime\).
 
 \textbf{Temporal processing}
 
-While many variables are collected separately at each time period, the
-underlying phenomenon, characterised by the index, is continuous. For
-example, precipitation can be measured daily or monthly, a
-meteorological drought is characterised by a prelonged lack of
-precipitation. Temporal proocessing is a step in the pipeline that
-includes operations in the temporal dimension and it can be generally
-represented by \[f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),\] where
+The construction of an index sometimes needs to consider information
+from neighbouring time periods. Temporal processing is a general
+operator on the time dimension of the data in the form of
+\[f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),\] where
 \(\psi \in \Psi \subseteq \mathbb{R}^{d_{\psi}}\) is the parameters
 associated with the temporal operation and \(d_{\psi}\) is the number of
-parameter of \(\psi\). The purpose of temporal aggregation can be to
-aggregate variable across time or to borrow information from nearby time
-periods to smooth or adjust the current value. The drought index SPI is
-constructed from the aggregated precipitation with a time scale
-parameter \(\psi = k\). The aggregation step in SPI can be written as
-\(x(s_i;t_{j^\prime}) = \sum_{j = j^\prime-k+1}^{j^\prime}x(s_i; t_j)\)
-where \(j^\prime\) is the time dimension after the aggregation.
+parameter of \(\psi\). An typical example of temporal processing is
+aggregation in the drought index SPI to measure the lack of
+precipitation for meteorological drought. In SPI, monthly precipitation
+is aggregated by a time scale parameter \(k\):
+\(x(s_i;t_{j^\prime}) = \sum_{j = j^\prime-k+1}^{j^\prime}x(s_i; t_j),\)
+where \(j^\prime\) is the new time index after the aggregation. In this
+notation, each spatial location is seaprately aggregated and
+precipitation is ummed from \(k\) month back, \(j^\prime - k + 1\), to
+the current, \(j^\prime\) period to create the aggregated series,
+indexed by \(j^\prime\).
+
+The choice of time scales parameter \(k\) can result in variation in the
+calculated index values: a small \(k\) of 3 or 6 month produces the
+index more sensitive to individual months, while a large \(k\) of 24 or
+36, an equivalent to a 2- or 3-year aggregation, gives dryness
+information relative to the long term condition. As will be shown in
+section {[}SECTION EXAMPLE{]}, this variation may even lead to
+conflicting conclusions on the dry/wet condition of the area,
+highlighting the importance to account for index uncertainty when
+interpreting index values for decision making.
 
 \textbf{Spatial aggregation}
 
