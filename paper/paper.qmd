@@ -266,7 +266,7 @@ In SPI, monthly precipitation is aggregated by a time scale parameter $k$: $x(s_
 
 The choice of time scales parameter $k$ can result in variation in the calculated index values: a small $k$ of 3 or 6 month produces the index more sensitive to individual months, while a large $k$ of 24 or 36, an equivalent to a 2- or 3-year aggregation, gives dryness information relative to the long term condition. As will be shown in section [SECTION EXAMPLE], this variation may even lead to conflicting conclusions on the dry/wet condition of the area, highlighting the importance to account for index uncertainty when interpreting index values for decision making.
 
-**Spatial aggregation**
+**Spatial aggregation** [TODO]
 
 Sometimes, information from neighbouring spatial locations can also be borrowed when constructing indexes. 
 This involves interpolating data from observed locations to the unobserved and aggregating data into different levels.
@@ -283,15 +283,15 @@ collect ground and satellite image -> merge
 
 \newpage 
 
-**Variable transformation **
+**Variable transformation ** [TODO]
 
-Variable transformation and scaling, in the next section, are both variable pre-processing steps to prepare the data with desire statistical property to work with. This can be a more stablised variance, a normal distribution that satisfies modelling assumptions, or a data range that required by the algorithms.
+Variable transformation, and scaling in the next section, are both pre-processing steps that prepare the data with desire statistical property to work with. Some desirable property to work with can be a stable variance, a normal distribution that satisfies modelling assumptions, or a data range that required by the algorithms.
 Variable tranformation is a general notion of a functional transformation on the variable: $$h_{\tau}(x(\mathbf{s};\mathbf{t})),$$ where $\tau \in T \subseteq \mathbb{R}^{d_{\tau}}$ is the parameter in the transformation, if any, and $d_{\tau}$ is the number of parameter of $\tau$. Typical examples of variable transformation are log, quadratic, square root, and box-cox transformation.
 
-**Scaling**
+**Scaling** [TODO]
 
-While scaling can be seen as a specific type of variable tranformation, it is separated into own step to make the scaling operation explicit in the pipeline.
-The key difference between the two steps is that variable transformation typically changes the shape of the data while scaling only changes the data scale and can usually be written in the form of $$[x(s_i;t_j) - \alpha]/\gamma.$$
+While scaling can be seen as a specific type of variable tranformation, it is separated into own step to make it explicit in the pipeline.
+The key difference between the two steps is that variable transformation typically changes the shape of the data, while scaling only changes the data scale and can usually be written in the form of $$[x(s_i;t_j) - \alpha]/\gamma.$$
 For example, a z-score standardisation can be written in the above form with $\alpha = \bar{x}(s; t)$ and $\gamma = \sigma(s; t)$, a min-max standardisation uses $\alpha = \min[x(s_i, t_j)]$ and $\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]$.
 @fig-scale-var-trans-compare shows a collection of variable pre-processing operations and uses color to differentiate whether the operation is a variable transformation or a scaling step. All the scaling operations in green results in the same shape as the original data.
 
@@ -366,7 +366,7 @@ trans_df %>%
 
 \newpage
 
-**Dimension reduction**
+**Dimension reduction** [TODO]
 
 While multivariate information can be collected on a concept, they need to be summarised into a single number for the final index. Dimension reduction step $$x_{p^*}(\mathbf{s}; \mathbf{t}) \rightarrow x_p(\mathbf{s}; \mathbf{t}),$$ where $p^* = 1, 2, \cdots, P^*$ and $p = 1, 2, \cdots, P$, reduces the variable dimension from $P$ to $P^*$. The most commonly used dimension reduction technique Principal Component Analysis (PCA), also called Empirical Orthogonal Function (EOF) in earth science, can be written as $x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t})$ where $\lambda_p$ is the loading of the PC1, derived from maximising the data variance given the constraint $\sum_{p=1}^P\lambda_p^2 = 1$.
 
@@ -419,16 +419,15 @@ dt %>%
   theme(panel.grid.minor = element_blank())
 ```
 
-**Benchmarking**
+**Benchmarking** [TODO]
 
 Benchmarking sets a constant value to allow the constructed index to be compared across time.
 Here we denote it with $u[x(s_i, t_j)]$ where $u$ is a scalar of interest in the index constructed, could be a constant or a function of the data, i.e. mean.
 
-
-
 **Simplification**
 
-In public communication, indexes are often delivered in categorical grades, along with its underlying numerical values. The simplification step, sometimes can also be called discretisation, prescribes how the continuous index values are converted into the discrete grades. This process can be written with the piece-wise function: 
+In public communication, the index values are usually accompanied by a categorical grade. The categorised grades is an ordered set of descriptive words or colors to communicate the severity or guide the comprehension of the indexes. 
+The mapping from continuous index values to the discrete grades is called simplification in the pipeline and it can be written as a piece-wise function: 
 
 $$
 \begin{cases}
@@ -440,18 +439,7 @@ C_z & c_z \leq x(s_i; t_j)
 \end{cases}
 $$
 
-where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are the threshold value in each category. In SPI, drought are sorted into four categories: mild drought: $[-0.99, 0]$; moderate drought: $[-1.49, -1]$; severe drought: $[-1.99, -1.5]$, and extreme drought: $[-\infty, -2]$. In this case, $C_0, C_1, C_2, C_3$ are the drought categories: mild, moderate, severe, and extreme drought ($z = 3$) and $c_0 =0, c_1 = -1, c_2 = -1.5, c_3 = -2$ are the cutoff value for each class.
-
-
-Discretise the continuous index into a few labelled categories. For communicating the severity of natural hazard to general public.
-
-uniform workflow to work with index construction.
-
--   illustration
--   math notation
--   benefit of the pipeline approach
-    -   index diagnostic
-    -   uncertainty
+where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are the thresholds for each category. In SPI, drought are sorted into four categories: mild drought: $[-0.99, 0]$; moderate drought: $[-1.49, -1]$; severe drought: $[-1.99, -1.5]$, and extreme drought: $[-\infty, -2]$. In this case, $C_0, C_1, C_2, C_3$ are the drought categories: mild, moderate, severe, and extreme drought ($z = 3$) and $c_0 =0, c_1 = -1, c_2 = -1.5, c_3 = -2$ are the cutoff value for each class.
 
 # Incorporating new buliding blocks into the pipeline {#sec-incorporating-new-buliding-blocks-into-the-pipeline}
 
