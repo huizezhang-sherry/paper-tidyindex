@@ -254,7 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indexes \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, enhanced, frame hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, breakable, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, sharp corners, breakable, interior hidden, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -615,18 +615,21 @@ interpreting index values for decision making.
 
 \textbf{Spatial aggregation} {[}TODO{]}
 
-Sometimes, information from neighbouring spatial locations can also be
-borrowed when constructing indexes. This involves interpolating data
-from observed locations to the unobserved and aggregating data into
-different levels. In the pipeline, spatial aggregation can be written as
+Sometimes
+
+Information from neighbouring spatial locations can also be borrowed
+when constructing indexes. This involves interpolating data from
+observed locations to the unobserved and aggregating data into different
+levels. In the pipeline, spatial aggregation can be written as
 \[g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})),\] where
 \(\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}\) is the spatial
 operation parameters and \(d_{\theta}\) is the number of parameter of
 \(\theta\). {[}GIVEN AN EXAMPLE{]}
 
-collect ground and satellite image -\textgreater{} merge
+While many indexes are calculated independently on spatial locations
 
-\newpage
+satellite images with different resolutions matching ground and
+satellite images data
 
 \textbf{Variable transformation } {[}TODO{]}
 
@@ -671,28 +674,37 @@ variable transformation.}
 
 \end{figure}
 
-\newpage
+\textbf{Dimension reduction}
 
-\textbf{Dimension reduction} {[}TODO{]}
-
-While multivariate information can be collected on a concept, they need
-to be summarised into a single number for the final index. Dimension
-reduction step
+When constructing indexes from multivariate information, dimension
+reduction methods combine those information into a univariate series. In
+the pipeline, dimension reduction includes methods that take
+multivariate inputs and output the data in a lower dimension (often
+univariate):
 \[x_{p^*}(\mathbf{s}; \mathbf{t}) \rightarrow x_p(\mathbf{s}; \mathbf{t}),\]
-where \(p^* = 1, 2, \cdots, P^*\) and \(p = 1, 2, \cdots, P\), reduces
-the variable dimension from \(P\) to \(P^*\). The most commonly used
-dimension reduction technique Principal Component Analysis (PCA), also
-called Empirical Orthogonal Function (EOF) in earth science, can be
-written as
+where \(p^* = 1, 2, \cdots, P^*\) and \(p = 1, 2, \cdots, P\) reduce the
+variable dimension from \(P\) to \(P^*\). The most commonly used
+dimension reduction technique is Principal Component Analysis (PCA),
+also called Empirical Orthogonal Function (EOF) in earth science. It can
+be written as
 \(x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t})\)
 where \(\lambda_p\) is the loading of the PC1, derived from maximising
 the data variance given the constraint \(\sum_{p=1}^P\lambda_p^2 = 1\).
 
-weighting
+The PCA is a special case of weighting, where individual variables are
+summed up in a linear combination with potential restrictions imposed on
+the weight coefficients. These coefficients may be simple mathematical
+constructions that give equal weight to each variable or can be derived
+with specialised knowledge by experts in the field. While suggested
+weights can indicate norms adored by practitioners, analysts should be
+given the flexibility to experiment with different combinations when
+constructing indexes. This could help understand index behavior from its
+sensitivity to the variables and suggest alternative weights that better
+suit specific tasks.
 
 \textbf{Distribution fit}
 
-\emph{modell fit? }
+\emph{model fit? }
 
 Distribution fit can be seen as model fitting in its simplest term. It
 can be represented by
@@ -717,19 +729,18 @@ for the ease of comparison across regions. For example, a normal scale,
 {[}0, 1{]}, or {[}0, 100{]} may be favored for reporting certain
 indexes. In drought indexes, i.e.~SPI or SPEI, the quantiles from the
 fitted distribution is converted into the normal scale via the normal
-reverse CDF function: \(\Phi^{-1}(.)\).
-
-Normalising is usually used in the end of the pipeline and its main
-difference from the scaling step is that here the change of scale also
-changes the distribution of the variable. While being commonly used,
-this step can get criticism from analysts for forcing the data into the
-decided scale, which can be either unnecessary or inaccurately
-exaggerate or downplay the outliers. Also, the use of normal scale needs
-to be interpreted with caution. Figure~\ref{fig-normalising} illustrates
-the normal density not being directly proportional to its probability of
-occurrence. This is concerning, especially at the extreme values, since
-a small difference in the tail density can have magnitudes of difference
-in its probability of occurrence.
+reverse CDF function: \(\Phi^{-1}(.)\). Normalising is usually used in
+the end of the pipeline and its main difference from the scaling step is
+that here the change of scale also changes the distribution of the
+variable. While being commonly used, this step can get criticism from
+analysts for forcing the data into the decided scale, which can be
+either unnecessary or inaccurately exaggerate or downplay the outliers.
+Also, the use of normal scale needs to be interpreted with caution.
+Figure~\ref{fig-normalising} illustrates the normal density not being
+directly proportional to its probability of occurrence. This is
+concerning, especially at the extreme values, since a small difference
+in the tail density can have magnitudes of difference in its probability
+of occurrence.
 
 \begin{figure}
 

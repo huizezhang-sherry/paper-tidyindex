@@ -268,20 +268,24 @@ The choice of time scales parameter $k$ can result in variation in the calculate
 
 **Spatial aggregation** [TODO]
 
-Sometimes, information from neighbouring spatial locations can also be borrowed when constructing indexes. 
+Sometimes 
+
+Information from neighbouring spatial locations can also be borrowed when constructing indexes. 
 This involves interpolating data from observed locations to the unobserved and aggregating data into different levels.
 In the pipeline, spatial aggregation can be written as $$g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})),$$ where $\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}$ is the spatial operation parameters and $d_{\theta}$ is the number of parameter of $\theta$. [GIVEN AN EXAMPLE]
 
+While many indexes are calculated independently on spatial locations
 
-collect ground and satellite image -> merge
+satellite images with different resolutions
+matching ground and satellite images data 
+
+
 <!-- $x(s_i^\prime;t_j) = \sum_{i \in \Omega}x(s_i; t_j)$ -->
 
 
 <!-- Another common use of spatial processing is to integrate satellite imagaries with ground measures, also merge satellite imagaries with different resolutions.  -->
 
  <!-- - 3 by 3 aggregation, another purpose: the spatial grid is too fine, aggregate to higher level. -->
-
-\newpage 
 
 **Variable transformation ** [TODO]
 
@@ -364,23 +368,23 @@ trans_df %>%
   theme(legend.position = "bottom")
 ```
 
-\newpage
+**Dimension reduction** 
 
-**Dimension reduction** [TODO]
+When constructing indexes from multivariate information, dimension reduction methods combine those information into a univariate series. In the pipeline, dimension reduction includes methods that take multivariate inputs and output the data in a lower dimension (often univariate): $$x_{p^*}(\mathbf{s}; \mathbf{t}) \rightarrow x_p(\mathbf{s}; \mathbf{t}),$$ where $p^* = 1, 2, \cdots, P^*$ and $p = 1, 2, \cdots, P$ reduce the variable dimension from $P$ to $P^*$. 
+The most commonly used dimension reduction technique is Principal Component Analysis (PCA), also called Empirical Orthogonal Function (EOF) in earth science. It can be written as $x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t})$ where $\lambda_p$ is the loading of the PC1, derived from maximising the data variance given the constraint $\sum_{p=1}^P\lambda_p^2 = 1$. 
 
-While multivariate information can be collected on a concept, they need to be summarised into a single number for the final index. Dimension reduction step $$x_{p^*}(\mathbf{s}; \mathbf{t}) \rightarrow x_p(\mathbf{s}; \mathbf{t}),$$ where $p^* = 1, 2, \cdots, P^*$ and $p = 1, 2, \cdots, P$, reduces the variable dimension from $P$ to $P^*$. The most commonly used dimension reduction technique Principal Component Analysis (PCA), also called Empirical Orthogonal Function (EOF) in earth science, can be written as $x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t})$ where $\lambda_p$ is the loading of the PC1, derived from maximising the data variance given the constraint $\sum_{p=1}^P\lambda_p^2 = 1$.
-
-weighting
+The PCA is a special case of weighting, where individual variables are summed up in a linear combination with potential restrictions imposed on the weight coefficients. These coefficients may be simple mathematical constructions that give equal weight to each variable or can be derived with specialised knowledge by experts in the field. 
+While suggested weights can indicate norms adored by practitioners, analysts should be given the flexibility to experiment with different combinations when constructing indexes. 
+This could help understand index behavior from its sensitivity to the variables and suggest alternative weights that better suit specific tasks.
 
 <!-- sometimes called feature extraction in the machine learning community  -->
 <!-- With drought indexes, the extraction of meaningful variables from the original data is usually supported by the water balance model, for example, in SPEI, the step that create $d$ out of precipitation and potential evapotranspiration (PET) has theoretical backup from [see paper.] -->
 
 **Distribution fit**
 
-*modell fit? *
+*model fit? *
 
 Distribution fit can be seen as model fitting in its simplest term. It can be represented by 
-
 <!-- With a probability model imposed,  -->
 
 $$F_{\eta}(x(\mathbf{s}; \mathbf{t})),$$ where $\eta \in H \subseteq \mathbb{R}^{d_{\eta}}$ is the distribution parameter and $d_{\eta}$ is the number of parameter of $\eta$. A distribution fit typically aims at finding the distribution that best fit the data. 
@@ -389,9 +393,7 @@ While it is useful to find the ultimate best distribution to fits the data, from
 
 **Normalising**
 
-This step maps the univariate series into a different scale, typically for the ease of comparison across regions. For example, a normal scale, [0, 1], or [0, 100] may be favored for reporting certain indexes. In drought indexes, i.e. SPI or SPEI, the quantiles from the fitted distribution is converted into the normal scale via the normal reverse CDF function: $\Phi^{-1}(.)$. 
-
-Normalising is usually used in the end of the pipeline and its main difference from the scaling step is that here the change of scale also changes the distribution of the variable. 
+This step maps the univariate series into a different scale, typically for the ease of comparison across regions. For example, a normal scale, [0, 1], or [0, 100] may be favored for reporting certain indexes. In drought indexes, i.e. SPI or SPEI, the quantiles from the fitted distribution is converted into the normal scale via the normal reverse CDF function: $\Phi^{-1}(.)$. Normalising is usually used in the end of the pipeline and its main difference from the scaling step is that here the change of scale also changes the distribution of the variable. 
 While being commonly used, this step can get criticism from analysts for forcing the data into the decided scale, which can be either unnecessary or inaccurately exaggerate or downplay the outliers. Also, the use of normal scale needs to be interpreted with caution. @fig-normalising illustrates the normal density not being directly proportional to its probability of occurrence.
 This is concerning, especially at the extreme values, since a small difference in the tail density can have magnitudes of difference in its probability of occurrence.
 
