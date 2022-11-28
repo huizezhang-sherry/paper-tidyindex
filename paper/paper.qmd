@@ -308,17 +308,17 @@ p2 <- dt2 %>%
 (p1 | p2) & theme(legend.position = "none")
 ```
 
-**Variable transformation ** [TODO]
+**Variable transformation ** 
 
-Variable transformation, and scaling in the next section, are both pre-processing steps that prepare the data with desire statistical property to work with. Some desirable property to work with can be a stable variance, a normal distribution that satisfies modelling assumptions, or a data range that required by the algorithms.
-Variable tranformation is a general notion of a functional transformation on the variable: $$h_{\tau}(x(\mathbf{s};\mathbf{t})),$$ where $\tau \in T \subseteq \mathbb{R}^{d_{\tau}}$ is the parameter in the transformation, if any, and $d_{\tau}$ is the number of parameter of $\tau$. Typical examples of variable transformation are log, quadratic, square root, and box-cox transformation.
+Variable transformation, and scaling in the next section, are both pre-processing steps to create variables with good statistical properties. These properties include a stable variance, normal distribution, or a certain scale required by some algorithm further down the pipeline.
+Variable tranformation is a general notion of a functional transformation on the variable: $$h_{\tau}(x(\mathbf{s};\mathbf{t})),$$ where $\tau \in T \subseteq \mathbb{R}^{d_{\tau}}$ is the parameter in the transformation, if any, and $d_{\tau}$ is the number of parameter of $\tau$. Transformation is needed for data that are highly skewed and some common transformations includes log, quadratic, and square root transformation.
 
-**Scaling** [TODO]
+**Scaling** 
 
-While scaling can be seen as a specific type of variable tranformation, it is separated into own step to make it explicit in the pipeline.
+While scaling can be seen as a specific type of variable tranformation, it is separated into own step to make the step explicit in the pipeline.
 The key difference between the two steps is that variable transformation typically changes the shape of the data, while scaling only changes the data scale and can usually be written in the form of $$[x(s_i;t_j) - \alpha]/\gamma.$$
 For example, a z-score standardisation can be written in the above form with $\alpha = \bar{x}(s; t)$ and $\gamma = \sigma(s; t)$, a min-max standardisation uses $\alpha = \min[x(s_i, t_j)]$ and $\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]$.
-@fig-scale-var-trans-compare shows a collection of variable pre-processing operations and uses color to differentiate whether the operation is a variable transformation or a scaling step. All the scaling operations in green results in the same shape as the original data.
+@fig-scale-var-trans-compare shows a collection of variable pre-processing operations and uses color to differentiate whether the operation is a variable transformation or a scaling step. All the scaling operations in green results in the same distribution as the original data.
 
 <!-- Take one or multiple variables to create a new variable,  -->
 <!-- Restrict it to single variable, square root, log etc could be linearly, also non-linear -->
@@ -333,7 +333,7 @@ For example, a z-score standardisation can be written in the above form with $\a
 
 
 ```{r fig-scale-var-trans-compare}
-#| fig-cap: "Comparison of scaling and variable transformation."
+#| fig-cap: "Comparison of operations in scaling (green) and variable transformation (orange) steps in free scale. Variables after the scaling operations have the same distribution as the origin, while the distribution changes after variable transformation. "
 #| fig-height: 8
 #| fig-width: 12
 set.seed(123)
@@ -441,7 +441,7 @@ dt %>%
 **Benchmarking** [TODO]
 
 Benchmarking sets a constant value to allow the constructed index to be compared across time.
-Here we denote it with $u[x(s_i, t_j)]$ where $u$ is a scalar of interest in the index constructed, could be a constant or a function of the data, i.e. mean.
+Here we denote it with $u[x(s_i, t_j)]$ where $u$ is a scalar of interest in the index constructed. A benchmark value could be a constant or a function of the data, i.e. mean.
 
 **Simplification**
 
