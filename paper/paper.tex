@@ -254,7 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indexes \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, breakable, sharp corners, enhanced, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, frame hidden, interior hidden, sharp corners, boxrule=0pt, enhanced, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -694,36 +694,30 @@ weighting
 
 \emph{modell fit? }
 
+Distribution fit can be seen as model fitting in its simplest term. It
+can be represented by
+
 \[F_{\eta}(x(\mathbf{s}; \mathbf{t})),\] where
 \(\eta \in H \subseteq \mathbb{R}^{d_{\eta}}\) is the distribution
-parameter and \(d_{\eta}\) is the number of parameter of \(\eta\).
-
-Considerations need to be given on selecting the best distribution to
-fit, Various discussion on the fitting methods and goodness of fit.
-Potentially, more care about how much difference each combination give
-in terms of the index value.
-
-sometimes, to account for the monthly variation in the data, the fitting
-is done separately for each month and the noramlising step can be
-written as \(\Phi^{-1}[F_{\eta}^m(x(\mathbf{s};t_{j^*}))]\), where
-\(j^*\) is all the indexes that satisfy \(j^* \mod 12 = m\) for each
-\(m = 0, 1,\cdots, 11\).
-
-\begin{itemize}
-\tightlist
-\item
-  In some cases, the distibution and inverse normal can be multivariate,
-  i.e.~use copula.
-\end{itemize}
+parameter and \(d_{\eta}\) is the number of parameter of \(\eta\). A
+distribution fit typically aims at finding the distribution that best
+fit the data. Analysts may start from a pool of candidate distributions
+with a chosen fitting method and goodness of fit measure. While it is
+useful to find the ultimate best distribution to fits the data, from a
+probabilistic perspective, the fitting procedure itself has uncertainty
+associated with the data fed and parameter chosen. A reasonable
+alternative is to understand how much the index values can vary given
+different distributions, fitting methods, and goodness of fit tests, and
+whether these variations are negligible in a given application.
 
 \textbf{Normalising}
 
 This step maps the univariate series into a different scale, typically
-for the ease of comparison. For example, a normal scale, {[}0, 1{]},
-{[}0, 100{]} may be favored to report certain indexes. In drought
-indexes, i.e.~SPI or SPEI, the quantiles from the fitted distribution is
-converted into the normal scale via the normal reverse CDF function:
-\(\Phi^{-1}(.)\).
+for the ease of comparison across regions. For example, a normal scale,
+{[}0, 1{]}, or {[}0, 100{]} may be favored for reporting certain
+indexes. In drought indexes, i.e.~SPI or SPEI, the quantiles from the
+fitted distribution is converted into the normal scale via the normal
+reverse CDF function: \(\Phi^{-1}(.)\).
 
 Normalising is usually used in the end of the pipeline and its main
 difference from the scaling step is that here the change of scale also
@@ -733,10 +727,9 @@ decided scale, which can be either unnecessary or inaccurately
 exaggerate or downplay the outliers. Also, the use of normal scale needs
 to be interpreted with caution. Figure~\ref{fig-normalising} illustrates
 the normal density not being directly proportional to its probability of
-occurrence. This is concerning, especially at the extreme values, where
-a normal density of -5 and -4 has magnitudes of difference into its
-probability of occurrence (1 in 3,000,000 and 1 in 31,000,
-respectively).
+occurrence. This is concerning, especially at the extreme values, since
+a small difference in the tail density can have magnitudes of difference
+in its probability of occurrence.
 
 \begin{figure}
 
@@ -744,8 +737,14 @@ respectively).
 
 }
 
-\caption{\label{fig-normalising}scatterplot of quantile vs.~its density
-values.}
+\caption{\label{fig-normalising}Scatterplot of normal quantiles against
+their density values. THree tail density values are highlighted with its
+probability of occurence labelled. Probability is calculated assuming
+monthly data: with a density of -2, the probability of occurrence is
+1/pnorm(-2)/12 = 4 years. The non-linear relationship between the two
+quantities suggests normalised indexes need to be interpreted with
+caution since a slight change in the tail distribution can result in
+magnitudes of difference in its probability of occurrence.}
 
 \end{figure}
 
