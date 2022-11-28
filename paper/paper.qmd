@@ -41,7 +41,9 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, echo = FALSE)
-
+library(tidyverse)
+library(latex2exp)
+library(patchwork)
 ```
 
 # Introduction
@@ -262,30 +264,49 @@ Let $\mathbf{x}(\mathbf{s};\mathbf{t})$ denote the raw data with spatial, tempor
 The construction of an index sometimes needs to consider information from neighbouring time periods.
 Temporal processing is a general operator on the time dimension of the data in the form of  $$f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),$$ where $\psi \in \Psi \subseteq \mathbb{R}^{d_{\psi}}$ is the parameters associated with the temporal operation and $d_{\psi}$ is the number of parameter of $\psi$. 
 An typical example of temporal processing is aggregation in the drought index SPI to measure the lack of precipitation for meteorological drought.
-In SPI, monthly precipitation is aggregated by a time scale parameter $k$: $x(s_i;t_{j^\prime}) = \sum_{j = j^\prime-k+1}^{j^\prime}x(s_i; t_j),$ where $j^\prime$ is the new time index after the aggregation. In this notation, each spatial location is seaprately aggregated and precipitation is ummed from $k$ month back, $j^\prime - k + 1$, to the current, $j^\prime$ period to create the aggregated series, indexed by $j^\prime$. 
+In SPI, monthly precipitation is aggregated by a time scale parameter $k$: $x(s_i;t_{j^\prime}) = \sum_{j = j^\prime-k+1}^{j^\prime}x(s_i; t_j),$ where $j^\prime$ is the new time index after the aggregation. In this notation, each spatial location is seaprately aggregated and precipitation is ummed from $k$ month back, $j^\prime - k + 1$, to the current period, $j^\prime$, to create the aggregated series, indexed by $j^\prime$. 
 
 The choice of time scales parameter $k$ can result in variation in the calculated index values: a small $k$ of 3 or 6 month produces the index more sensitive to individual months, while a large $k$ of 24 or 36, an equivalent to a 2- or 3-year aggregation, gives dryness information relative to the long term condition. As will be shown in section [SECTION EXAMPLE], this variation may even lead to conflicting conclusions on the dry/wet condition of the area, highlighting the importance to account for index uncertainty when interpreting index values for decision making.
 
-**Spatial aggregation** [TODO]
+**Spatial aggregation** 
 
-Sometimes 
+While many indexes calculate independently on spatial locations, borrowing spatial information can happen at the unobservable locations. Also, variables can be collected in different formats: some from satellite imageries as raster data, potentially at different resolutions, some from ground stations as vector data. These spatial data need to be merged into a uniform unit to construct indexes. 
+In the pipeline, spatial aggregation includes operations on the spatial dimension of the data and can be written as $$g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})),$$ where $\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}$ is the spatial operation parameters and $d_{\theta}$ is the number of parameter of $\theta$. 
+When one of the variables collected is only available in a coarser resolution, $i^\prime$, analysts may choose to reduce other variables with finer resolution, $i$, to match the coarser resolution, as in @fig-spatial-agg. This is a spatial aggregation step and aggregating using the mean can be written as: $x(s_{i^\prime};t_{j}) = \bar{x}(s_{i \in i^\prime}; t_j),$, where $i \in i^\prime$ includes all the cells from the finer resolution in the coarser grid. *(Feel like the figure here is more of a visual illustration of the equation without enough further implication =.=)*
 
-Information from neighbouring spatial locations can also be borrowed when constructing indexes. 
-This involves interpolating data from observed locations to the unobserved and aggregating data into different levels.
-In the pipeline, spatial aggregation can be written as $$g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})),$$ where $\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}$ is the spatial operation parameters and $d_{\theta}$ is the number of parameter of $\theta$. [GIVEN AN EXAMPLE]
+```{r fig-spatial-agg}
+#| fig-cap: "Illustration of aggregating raster data with finer resolution (right) into coarser resolution (left)." 
+#| fig-width: 10
+#| fig-height: 3
+dt <- crossing(y = 1:2, x = 1:3) %>% 
+  arrange(-y) %>% 
+  mutate(label = as.factor(1:6))
+okabe <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#CC79A7")
 
-While many indexes are calculated independently on spatial locations
+p1 <- dt %>% 
+  ggplot(aes(x = x, y = y)) + 
+  geom_tile(aes(fill = label), color = "black") + 
+  geom_text(aes(label = label)) + 
+  scale_fill_manual(values = okabe) + 
+  theme_void() + 
+  theme(aspect.ratio = 2/3)
 
-satellite images with different resolutions
-matching ground and satellite images data 
+dt2 <- crossing(y = 1:6, x = 1:9) %>% 
+  arrange(-y) %>% 
+  mutate(x1 = (x-1) %/%3 + 1, y1 = (y-1) %/%3 + 1) %>% 
+  left_join(dt, by = c("x1" = "x", "y1" = "y")) %>% 
+  mutate(id = row_number())
 
+p2 <- dt2 %>% 
+  ggplot(aes(x = x, y = y)) + 
+  geom_tile(aes(fill = label), color = "black") + 
+  geom_text(aes(label = id)) + 
+  scale_fill_manual(values = okabe) + 
+  theme_void() + 
+  theme(aspect.ratio = 2/3)
 
-<!-- $x(s_i^\prime;t_j) = \sum_{i \in \Omega}x(s_i; t_j)$ -->
-
-
-<!-- Another common use of spatial processing is to integrate satellite imagaries with ground measures, also merge satellite imagaries with different resolutions.  -->
-
- <!-- - 3 by 3 aggregation, another purpose: the spatial grid is too fine, aggregate to higher level. -->
+(p1 | p2) & theme(legend.position = "none")
+```
 
 **Variable transformation ** [TODO]
 
@@ -315,8 +336,6 @@ For example, a z-score standardisation can be written in the above form with $\a
 #| fig-cap: "Comparison of scaling and variable transformation."
 #| fig-height: 8
 #| fig-width: 12
-library(tidyverse)
-library(latex2exp)
 set.seed(123)
 x <- rgamma(n = 1000, shape = 1, scale = 2)
 
@@ -384,10 +403,8 @@ This could help understand index behavior from its sensitivity to the variables 
 
 *model fit? *
 
-Distribution fit can be seen as model fitting in its simplest term. It can be represented by 
 <!-- With a probability model imposed,  -->
-
-$$F_{\eta}(x(\mathbf{s}; \mathbf{t})),$$ where $\eta \in H \subseteq \mathbb{R}^{d_{\eta}}$ is the distribution parameter and $d_{\eta}$ is the number of parameter of $\eta$. A distribution fit typically aims at finding the distribution that best fit the data. 
+Distribution fit can be seen as model fitting in its simplest term. It can be represented by $$F_{\eta}(x(\mathbf{s}; \mathbf{t})),$$ where $\eta \in H \subseteq \mathbb{R}^{d_{\eta}}$ is the distribution parameter and $d_{\eta}$ is the number of parameter of $\eta$. A distribution fit typically aims at finding the distribution that best fit the data. 
 Analysts may start from a pool of candidate distributions with a chosen fitting method and goodness of fit measure. 
 While it is useful to find the ultimate best distribution to fits the data, from a probabilistic perspective, the fitting procedure itself has uncertainty associated with the data fed and parameter chosen. A reasonable alternative is to understand how much the index values can vary given different distributions, fitting methods, and goodness of fit tests, and whether these variations are negligible in a given application.
 
