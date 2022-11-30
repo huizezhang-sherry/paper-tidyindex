@@ -254,7 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indexes \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, sharp corners, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, boxrule=0pt, interior hidden, sharp corners, breakable, enhanced, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -549,17 +549,26 @@ indies}\label{pipeline-steps-for-constructing-indies}}
 An overview of the pipeline is given in Figure~\ref{fig-pipeline-steps}
 to illustrate the construction from raw data to the final indexes. The
 pipeline includes modules for operations in the spatial, temporal, and
-multivariate aspect of the data: temporal processing, spatial
-aggregation, variable transformation, scaling, dimension reduction, and
-normalising, as well as modules for comparing and communicating indexes
-(benchmarking and simplification). These steps are not required to be
-arranged in a fixed order and not all the steps have to appear when
-constructing each index. While the pipeline starts with the raw data,
-steps prior to this, i.e.~define a useful concept to construct the
-index, collect high quality data relevant for measuring the concept, are
-also cricial to the sucess of an index. The framework proposed in this
-paper assumes the objective of an index has been defined and relevant
-variables have been collected and quality controlled.
+multivariate aspects of the data as well as modules for comparing and
+communicating indexes (benchmarking and simplification). Analysts are
+free to select the modules they need and arrange them in the order they
+see fit to construct indexes. While the starting point of the pipeline
+is raw data, there are steps prior to this that are crucial to the
+success of an index. For example, the defined index needs to be useful
+for measuring the concept of interest and variables need to be collected
+from reliable sources with proper quality control.
+
+The notation used in this section will be first introduced before
+elaborating on each pipeline module. Let
+\(\mathbf{x}(\mathbf{s};\mathbf{t})\) denote the raw data with spatial,
+temporal, and multivariate aspects: the spatial dimension
+\(\mathbf{s} = (s_1, s_2, \cdots, s_n)^\prime\) is defined in the 2D
+space: \(\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2\), the
+temporal dimension \(\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime\) is
+defined in the 1D space:
+\(\mathbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}\). When more than
+one variable is involved, the multivariate data can also be written as:
+\(\mathbf{x}(\mathbf{s}; \mathbf{t}) = (x_1(\mathbf{s}; \mathbf{t}), x_2(\mathbf{s}; \mathbf{t}), \cdots, x_P(\mathbf{s}; \mathbf{t}))^\prime\).
 
 \begin{figure}
 
@@ -568,58 +577,47 @@ variables have been collected and quality controlled.
 }
 
 \caption{\label{fig-pipeline-steps}Diagram of pipeline steps for index
-construction.}
+construction. will need to be updated with better design and the
+distribution fitting step.}
 
 \end{figure}
-
-\textbf{Notation}
-
-Let \(\mathbf{x}(\mathbf{s};\mathbf{t})\) denote the raw data with
-spatial, temporal, and multivariate aspect: the spatial dimension
-\(\mathbf{s} = (s_1, s_2, \cdots, s_n)^\prime\) is defined in the 2D
-space: \(\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2\), the
-temporal dimension \(\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime\) is
-defined in the 1D space:
-\(\mathbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}\). When more than
-one variable are involved, the multivariate data can also be written as:
-\(\mathbf{x}(\mathbf{s}; \mathbf{t}) = (x_1(\mathbf{s}; \mathbf{t}), x_2(\mathbf{s}; \mathbf{t}), \cdots, x_P(\mathbf{s}; \mathbf{t}))^\prime\).
 
 \textbf{Temporal processing}
 
 The construction of an index sometimes needs to consider information
-from neighbouring time periods. Temporal processing is a general
+from neighbouring time periods. The temporal processing is a general
 operator on the time dimension of the data in the form of
 \[f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),\] where
 \(\psi \in \Psi \subseteq \mathbb{R}^{d_{\psi}}\) is the parameters
 associated with the temporal operation and \(d_{\psi}\) is the number of
-parameter of \(\psi\). An typical example of temporal processing is
+parameter of \(\psi\). A typical example of temporal processing is
 aggregation in the drought index SPI to measure the lack of
 precipitation for meteorological drought. In SPI, monthly precipitation
 is aggregated by a time scale parameter \(k\):
 \(x(s_i;t_{j^\prime}) = \sum_{j = j^\prime-k+1}^{j^\prime}x(s_i; t_j),\)
 where \(j^\prime\) is the new time index after the aggregation. In this
-notation, each spatial location is seaprately aggregated and
+notation, each spatial location is separately aggregated and
 precipitation is ummed from \(k\) month back, \(j^\prime - k + 1\), to
 the current period, \(j^\prime\), to create the aggregated series,
 indexed by \(j^\prime\).
 
 The choice of time scales parameter \(k\) can result in variation in the
-calculated index values: a small \(k\) of 3 or 6 month produces the
+calculated index values: a small \(k\) of 3 or 6 months produces the
 index more sensitive to individual months, while a large \(k\) of 24 or
 36, an equivalent to a 2- or 3-year aggregation, gives dryness
 information relative to the long term condition. As will be shown in
 section {[}SECTION EXAMPLE{]}, this variation may even lead to
 conflicting conclusions on the dry/wet condition of the area,
 highlighting the importance to account for index uncertainty when
-interpreting index values for decision making.
+interpreting index values for decision-making.
 
 \textbf{Spatial aggregation}
 
-While many indexes calculate independently on spatial locations,
-borrowing spatial information can happen at the unobservable locations.
+While many indexes are calculated independently on spatial locations,
+borrowing spatial information can happen at unobservable locations.
 Also, variables can be collected in different formats: some from
 satellite imageries as raster data, potentially at different
-resolutions, some from ground stations as vector data. These spatial
+resolutions, and some from ground stations as vector data. These spatial
 data need to be merged into a uniform unit to construct indexes. In the
 pipeline, spatial aggregation includes operations on the spatial
 dimension of the data and can be written as
@@ -653,21 +651,22 @@ Variable transformation, and scaling in the next section, are both
 pre-processing steps to create variables with good statistical
 properties. These properties include a stable variance, normal
 distribution, or a certain scale required by some algorithm further down
-the pipeline. Variable tranformation is a general notion of a functional
-transformation on the variable: \[h_{\tau}(x(\mathbf{s};\mathbf{t})),\]
-where \(\tau \in T \subseteq \mathbb{R}^{d_{\tau}}\) is the parameter in
-the transformation, if any, and \(d_{\tau}\) is the number of parameter
-of \(\tau\). Transformation is needed for data that are highly skewed
-and some common transformations includes log, quadratic, and square root
+the pipeline. Variable transformation is a general notion of a
+functional transformation on the variable:
+\[h_{\tau}(x(\mathbf{s};\mathbf{t})),\] where
+\(\tau \in T \subseteq \mathbb{R}^{d_{\tau}}\) is the parameter in the
+transformation if any, and \(d_{\tau}\) is the number of parameter of
+\(\tau\). Transformation is needed for data that are highly skewed and
+some common transformations include log, quadratic, and square root
 transformation.
 
 \textbf{Scaling}
 
-While scaling can be seen as a specific type of variable tranformation,
-it is separated into own step to make the step explicit in the pipeline.
-The key difference between the two steps is that variable transformation
-typically changes the shape of the data, while scaling only changes the
-data scale and can usually be written in the form of
+While scaling can be seen as a specific type of variable transformation,
+it is separated into its own step to make the step explicit in the
+pipeline. The key difference between the two steps is that variable
+transformation typically changes the shape of the data while scaling
+only changes the data scale and can usually be written in the form of
 \[[x(s_i;t_j) - \alpha]/\gamma.\] For example, a z-score standardisation
 can be written in the above form with \(\alpha = \bar{x}(s; t)\) and
 \(\gamma = \sigma(s; t)\), a min-max standardisation uses
@@ -676,7 +675,7 @@ can be written in the above form with \(\alpha = \bar{x}(s; t)\) and
 Figure~\ref{fig-scale-var-trans-compare} shows a collection of variable
 pre-processing operations and uses color to differentiate whether the
 operation is a variable transformation or a scaling step. All the
-scaling operations in green results in the same distribution as the
+scaling operations in green result in the same distribution as the
 original data.
 
 \begin{figure}
@@ -696,7 +695,7 @@ transformation.}
 \textbf{Dimension reduction}
 
 When constructing indexes from multivariate information, dimension
-reduction methods combine those information into a univariate series. In
+reduction methods combine that information into a univariate series. In
 the pipeline, dimension reduction includes methods that take
 multivariate inputs and output the data in a lower dimension (often
 univariate):
@@ -725,34 +724,35 @@ suit specific tasks.
 
 \emph{model fit? }
 
-Distribution fit can be seen as model fitting in its simplest term. It
-can be represented by \[F_{\eta}(x(\mathbf{s}; \mathbf{t})),\] where
+Distribution fit can be seen as the model fitting in its simplest term.
+It can be represented by \[F_{\eta}(x(\mathbf{s}; \mathbf{t})),\] where
 \(\eta \in H \subseteq \mathbb{R}^{d_{\eta}}\) is the distribution
 parameter and \(d_{\eta}\) is the number of parameter of \(\eta\). A
 distribution fit typically aims at finding the distribution that best
-fit the data. Analysts may start from a pool of candidate distributions
+fits the data. Analysts may start from a pool of candidate distributions
 with a chosen fitting method and goodness of fit measure. While it is
 useful to find the ultimate best distribution to fits the data, from a
-probabilistic perspective, the fitting procedure itself has uncertainty
-associated with the data fed and parameter chosen. A reasonable
-alternative is to understand how much the index values can vary given
-different distributions, fitting methods, and goodness of fit tests, and
-whether these variations are negligible in a given application.
+probabilistic perspective, the fitting procedure itself has an
+uncertainty associated with the data fed and the parameter chosen. A
+reasonable alternative is to understand how much the index values can
+vary given different distributions, fitting methods, and goodness of fit
+tests, and whether these variations are negligible in a given
+application.
 
 \textbf{Normalising}
 
 This step maps the univariate series into a different scale, typically
-for the ease of comparison across regions. For example, a normal scale,
+for ease of comparison across regions. For example, a normal scale,
 {[}0, 1{]}, or {[}0, 100{]} may be favored for reporting certain
 indexes. In drought indexes, i.e.~SPI or SPEI, the quantiles from the
-fitted distribution is converted into the normal scale via the normal
-reverse CDF function: \(\Phi^{-1}(.)\). Normalising is usually used in
+fitted distribution are converted into the normal scale via the normal
+reverse CDF function: \(\Phi^{-1}(.)\). Normalising is usually used at
 the end of the pipeline and its main difference from the scaling step is
 that here the change of scale also changes the distribution of the
 variable. While being commonly used, this step can get criticism from
 analysts for forcing the data into the decided scale, which can be
 either unnecessary or inaccurately exaggerate or downplay the outliers.
-Also, the use of normal scale needs to be interpreted with caution.
+Also, the use of a normal scale needs to be interpreted with caution.
 Figure~\ref{fig-normalising} illustrates the normal density not being
 directly proportional to its probability of occurrence. This is
 concerning, especially at the extreme values, since a small difference
@@ -780,13 +780,13 @@ magnitudes of difference in its probability of occurrence.}
 
 Benchmarking sets a constant value to allow the constructed index to be
 compared across time. Here we denote it with \(u[x(s_i, t_j)]\) where
-\(u\) is a scalar of interest in the index constructed, could be a
-constant or a function of the data, i.e.~mean.
+\(u\) is a scalar of interest in the index constructed. A benchmark
+value could be a constant or a function of the data, i.e.~mean.
 
 \textbf{Simplification}
 
 In public communication, the index values are usually accompanied by a
-categorical grade. The categorised grades is an ordered set of
+categorical grade. The categorised grades are an ordered set of
 descriptive words or colors to communicate the severity or guide the
 comprehension of the indexes. The mapping from continuous index values
 to the discrete grades is called simplification in the pipeline and it
@@ -804,7 +804,7 @@ C_z & c_z \leq x(s_i; t_j)
 
 where \(C_0, C_1,\cdots ,C_z\) are the categories and
 \(c_0, c_1, \cdots, c_z\) are the thresholds for each category. In SPI,
-drought are sorted into four categories: mild drought: \([-0.99, 0]\);
+droughts are sorted into four categories: mild drought: \([-0.99, 0]\);
 moderate drought: \([-1.49, -1]\); severe drought: \([-1.99, -1.5]\),
 and extreme drought: \([-\infty, -2]\). In this case,
 \(C_0, C_1, C_2, C_3\) are the drought categories: mild, moderate,
