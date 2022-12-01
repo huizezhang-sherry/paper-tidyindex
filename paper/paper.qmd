@@ -233,7 +233,7 @@ knitr::include_graphics(here::here("figures/toy-example-spei.png"))
 <!-- *constructing time series index should also be encapsulated in the framework* -->
 
 An overview of the pipeline is given in @fig-pipeline-steps to illustrate the construction from raw data to the final indexes.
-The pipeline includes modules for operations in the spatial, temporal, and multivariate aspects of the data as well as modules for comparing and communicating indexes (benchmarking and simplification).
+The pipeline includes modules for operations in the spatial, temporal, and multivariate aspects of the data as well as modules for comparing and communicating indexes.
 Analysts are free to select the modules they need and arrange them in the order they see fit to construct indexes.
 While the starting point of the pipeline is raw data, there are steps prior to this that are crucial to the success of an index. 
 For example, the defined index needs to be useful for measuring the concept of interest and variables need to be collected from reliable sources with proper quality control. 
@@ -248,64 +248,55 @@ The notation used in this section will be first introduced before elaborating on
 knitr::include_graphics(here::here("figures/pipeline-steps.png"))
 ```
 
-**Temporal processing**
+### Temporal processing
 
 The construction of an index sometimes needs to consider information from neighbouring time periods.
-The temporal processing is a general operator on the time dimension of the data in the form of  $$f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),$$ where $\psi \in \Psi \subseteq \mathbb{R}^{d_{\psi}}$ is the parameters associated with the temporal operation and $d_{\psi}$ is the number of parameter of $\psi$. 
+The temporal processing is a general operator on the time dimension of the data in the form of  
+
+\begin{equation}
+f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),
+\end{equation}
+
+where $\psi \in \Psi \subseteq \mathbb{R}^{d_{\psi}}$ is the parameters associated with the temporal operation and $d_{\psi}$ is the number of parameter of $\psi$. 
 A typical example of temporal processing is aggregation in the drought index SPI to measure the lack of precipitation for meteorological drought.
 In SPI, monthly precipitation is aggregated by a time scale parameter $k$: $x(s_i;t_{j^\prime}) = \sum_{j = j^\prime-k+1}^{j^\prime}x(s_i; t_j),$ where $j^\prime$ is the new time index after the aggregation. In this notation, each spatial location is separately aggregated and precipitation is ummed from $k$ month back, $j^\prime - k + 1$, to the current period, $j^\prime$, to create the aggregated series, indexed by $j^\prime$. 
 
+*more explicit on k will influence 1) long term vs. short term, 2) uncertainty*
 The choice of time scales parameter $k$ can result in variation in the calculated index values: a small $k$ of 3 or 6 months produces the index more sensitive to individual months, while a large $k$ of 24 or 36, an equivalent to a 2- or 3-year aggregation, gives dryness information relative to the long term condition. As will be shown in section [SECTION EXAMPLE], this variation may even lead to conflicting conclusions on the dry/wet condition of the area, highlighting the importance to account for index uncertainty when interpreting index values for decision-making.
 
-**Spatial aggregation** 
+### Spatial processing
 
 While many indexes are calculated independently on spatial locations, borrowing spatial information can happen at unobservable locations. Also, variables can be collected in different formats: some from satellite imageries as raster data, potentially at different resolutions, and some from ground stations as vector data. These spatial data need to be merged into a uniform unit to construct indexes. 
-In the pipeline, spatial aggregation includes operations on the spatial dimension of the data and can be written as $$g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})),$$ where $\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}$ is the spatial operation parameters and $d_{\theta}$ is the number of parameter of $\theta$. 
-When one of the variables collected is only available in a coarser resolution, $i^\prime$, analysts may choose to reduce other variables with finer resolution, $i$, to match the coarser resolution, as in @fig-spatial-agg. This is a spatial aggregation step and aggregating using the mean can be written as: $x(s_{i^\prime};t_{j}) = \bar{x}(s_{i \in i^\prime}; t_j),$, where $i \in i^\prime$ includes all the cells from the finer resolution in the coarser grid. *(Feel like the figure here is more of a visual illustration of the equation without enough further implication =.=)*
+In the pipeline, spatial aggregation includes operations on the spatial dimension of the data and can be written as 
 
-```{r fig-spatial-agg}
-#| fig-cap: "Illustration of aggregating raster data with finer resolution (right) into coarser resolution (left)." 
-#| fig-width: 10
-#| fig-height: 3
-dt <- crossing(y = 1:2, x = 1:3) %>% 
-  arrange(-y) %>% 
-  mutate(label = as.factor(1:6))
-okabe <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#CC79A7")
+\begin{equation}
+g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})),
+\end{equation}
 
-p1 <- dt %>% 
-  ggplot(aes(x = x, y = y)) + 
-  geom_tile(aes(fill = label), color = "black") + 
-  geom_text(aes(label = label)) + 
-  scale_fill_manual(values = okabe) + 
-  theme_void() + 
-  theme(aspect.ratio = 2/3)
+where $\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}$ is the spatial operation parameters and $d_{\theta}$ is the number of parameter of $\theta$. 
+When one of the variables collected is only available in a coarser resolution, $i^\prime$, analysts may choose to reduce other variables with finer resolution, $i$, to match the coarser resolution. This is a spatial aggregation step and aggregating using the mean can be written as: $x(s_{i^\prime};t_{j}) = \bar{x}(s_{i \in i^\prime}; t_j),$, where $i \in i^\prime$ includes all the cells from the finer resolution in the coarser grid. 
 
-dt2 <- crossing(y = 1:6, x = 1:9) %>% 
-  arrange(-y) %>% 
-  mutate(x1 = (x-1) %/%3 + 1, y1 = (y-1) %/%3 + 1) %>% 
-  left_join(dt, by = c("x1" = "x", "y1" = "y")) %>% 
-  mutate(id = row_number())
 
-p2 <- dt2 %>% 
-  ggplot(aes(x = x, y = y)) + 
-  geom_tile(aes(fill = label), color = "black") + 
-  geom_text(aes(label = id)) + 
-  scale_fill_manual(values = okabe) + 
-  theme_void() + 
-  theme(aspect.ratio = 2/3)
+### Variable transformation 
 
-(p1 | p2) & theme(legend.position = "none")
-```
+Variable transformation, and scaling in the next section, are both pre-processing steps to create variables that fits assumptions for further computing. These include a stable variance, normal distribution, or a certain scale required by some algorithm further down the pipeline.
+Variable transformation is a general notion of a functional transformation on the variable: 
 
-**Variable transformation ** 
+\begin{equation}
+h_{\tau}(x(\mathbf{s};\mathbf{t})),
+\end{equation} 
 
-Variable transformation, and scaling in the next section, are both pre-processing steps to create variables with good statistical properties. These properties include a stable variance, normal distribution, or a certain scale required by some algorithm further down the pipeline.
-Variable transformation is a general notion of a functional transformation on the variable: $$h_{\tau}(x(\mathbf{s};\mathbf{t})),$$ where $\tau \in T \subseteq \mathbb{R}^{d_{\tau}}$ is the parameter in the transformation if any, and $d_{\tau}$ is the number of parameter of $\tau$. Transformation is needed for data that are highly skewed and some common transformations include log, quadratic, and square root transformation.
+where $\tau \in T \subseteq \mathbb{R}^{d_{\tau}}$ is the parameter in the transformation if any, and $d_{\tau}$ is the number of parameter of $\tau$. Transformation is needed for data that are highly skewed and some common transformations include log, quadratic, and square root transformation.
 
-**Scaling** 
+### Scaling
 
 While scaling can be seen as a specific type of variable transformation, it is separated into its own step to make the step explicit in the pipeline.
-The key difference between the two steps is that variable transformation typically changes the shape of the data while scaling only changes the data scale and can usually be written in the form of $$[x(s_i;t_j) - \alpha]/\gamma.$$
+The key difference between the two steps is that variable transformation typically changes the shape of the data while scaling only changes the data scale and can usually be written in the form of 
+
+\begin{equation}
+[x(s_i;t_j) - \alpha]/\gamma.
+\end{equation}
+
 For example, a z-score standardisation can be written in the above form with $\alpha = \bar{x}(s; t)$ and $\gamma = \sigma(s; t)$, a min-max standardisation uses $\alpha = \min[x(s_i, t_j)]$ and $\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]$.
 @fig-scale-var-trans-compare shows a collection of variable pre-processing operations and uses color to differentiate whether the operation is a variable transformation or a scaling step. All the scaling operations in green result in the same distribution as the original data.
 
@@ -376,10 +367,18 @@ trans_df %>%
   theme(legend.position = "bottom")
 ```
 
-**Dimension reduction** 
+### Dimension reduction
 
-When constructing indexes from multivariate information, dimension reduction methods combine that information into a univariate series. In the pipeline, dimension reduction includes methods that take multivariate inputs and output the data in a lower dimension (often univariate): $$x_{p^*}(\mathbf{s}; \mathbf{t}) \rightarrow x_p(\mathbf{s}; \mathbf{t}),$$ where $p^* = 1, 2, \cdots, P^*$ and $p = 1, 2, \cdots, P$ reduce the variable dimension from $P$ to $P^*$. 
+When constructing indexes from multivariate information, dimension reduction methods combine that information into a univariate series. In the pipeline, dimension reduction includes methods that take multivariate inputs and output the data in a lower dimension (often univariate): 
+
+\begin{equation}
+x_{p^*}(\mathbf{s}; \mathbf{t}) \rightarrow x_p(\mathbf{s}; \mathbf{t}),
+\end{equation}
+
+where $p^* = 1, 2, \cdots, P^*$ and $p = 1, 2, \cdots, P$ reduce the variable dimension from $P$ to $P^*$. 
 The most commonly used dimension reduction technique is Principal Component Analysis (PCA), also called Empirical Orthogonal Function (EOF) in earth science. It can be written as $x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t})$ where $\lambda_p$ is the loading of the PC1, derived from maximising the data variance given the constraint $\sum_{p=1}^P\lambda_p^2 = 1$. 
+
+*add another perspective that there are statistical methods, i.e. PCA, and also domain knowledge driven methods, i.e. d = P - PET in SPEI.*
 
 The PCA is a special case of weighting, where individual variables are summed up in a linear combination with potential restrictions imposed on the weight coefficients. These coefficients may be simple mathematical constructions that give equal weight to each variable or can be derived with specialised knowledge by experts in the field. 
 While suggested weights can indicate norms adored by practitioners, analysts should be given the flexibility to experiment with different combinations when constructing indexes. 
@@ -388,16 +387,22 @@ This could help understand index behavior from its sensitivity to the variables 
 <!-- sometimes called feature extraction in the machine learning community  -->
 <!-- With drought indexes, the extraction of meaningful variables from the original data is usually supported by the water balance model, for example, in SPEI, the step that create $d$ out of precipitation and potential evapotranspiration (PET) has theoretical backup from [see paper.] -->
 
-**Distribution fit**
+### Distribution fit
 
 *model fit? *
 
 <!-- With a probability model imposed,  -->
-Distribution fit can be seen as the model fitting in its simplest term. It can be represented by $$F_{\eta}(x(\mathbf{s}; \mathbf{t})),$$ where $\eta \in H \subseteq \mathbb{R}^{d_{\eta}}$ is the distribution parameter and $d_{\eta}$ is the number of parameter of $\eta$. A distribution fit typically aims at finding the distribution that best fits the data. 
+Distribution fit can be seen as the model fitting in its simplest term. It can be represented by 
+
+\begin{equation}
+F_{\eta}(x(\mathbf{s}; \mathbf{t})), 
+\end{equation}
+
+where $\eta \in H \subseteq \mathbb{R}^{d_{\eta}}$ is the distribution parameter and $d_{\eta}$ is the number of parameter of $\eta$. A distribution fit typically aims at finding the distribution that best fits the data. 
 Analysts may start from a pool of candidate distributions with a chosen fitting method and goodness of fit measure. 
 While it is useful to find the ultimate best distribution to fits the data, from a probabilistic perspective, the fitting procedure itself has an uncertainty associated with the data fed and the parameter chosen. A reasonable alternative is to understand how much the index values can vary given different distributions, fitting methods, and goodness of fit tests, and whether these variations are negligible in a given application.
 
-**Normalising**
+### Normalising
 
 This step maps the univariate series into a different scale, typically for ease of comparison across regions. 
 For example, a normal scale, [0, 1], or [0, 100] may be favored for reporting certain indexes. 
@@ -432,17 +437,17 @@ dt %>%
   theme(panel.grid.minor = element_blank())
 ```
 
-**Benchmarking** [TODO]
+### Benchmarking
 
 Benchmarking sets a constant value to allow the constructed index to be compared across time.
 Here we denote it with $u[x(s_i, t_j)]$ where $u$ is a scalar of interest in the index constructed. A benchmark value could be a constant or a function of the data, i.e. mean.
 
-**Simplification**
+### Simplification
 
 In public communication, the index values are usually accompanied by a categorical grade. The categorised grades are an ordered set of descriptive words or colors to communicate the severity or guide the comprehension of the indexes. 
 The mapping from continuous index values to the discrete grades is called simplification in the pipeline and it can be written as a piece-wise function: 
 
-$$
+\begin{equation}
 \begin{cases}
 C_0 & c_1 \leq (s_i; t_j) < c_0 \\
 C_1 & c_2 \leq x(s_i; t_j) < c_1 \\
@@ -450,7 +455,7 @@ C_2 & c_3 \leq x(s_i; t_j) < c_2 \\
 \cdots \\
 C_z & c_z \leq x(s_i; t_j)
 \end{cases}
-$$
+\end{equation}
 
 where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are the thresholds for each category. In SPI, droughts are sorted into four categories: mild drought: $[-0.99, 0]$; moderate drought: $[-1.49, -1]$; severe drought: $[-1.99, -1.5]$, and extreme drought: $[-\infty, -2]$. In this case, $C_0, C_1, C_2, C_3$ are the drought categories: mild, moderate, severe, and extreme drought ($z = 3$) and $c_0 =0, c_1 = -1, c_2 = -1.5, c_3 = -2$ are the cutoff value for each class.
 
