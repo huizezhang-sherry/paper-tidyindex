@@ -254,7 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indexes \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced, frame hidden, breakable, sharp corners, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, interior hidden, enhanced, breakable, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -546,6 +546,8 @@ generalised extreme value (\texttt{gev}) distribution, using the
 \subsection{Pipeline steps for constructing
 indies}\label{pipeline-steps-for-constructing-indies}}
 
+\emph{variables == indicators}
+
 An overview of the pipeline is given in Figure~\ref{fig-pipeline-steps}
 to illustrate the construction from raw data to the final indexes. The
 pipeline includes modules for operations in the spatial, temporal, and
@@ -619,6 +621,8 @@ conflicting conclusions on the dry/wet condition of the area,
 highlighting the importance to account for index uncertainty when
 interpreting index values for decision-making.
 
+\emph{Effective drought index}
+
 \hypertarget{spatial-processing}{%
 \subsubsection{Spatial processing}\label{spatial-processing}}
 
@@ -654,12 +658,11 @@ from ground measures with satellite imageries.
 \hypertarget{variable-transformation}{%
 \subsubsection{Variable transformation}\label{variable-transformation}}
 
-Variable transformation, and scaling in the next section, are both
-pre-processing steps to create variables that fits assumptions for
-further computing. These include a stable variance, normal distribution,
-or a certain scale required by some algorithm further down the pipeline.
-Variable transformation is a general notion of a functional
-transformation on the variable:
+The purpose of variable transformation is to create variables that fits
+assumptions for further computing. These assumptions include a stable
+variance, normal distribution, or a certain scale required by some
+algorithms down the pipeline. Variable transformation is a general
+notion of a functional transformation on the variable:
 
 \begin{equation}
 h_{\tau}(x(\mathbf{s};\mathbf{t})),
@@ -690,9 +693,10 @@ standardisation uses \(\alpha = \min[x(s_i, t_j)]\) and
 \(\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]\).
 Figure~\ref{fig-scale-var-trans-compare} shows a collection of variable
 pre-processing operations and uses color to differentiate whether the
-operation is a variable transformation or a scaling step. All the
-scaling operations in green result in the same distribution as the
-original data.
+operation is a variable transformation or a scaling step. While both
+variable transformation and scaling are pre-processing steps, the
+scaling operations in green show the same distribution as the original
+data.
 
 \begin{figure}
 
@@ -708,10 +712,12 @@ transformation.}
 
 \end{figure}
 
+\newpage
+
 \hypertarget{dimension-reduction}{%
 \subsubsection{Dimension reduction}\label{dimension-reduction}}
 
-When constructing indexes from multivariate information, dimension
+When indexes are constructed from multivariate information, dimension
 reduction methods combine that information into a univariate series. In
 the pipeline, dimension reduction includes methods that take
 multivariate inputs and output the data in a lower dimension (often
@@ -725,25 +731,28 @@ where \(p^* = 1, 2, \cdots, P^*\) and \(p = 1, 2, \cdots, P\) reduce the
 variable dimension from \(P\) to \(P^*\). The most commonly used
 dimension reduction technique is Principal Component Analysis (PCA),
 also called Empirical Orthogonal Function (EOF) in earth science. It can
-be written as
-\(x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t})\)
-where \(\lambda_p\) is the loading of the PC1, derived from maximising
-the data variance given the constraint \(\sum_{p=1}^P\lambda_p^2 = 1\).
+be seen as a special case of weighting, where variables are summed up in
+a linear combination:
+\[x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t}),\]
+with restrictions imposed on the weight coefficient:
+\(\sum_{p=1}^P\lambda_p^2 = 1\). In other cases of weighting, the
+coefficients can be as simple as giving equal weight to each variables.
 
-\emph{add another perspective that there are statistical methods,
-i.e.~PCA, and also domain knowledge driven methods, i.e.~d = P - PET in
-SPEI.}
+Some dimension reduction can also be formulated from domain-specific
+knowledge. This can be theories that describe the physics of the
+phenomenon being indexed or practical formulations used to extract
+useful features from the raw variables. For example, in the index SPEI,
+a difference series is calculated between precipitation and potential
+evapotranspiration (PET) and the validity of this formulation is backed
+up by climate water balance model {[}Thornthwaite, 1948{]}, which
+describes {[}\ldots{]}. \emph{Add another example of remote sensing
+variables i.e.~NDVI = (NIR - Red) / (NIR + Red)?}
 
-The PCA is a special case of weighting, where individual variables are
-summed up in a linear combination with potential restrictions imposed on
-the weight coefficients. These coefficients may be simple mathematical
-constructions that give equal weight to each variable or can be derived
-with specialised knowledge by experts in the field. While suggested
-weights can indicate norms adored by practitioners, analysts should be
-given the flexibility to experiment with different combinations when
-constructing indexes. This could help understand index behavior from its
-sensitivity to the variables and suggest alternative weights that better
-suit specific tasks.
+While suggested weights and formulas can indicate norms adored by
+practitioners, analysts should be given the flexibility to experiment
+with different combinations when constructing indexes. This could help
+understand index behavior from its sensitivity to the variables and
+suggest alternative weights that better suit the specific tasks.
 
 \hypertarget{distribution-fit}{%
 \subsubsection{Distribution fit}\label{distribution-fit}}
