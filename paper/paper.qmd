@@ -258,24 +258,30 @@ f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),
 \end{equation}
 
 where $\psi \in \Psi \subseteq \mathbb{R}^{d_{\psi}}$ is the parameters associated with the temporal operation and $d_{\psi}$ is the number of parameter of $\psi$. 
-A typical example of temporal processing is aggregation in the drought index SPI to measure the lack of precipitation for meteorological drought.
-In SPI, monthly precipitation is aggregated by a time scale parameter $k$: $x(s_i;t_{j^\prime}) = \sum_{j = j^\prime-k+1}^{j^\prime}x(s_i; t_j),$ where $j^\prime$ is the new time index after the aggregation. In this notation, each spatial location is separately aggregated and precipitation is ummed from $k$ month back, $j^\prime - k + 1$, to the current period, $j^\prime$, to create the aggregated series, indexed by $j^\prime$. 
+A typical example of temporal processing is aggregation, which is used in the drought index SPI to measure the lack of precipitation for meteorological drought.
+In SPI, monthly precipitation is aggregated by a time scale parameter $k$: $x(s_i;t_{j^\prime}) = \sum_{j = j^\prime-k+1}^{j^\prime}x(s_i; t_j),$ where $j^\prime$ is the new time index after the aggregation. In this notation, each spatial location is separately aggregated and precipitation is summed from $k$ month back, $j^\prime - k + 1$, to the current period, $j^\prime$, to create the aggregated series, indexed by $j^\prime$. 
 
 *more explicit on k will influence 1) long term vs. short term, 2) uncertainty*
+
 The choice of time scales parameter $k$ can result in variation in the calculated index values: a small $k$ of 3 or 6 months produces the index more sensitive to individual months, while a large $k$ of 24 or 36, an equivalent to a 2- or 3-year aggregation, gives dryness information relative to the long term condition. As will be shown in section [SECTION EXAMPLE], this variation may even lead to conflicting conclusions on the dry/wet condition of the area, highlighting the importance to account for index uncertainty when interpreting index values for decision-making.
 
 ### Spatial processing
 
-While many indexes are calculated independently on spatial locations, borrowing spatial information can happen at unobservable locations. Also, variables can be collected in different formats: some from satellite imageries as raster data, potentially at different resolutions, and some from ground stations as vector data. These spatial data need to be merged into a uniform unit to construct indexes. 
-In the pipeline, spatial aggregation includes operations on the spatial dimension of the data and can be written as 
+Spatial processing may be needed when indexes are not calculated independently on each collected location or when variables collected from multiple sources need to be fused before further processing. The process can be written as a general operation in the form of 
 
 \begin{equation}
-g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})),
+x(\mathbf{s}^\prime;\mathbf{t}) = g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})),
 \end{equation}
 
-where $\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}$ is the spatial operation parameters and $d_{\theta}$ is the number of parameter of $\theta$. 
-When one of the variables collected is only available in a coarser resolution, $i^\prime$, analysts may choose to reduce other variables with finer resolution, $i$, to match the coarser resolution. This is a spatial aggregation step and aggregating using the mean can be written as: $x(s_{i^\prime};t_{j}) = \bar{x}(s_{i \in i^\prime}; t_j),$, where $i \in i^\prime$ includes all the cells from the finer resolution in the coarser grid. 
+where $\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}$ is the associated parameters in the process and $d_{\theta}$ is the number of parameter of $\theta$. 
+An example of spatial processing is to align variables collected in different resolutions.
+When variables are collected at different resolutions, analysts may choose to down-sample those in a finer resolution, $i$, to match those in a coarser resolution, $i^\prime$. This is a spatial aggregation and if aggregate using the mean, it can be written as 
 
+\begin{equation}
+g(x) = \frac{\sum_{i \in i^\prime}x}{n_{i^\prime}},
+\end{equation}
+
+where $i \in i^\prime$ includes all the cells from the finer resolution in the coarser grid and $n_{i^\prime}$ is the number of observations falls into the  coarser grid. Other examples of spatial processing include 1) borrowing information from neighbouring spatial locations to interpolate unobserved locations and 2) fusing variables from ground measures with satellite imageries.
 
 ### Variable transformation 
 
