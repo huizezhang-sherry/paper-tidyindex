@@ -222,6 +222,24 @@ The pipeline construction produces the same index value as command like `spei(..
 #| fig-cap: "Standardised Precipitation Evapotranspiration Index (SPEI) calculated with two distribution fits in Step 3 described above: generalised logistic (`glogist`) and generalised extreme value (`gev`) distribution, using the `wichita` data from the package `SPEI`."
 #| out-height: 30%
 #| out-width: 100%
+# library(indri)
+# library(dplyr)
+# library(lubridate)
+# library(lmomco)
+# library(ggplot2)
+# library(tsibble)
+# library(SPEI)
+# data(wichita)
+# 
+# dt <- wichita %>% 
+#   aggregate(var = prcp, scale = c(6, 12), index = ym, id = id, gran = month) %>%
+#   filter(!is.na(.agg)) %>%
+#   normalise(dist = list(gev(), loglogistic()), var = .agg) %>%
+#   augment(col = .agg)
+# 
+# dt %>% 
+#   ggplot(aes(x = ym, y = .index, color = .dist)) + 
+#   geom_line()
 knitr::include_graphics(here::here("figures/toy-example-spei.png"))
 ```
 
@@ -232,15 +250,18 @@ knitr::include_graphics(here::here("figures/toy-example-spei.png"))
 
 <!-- *constructing time series index should also be encapsulated in the framework* -->
 
+*any index can be broken down into multiple steps and then we can do things with it: swap, change parameter, etc*
+
+
 *variables == indicators*
 
 An overview of the pipeline is given in @fig-pipeline-steps to illustrate the construction from raw data to the final indexes.
-The pipeline includes modules for operations in the spatial, temporal, and multivariate aspects of the data as well as modules for comparing and communicating indexes.
+The pipeline includes eight modules for operations in the spatial, temporal, and multivariate aspects of the data as well as modules for comparing and communicating indexes.
 Analysts are free to select the modules they need and arrange them in the order they see fit to construct indexes.
 While the starting point of the pipeline is raw data, there are steps prior to this that are crucial to the success of an index. 
 For example, the defined index needs to be useful for measuring the concept of interest and variables need to be collected from reliable sources with proper quality control. 
 
-The notation used in this section will be first introduced before elaborating on each pipeline module. Let $\mathbf{x}(\mathbf{s};\mathbf{t})$ denote the raw data with spatial, temporal, and multivariate aspects: the spatial dimension $\mathbf{s} =  (s_1, s_2, \cdots, s_n)^\prime$ is defined in the 2D space: $\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2$, the temporal dimension $\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime$ is defined in the 1D space: $\mathbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}$. When more than one variable is involved, the multivariate data can also be written as: $\mathbf{x}(\mathbf{s}; \mathbf{t}) = (x_1(\mathbf{s}; \mathbf{t}), x_2(\mathbf{s}; \mathbf{t}), \cdots, x_P(\mathbf{s}; \mathbf{t}))^\prime$.
+Before elaborating each of the eight pipeline modules as subsections, the data notation will be first introduced. Let $\mathbf{x}(\mathbf{s};\mathbf{t})$ denote the raw data with spatial, temporal, and multivariate aspects: the spatial dimension $\mathbf{s} =  (s_1, s_2, \cdots, s_n)^\prime$ is defined in the 2D space: $\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2$, the temporal dimension $\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime$ is defined in the 1D space: $\mathbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}$. When more than one variable is involved, the multivariate data can also be written as: $\mathbf{x}(\mathbf{s}; \mathbf{t}) = (x_1(\mathbf{s}; \mathbf{t}), x_2(\mathbf{s}; \mathbf{t}), \cdots, x_P(\mathbf{s}; \mathbf{t}))^\prime$.
 
 ```{r fig-pipeline-steps}
 #| fig-align: center
@@ -451,8 +472,8 @@ dt %>%
     nudge_y = 0.2, nudge_x = 0.1,
     arrow = arrow(length = unit(0.08, "inches")), min.segment.length = 0) +
   scale_x_continuous(breaks = seq(-3, 3, 1)) + 
-  xlab("Density") + 
-  ylab("Quantile") + 
+  xlab("Normalised Score") + 
+  ylab("Probability") + 
   theme_bw() + 
   theme(panel.grid.minor = element_blank())
 ```
@@ -479,18 +500,44 @@ C_z & c_z \leq x(s_i; t_j)
 
 where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are the thresholds for each category. In SPI, droughts are sorted into four categories: mild drought: $[-0.99, 0]$; moderate drought: $[-1.49, -1]$; severe drought: $[-1.99, -1.5]$, and extreme drought: $[-\infty, -2]$. In this case, $C_0, C_1, C_2, C_3$ are the drought categories: mild, moderate, severe, and extreme drought ($z = 3$) and $c_0 =0, c_1 = -1, c_2 = -1.5, c_3 = -2$ are the cutoff value for each class.
 
-# Incorporating new buliding blocks into the pipeline {#sec-incorporating-new-buliding-blocks-into-the-pipeline}
+# Incorporating alternative methods into the pipeline components {#sec-incorporating-new-buliding-blocks-into-the-pipeline}
 
 <!-- # [Extending the pipeline] a different name here: alternate a module with a different (method) -->
 
 # Examples {#sec-examples}
 
-## Constructing Standardised Precipitation Index (SPI)
+## A drought index example
 
 -   a basic workflow and congruence with results in the `SPEI` pkg
 -   allow multiple distribution fit
 -   allow bootstrap uncertainty
 
-## Calculating SPEI with raster data
+easier to make comparison
+pick a publication, propose a new index that has this benefit but also correlate highly with the big name indexes
+
+## An example on sustainable development indicators
+
+Weighting
+
+## Calculating indexes on raster data
+
+<!-- Raster data is common data format for delivering large satellite spatio-temporal data.  -->
+
+<!-- Issue 1: variables may be collected at different spatial and temporal extent/ scale, different resolutions and granularities.  -->
+
+<!-- cleaning these variables involves spatial and temporal processing.  -->
+
+<!-- Issue 2: what the data the step is operated on?? -->
+
+<!-- When calculating on raster data, it is confusing on what data the operation is on. Is the operation operated per pixel or across regions, is the operation operated across all the time point, across year, across month etc.  -->
+
+<!-- While it may be clear to researchers themselves, but can be confusing for others who read the analysis for the first time.  -->
+
+<!-- The data structure should be made explicit at each operation on the spatio-temporal raster data, in terms of inputs and outputs. -->
+
+<!-- The raster examples  -->
+
+
+
 
 # Reference

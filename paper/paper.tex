@@ -254,7 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indexes \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, interior hidden, enhanced, breakable, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, frame hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, enhanced, interior hidden, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -546,22 +546,25 @@ generalised extreme value (\texttt{gev}) distribution, using the
 \subsection{Pipeline steps for constructing
 indies}\label{pipeline-steps-for-constructing-indies}}
 
+\emph{any index can be broken down into multiple steps and then we can
+do things with it: swap, change parameter, etc}
+
 \emph{variables == indicators}
 
 An overview of the pipeline is given in Figure~\ref{fig-pipeline-steps}
 to illustrate the construction from raw data to the final indexes. The
-pipeline includes modules for operations in the spatial, temporal, and
-multivariate aspects of the data as well as modules for comparing and
-communicating indexes. Analysts are free to select the modules they need
-and arrange them in the order they see fit to construct indexes. While
-the starting point of the pipeline is raw data, there are steps prior to
-this that are crucial to the success of an index. For example, the
-defined index needs to be useful for measuring the concept of interest
-and variables need to be collected from reliable sources with proper
-quality control.
+pipeline includes eight modules for operations in the spatial, temporal,
+and multivariate aspects of the data as well as modules for comparing
+and communicating indexes. Analysts are free to select the modules they
+need and arrange them in the order they see fit to construct indexes.
+While the starting point of the pipeline is raw data, there are steps
+prior to this that are crucial to the success of an index. For example,
+the defined index needs to be useful for measuring the concept of
+interest and variables need to be collected from reliable sources with
+proper quality control.
 
-The notation used in this section will be first introduced before
-elaborating on each pipeline module. Let
+Before elaborating each of the eight pipeline modules as subsections,
+the data notation will be first introduced. Let
 \(\mathbf{x}(\mathbf{s};\mathbf{t})\) denote the raw data with spatial,
 temporal, and multivariate aspects: the spatial dimension
 \(\mathbf{s} = (s_1, s_2, \cdots, s_n)^\prime\) is defined in the 2D
@@ -856,15 +859,14 @@ severe, and extreme drought (\(z = 3\)) and
 class.
 
 \hypertarget{sec-incorporating-new-buliding-blocks-into-the-pipeline}{%
-\section{Incorporating new buliding blocks into the
-pipeline}\label{sec-incorporating-new-buliding-blocks-into-the-pipeline}}
+\section{Incorporating alternative methods into the pipeline
+components}\label{sec-incorporating-new-buliding-blocks-into-the-pipeline}}
 
 \hypertarget{sec-examples}{%
 \section{Examples}\label{sec-examples}}
 
-\hypertarget{constructing-standardised-precipitation-index-spi}{%
-\subsection{Constructing Standardised Precipitation Index
-(SPI)}\label{constructing-standardised-precipitation-index-spi}}
+\hypertarget{a-drought-index-example}{%
+\subsection{A drought index example}\label{a-drought-index-example}}
 
 \begin{itemize}
 \tightlist
@@ -876,9 +878,18 @@ pipeline}\label{sec-incorporating-new-buliding-blocks-into-the-pipeline}}
   allow bootstrap uncertainty
 \end{itemize}
 
-\hypertarget{calculating-spei-with-raster-data}{%
-\subsection{Calculating SPEI with raster
-data}\label{calculating-spei-with-raster-data}}
+easier to make comparison pick a publication, propose a new index that
+has this benefit but also correlate highly with the big name indexes
+
+\hypertarget{an-example-on-sustainable-development-indicators}{%
+\subsection{An example on sustainable development
+indicators}\label{an-example-on-sustainable-development-indicators}}
+
+Weighting
+
+\hypertarget{calculating-indexes-on-raster-data}{%
+\subsection{Calculating indexes on raster
+data}\label{calculating-indexes-on-raster-data}}
 
 \hypertarget{reference}{%
 \section*{Reference}\label{reference}}
