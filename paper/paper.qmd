@@ -40,10 +40,13 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+options(width = 500)
 library(tidyverse)
 library(latex2exp)
 library(patchwork)
+library(indri)
+library(GGally)
 ```
 
 # Introduction
@@ -515,9 +518,131 @@ where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are 
 easier to make comparison
 pick a publication, propose a new index that has this benefit but also correlate highly with the big name indexes
 
+\newpage
+
 ## An example on sustainable development indicators
 
-Weighting
+Another type of indexes that are commonly used in social science is to rank entities (i.e. countries) on a topic through a range of indicators. This includes university ranking from QS, Times Higher Education; the Sustainable Development Goals (SDG) Index [@SDSN_Bertelsmann_2021] by the Sustainable Development Solutions Network (SDSN), the Human Development Index (HDI) [@UNDP_2021] by United Nations Development Programme (UNDP), etc. These indexes, or rankings, typically have a set of predefined dimensions, or pillars, and indicators are first reduced to these pillars and then reduced to an index. In the following example, we will first show how to compute the Human Development Index (HDI) using the pipeline developed, and then demonstrate how the alternative expressions and parameters can be tested with two functions: `swap_exprs()` and `swap_values()`.
+
+Human Development Index (HDI) measures the development of a country through [...], more than just the economics. It uses three dimensions and four indicators: health (life expectancy at birth), education (expected years of schooling, mean years of schooling), and standard of living (GNI per capita). The technical notes [@UNDP_2021_tech_notes] from United Nation Development Programme have documented the procedures to calculate HDI and we summarise them as below: 
+
+  - take log on GNI per capita,
+  - rescale the four indicators using mini-max with the provided minimum and maximum, 
+  - aggregate the two education indicators using the arithmetic mean
+  - aggregate the three dimensions into the index using the geometrical mean
+
+After the initial data import and wrangling, these steps can be calculated in the pipeline,as: 
+
+```{r}
+dt <- readxl::read_xlsx(path = here::here("data/hdi.xlsx") , skip = 4)
+raw <- dt %>%
+  janitor::clean_names() %>%
+  dplyr::select(-paste0("x", seq(4, 14, 2))) %>%
+  dplyr::rename(id = x1, countries = x2) %>%
+  dplyr::mutate(across(c(id, human_development_index_hdi:hdi_rank), as.numeric)) %>%
+  dplyr::filter(!is.na(id)) %>%
+  dplyr::mutate(across(4:7, ~round(.x, digits = 3))) %>% 
+  dplyr::select(-c(human_development_index_hdi,
+                   gni_per_capita_rank_minus_hdi_rank, 
+                   hdi_rank)) 
+colnames(raw) <- c("id", "country", "life_exp", "exp_sch", "avg_sch", "gni_pc")
+
+scaling_params <- tibble::tribble(
+   ~Dimension, ~Indicator, ~Var,  ~Minimum, ~Maximum,
+  "Health",              "Life expectancy at birth (years)",   "life_exp",    "20",          "85",
+  "Education",           "Expected years of schooling (years)",  "exp_sch",    "0",          "18",
+  "Education",           "Mean years of schooling (years)",   "avg_sch",      "0",          "15",
+  "Standard of living",  "GNI per capita (2017 PPP$)",     "gni_pc",       "100",      "75000"
+  ) %>%
+  mutate(across(contains("mum"), as.numeric),
+         across(contains("mum"), ~ifelse(Var == "gni_pc", log10(.x), .x)))
+```
+
+```{r echo = TRUE, message=TRUE}
+dt <- raw %>% init(id = country, indicators = life_exp:gni_pc)
+(res <- dt %>%
+  var_trans(gni_pc = log10(gni_pc)) %>% 
+  var_trans(.method = rescale_minmax, .vars = life_exp:gni_pc,
+            min = scaling_params$Minimum, max = scaling_params$Maximum) %>% 
+  dim_red(sch = (exp_sch + avg_sch) / 2) %>%
+  dim_red(index = (life_exp * sch * gni_pc)^(1/3)))
+```
+
+The output is an `indri` object where a summary of the operations performed have been provided. The dataset contains the ID, country name,  rescaled variables (`life_exp`, `exp_sch`, `avg_sch`, `gni_pc`), the average of two indicators in the education dimension (`sch`), and the index calculated (`index`).
+
+A set of questions that can interest index analysts are the what-ifs: how would the index/ ranking changes if a particular parameter or expression changes in the pipeline. In the context of HDI, the index is calculated as the geometrical mean of the three dimensions, what if an arithmetic mean or different weights is used? The maximum and minimum limit is carefully chosen with justification provided in the technical notes: 
+
+  > The low minimum value for gross national income (GNI) per capita, $100, is justified by the considerable amount of unmeasured subsistence and nonmarket production in economies close to the minimum, which is not captured in the official data
+  
+  What if this lower minimum is raised or decreased?
+
+The function `swap_exprs()` and `swap_values()` can be used to answer these what-ifs.  The two functions first uses a set of arguments to locate the operations the analysts would like to test, and then accepts a list of expressions or values for testing, and lastly, the initial `indri` (raw data). Another five expressions with different weighting emphasis are tested on calculating the final HDI: 
+
+```{r echo = TRUE}
+res2 <- res %>%
+  swap_exprs(
+    .var = index,
+    .expr = list(
+      index1 = (life_exp + sch + gni_pc)/3,
+      index2 = 0.8 * life_exp + 0.1 * sch + 0.1 * gni_pc,
+      index3 = 0.1 * life_exp + 0.8 * sch + 0.1 * gni_pc,
+      index4 = 0.1 * life_exp + 0.1 * sch + 0.8 * gni_pc,
+      # PCA recommended weight
+      index5 = 0.569 * life_exp + 0.576 * sch + 0.586 * gni_pc), 
+    .raw_data = dt)
+```
+
+The result contains another 5 variations of indexes calculated from the expression above. Country ranks can be added using the base function `rank()`. Figure @fig-hdi-expr shows the scatterplot matrix of the country ranking against each other, including the original index (`index0`). From the plot, we learn that the geoemtrical mean (`rank0`), the arithmetic mean (`rank1`), and the PCA recommended weights (`rank5`) give almost similar ranks. This validates the method chosen by the original index. However, when the three dimensions are given different weights (`rank2`, `rank3`, and `rank4`), the country ranking can vary substantially. A cluster of points have been highlighted in the panel `rank3` vs. `rank4`. These countries are ranked highly according to `rank4` but become mediocre when ranked by `index3`. Looking into the three dimensions of these countries in Table @tbl-hdi-expr shows that these countries (Andorra, Qatar, San Marino, Kuwait, and Brunei Darussalam) have high life expectancy and GNI, but relatively low score on education, hence they are ranked lower when education (`sch`) is given a larger weight in `index3` (`0.1 * life_exp + 0.1 * sch + 0.8 * gni_pc`).
+
+```{r fig-hdi-expr}
+#| fig-height: 8
+#| fig-width: 12
+#| fig-cap: "my plot"
+with_rank <- res2$data %>% 
+  mutate(across(contains("index"), ~rank(-.x), .names = "rank.{.col}")) %>% 
+  rename_with(~gsub(".index", "", .x), contains("rank.index"))
+
+lower_cluster <- with_rank %>% 
+  filter(rank4 < 30, rank3 > 50) %>% 
+  select(country, life_exp, sch, gni_pc, index3, index4, rank3, rank4)
+
+with_highlight <- with_rank %>% 
+  mutate(highlight = ifelse(country %in% lower_cluster$country, TRUE, FALSE))
+
+p1 <- ggpairs(
+  with_highlight, columns = 14:19,
+  upper = list(continuous = "points", combo = "facethist", 
+               discrete = "facetbar", na = "na"),
+  lower = NULL, diag = NULL) +
+  theme(aspect.ratio = 1)
+
+# https://stackoverflow.com/questions/65091593/how-to-mark-certain-point-in-ggpairs
+p1$plots[[23]]$mapping <- 
+    `class<-`(c(p1$plots[[23]]$mapping, aes(color = highlight)), "uneval")
+p1 <- p1 + scale_color_manual(values = c("black", "red"))
+p1
+```
+
+```{r echo = FALSE}
+#| tbl-cap:  my tables
+#| label: tbl-hdi-expr
+lower_cluster %>% 
+  knitr::kable(digits = 3)
+```
+
+
+
+```{r echo = TRUE}
+res3 <- res %>%
+  swap_values(
+    .module = var_trans, .step = rescale_minmax, .res = gni_pc,
+    .var = min, .values = log10(700),
+    .raw_data = dt)
+```
+
+
+
+\newpage
 
 ## Calculating indexes on raster data
 
