@@ -524,16 +524,16 @@ pick a publication, propose a new index that has this benefit but also correlate
 
 <!-- Indexes are commonly used in social science is to rank entities (i.e. countries) on a topic through a range of indicators. This includes university ranking from QS, Times Higher Education; the Sustainable Development Goals (SDG) Index [@SDSN_Bertelsmann_2021] by the Sustainable Development Solutions Network (SDSN), the Human Development Index (HDI) [@UNDP_2021] by United Nations Development Programme (UNDP), etc. These indexes, or rankings, typically have a set of predefined dimensions, or pillars, and indicators are first reduced to these pillars and then reduced to an index.  -->
 
-In the following example, we will first constructing the Human Development Index (HDI) using the pipeline syntax and then show how the index, and ranking, may changes once an alternative expression or parameter in the computation is changed in two scenarios.
+In the following example, the Human Development Index (HDI) will first be constructed using the pipeline syntax. The section will then demonstrate how expressions or parameters in the pipeline can be swapped to alternatives to study the index property.
 
-Human Development Index (HDI) measures the development of countries from human living. Rather than focusing solely on the contribution of economic growth to the standard of living, HDI identifies another two important dimension in human development: a long living life and being knowledgeable. The three dimensions are measured using four indicators: life expectancy at birth (health), expected years of schooling (education), mean years of schooling (education), and Gross National Income (GNI) *per capita* (standard of living). The technical notes [@UNDP_2021_tech_notes] have documented the procedures to calculate HDI and they are summarised below: 
+Human Development Index (HDI) measures the development of countries through more than just economic growth, but also people's life expectancy and opportunity to receive education. These three identified dimensions are measured using four indicators: life expectancy at birth (health), expected years of schooling (education), mean years of schooling (education), and Gross National Income (GNI) *per capita* (standard of living). The technical notes [@UNDP_2021_tech_notes] have documented the procedures to calculate HDI and they are summarised below: 
 
   1. take log on GNI *per capita*,
   2. rescale the four indicators into [0, 1] using mini-max,
-  3. aggregate the two education indicators using arithmetic mean
-  4. aggregate the three dimensions into the index using geometric mean
+  3. aggregate the two education indicators using arithmetic mean, and
+  4. aggregate the three dimensions into the index using geometric mean.
   
-The values used in mini-max rescaling is summarised in @tbl-rescale-params and the justification of these numbers can be found in the technical notes mentioned above.
+The values used in mini-max rescaling are summarised in @tbl-rescale-params and the justification of these numbers can be found in the technical notes mentioned above.
 
 ```{r}
 #| tbl-cap-location: bottom
@@ -551,7 +551,7 @@ scaling_params <- tibble::tribble(
 knitr::kable(scaling_params, digits = 3)
 ```
 
-Among the four steps listed in the calculation, the first two are variable transformation. The next two steps can be considered as dimension reduction given it intends to combine multivariate data into univariate. With the index pipeline proposed in the paper, HDI can be calculated as: 
+Among the four steps listed in the calculation, the first two are variable transformation. The next two can be considered as the dimension reduction step in the data pipeline given its intention to combine multivariate data into univariate. With the index pipeline proposed in the paper, HDI can be calculated as: 
 
 ```{r}
 dt <- readxl::read_xlsx(path = here::here("data/hdi.xlsx") , skip = 4)
@@ -571,7 +571,7 @@ colnames(raw) <- c("id", "country", "life_exp", "exp_sch", "avg_sch", "gni_pc")
 ```{r echo = TRUE, message=TRUE}
 dt <- raw %>% init(id = country, indicators = life_exp:gni_pc)
 (res <- dt %>%
-  var_trans(gni_pc = log10(gni_pc)) %>% 
+  var_trans(gni_pc = log(gni_pc, base = 10)) %>% 
   var_trans(.method = rescale_minmax, .vars = life_exp:gni_pc,
             min = c(20, 0, 0, 2), max = c(85, 18, 15, log10(75000))) %>% 
   dim_red(sch = (exp_sch + avg_sch) / 2) %>%
@@ -583,9 +583,13 @@ The output is an `indri` object with a summary of operations followed by the dat
 Index analysts can be interested in studying the property of the index and the countries through the "what-if" questions. In the context of HDI, this can be: 
 
   - what if arithmetic mean, or different weights, is used to reduce the three dimensions into HDI? 
-  - what if the maximum and minimum values used in the rescaling changes? 
+  - what if an alternative maximum or minimum value is used in the rescaling step? 
 
-We will now demonstrate how these questions can be answered using the function `swap_exprs()` and `swap_values()`. Both function first use a set of arguments (`.var`, `.module`, `.step`, and `.res`) to locate the operation to be tested. Then, `.expr` and `.values` will accept a list of expression or a vector of values respectively for testing. Lastly, the initial `indri` (raw data) needs to be provided. The following code tests on five expressions (arithmetic mean, three weighting schemes each emphasizing on one dimension, and principal component analysis recommended weight):
+These questions can be answered using the function `swap_exprs()` and `swap_values()`. Both functions first use a set of arguments (`.var`, `.module`, `.step`, and `.res`) to locate the operation to be tested. Then, `.expr` and `.values` will accept a list of expressions or a vector of values for testing. Lastly, the initial `indri` (raw data) needs to be provided. 
+
+*What if an alternative dimension reduction expression is used to reduce the three dimensions into the HDI?*
+
+A common method to reduce the data dimension is through linear combination. With different weighting schemes, the combination can be compared to study the variable importance of each dimension or to reveal the underlying structures of countries. The following code tests five expressions (arithmetic mean, principal component analysis weight, and three weighting schemes emphasizing life expectancy, education, and GNI per capita respectively):
 
 ```{r echo = TRUE, message=TRUE}
 (res2 <- res %>%
@@ -601,13 +605,13 @@ We will now demonstrate how these questions can be answered using the function `
     .raw_data = dt))
 ```
 
-The resulting data includes five more columns corresponding to the five alternative index. The country ranking can be further computed on the data and plotted in a scatterplot matrix as in @fig-hdi-expr. The plot shows almost similar ranks suggested by the indexes calculated using geometric mean (`rank0`), the arithmetic mean (`rank1`), and the PCA recommended weights (`rank2`). The agreement of the three methods supports the use of geometric mean as the dimension reduction method in the original index. The scatterplot matrix also reveals the difference in ranking when the three dimensions are given different weights in `rank3`, `rank4`, and `rank5`. The panel `rank4` vs `rank5` shows a cluster of highlighted points with relatively high ranks according to `rank5` but low in `rank4`.  These countries are printed in @tbl-hdi-expr prints along with their three dimensions, calculated indexes and rankings. While having a high life expectancy and GNI *per capita*, these countries (Andorra, Qatar, San Marino, Kuwait, and Brunei Darussalam) score relatively low in education, which is weighted heavily in `index4` (`0.1 * life_exp + 0.1 * sch + 0.8 * gni_pc`).
+The resulting data includes five more columns corresponding to the five alternative indexes. The country ranking can be further computed on the data and plotted in a scatterplot matrix as in @fig-hdi-expr. The plot shows almost similar ranks suggested by the indexes calculated using geometric mean (`rank0`), the arithmetic mean (`rank1`), and the PCA recommended weights (`rank2`). The agreement of the three methods supports the use of geometric mean as the dimension reduction method in the original index. The scatterplot matrix also reveals the difference in ranking when the three dimensions are given different weights in `rank3`, `rank4`, and `rank5`. The panel `rank4` vs `rank5` shows a cluster of highlighted points with relatively high ranks according to `rank5` but low in `rank4`.  These countries are printed in @tbl-hdi-expr prints along with their three dimensions, calculated indexes, and rankings. While having a high life expectancy and GNI *per capita*, these countries (Andorra, Qatar, San Marino, Kuwait, and Brunei Darussalam) score relatively low in education, which is weighted heavily in `index4` (`0.1 * life_exp + 0.1 * sch + 0.8 * gni_pc`).
 
 
 ```{r fig-hdi-expr}
 #| fig-height: 8
 #| fig-width: 12
-#| fig-cap: "Scatterplot matrix of country rankings computed from different dimension reduction expressions in HDI: geometric mean (`rank0`), arithmetic mean (`rank1`), principal component analysis recommended weights (`rank2`), and heavier weight on life expectancy, education, and GNI per capita (`rank3` - `rank5`). Geometric mean, arithmetic mean, and PCA produce similar rankings where countries are aligned in a diagnoal line, while country rankings varies when compare among `rank3` to `rank5`. Panel `rank5` vs. `rank4` highlights a cluster of countries that rank high by `rank5` but low by `rank4`. The plot demonstrates the necessity to tests on various alternative expressions to study the robustness of the method and to capture distinctive characteristics of different countries. "
+#| fig-cap: "Scatterplot matrix of country rankings computed from different dimension reduction expressions in HDI: geometric mean (`rank0`), arithmetic mean (`rank1`), principal component analysis recommended weights (`rank2`), and heavier weight on life expectancy, education, and GNI per capita (`rank3` - `rank5`). Geometric mean, arithmetic mean, and PCA produce similar rankings where countries are aligned in a diagnoal line, while country rankings varies when compare among `rank3` to `rank5`. Panel `rank5` vs. `rank4` highlights a cluster of countries that rank high by `rank5` but low by `rank4`. The plot demonstrates the necessity to test on various alternative expressions to verify the robustness of the method and to capture distinctive characteristics of different countries. "
 with_rank <- res2$data %>% 
   mutate(across(contains("index"), ~rank(-.x), .names = "rank.{.col}")) %>% 
   rename_with(~gsub(".index", "", .x), contains("rank.index"))
@@ -641,21 +645,51 @@ lower_cluster %>%
   knitr::kable(digits = 3)
 ```
 
+\newpage
 
-The maximum and minimum limit is carefully chosen with justification provided in the technical notes: 
+*what if the minimum value for GNI per capita is changed?*
+
+The lower limit for GNI per capita is set to be the common log of $100, with justification provided in the technical notes as:
 
   > The low minimum value for gross national income (GNI) per capita, $100, is justified by the considerable amount of unmeasured subsistence and nonmarket production in economies close to the minimum, which is not captured in the official data
   
-  What if this lower minimum is raised or decreased?
+The open source data provided by United Nations Development Programme suggest the minimum GNI *per capita* is `$732` and this opens the questions on how the index/ranking will change if the lower minimum (`$100`) is raised or decreased. We can answer this question by testing on a set of different values using `.values` in the function `swap_values()`:
 
-
-```{r echo = TRUE}
-res3 <- res %>%
+```{r echo = TRUE, message = TRUE}
+(res3 <- res %>%
   swap_values(
     .module = var_trans, .step = rescale_minmax, .res = gni_pc,
     .var = min, .values = log10(700),
-    .raw_data = dt)
+    .raw_data = dt)) 
 ```
+
+\newpage
+
+The function computes the GNI *per capita* in both the original value (`gni_pc0`) and the new value provided (`gni_pc1`). All the subsequent operations are also computed for both cases and result in `index0` and `index1`.
+
+```{r}
+#| fig-height: 6
+#| fig-width: 6
+#| fig-align: center
+new_rank <- res3$data %>%
+  mutate(across(contains("index"), ~rank(-.x), .names = "rank.{.col}")) %>%
+  rename_with(~gsub(".index", "", .x), contains("rank.index")) %>% 
+  mutate(difference = rank1 - rank0)
+
+try <- new_rank %>%
+  dplyr::select(id, country, contains("life_exp"), contains("index"), contains("rank"), difference) %>% 
+  arrange(-abs(difference))
+
+new_rank %>% 
+  ggplot(aes(x = rank0, y = rank1)) + 
+  geom_point() + 
+  geom_abline(slope = 1, intercept = 0, color = "blue") +
+  # geom_text(data = try %>% filter(difference > 15), color = "red", aes(label = country)) +
+  theme(aspect.ratio = 1) +
+  xlab("log10(100) as the rescale minimum for GNI per capita") +
+  ylab("log10(700) as the rescale minimum for GNI per capita") 
+```
+
 
 
 
