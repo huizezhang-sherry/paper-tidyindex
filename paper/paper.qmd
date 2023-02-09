@@ -187,14 +187,27 @@ In this workflow, analysts are not limited by indexes that have been already pro
 
 ## How does the pipeline constructin of an index look like? 
 
-Consider a commonly used drought index: Standardized Precipitation-Evapotranspiration Index (SPEI)  [@spei]. Its construction involves: 1) calculating potential evapotranspiration (PET) from average temperature, `tavg`, and its difference, `d`, with precipitation, `prcp`, 2) aggregating difference series with a time scale, 3) fitting the aggregated series with a chosen distribution to get density values, and 4) converting the density values to normal quantiles. Under the pipeline approach, SPEI will be constructed as: 
+Consider a commonly used drought index: Standardized Precipitation-Evapotranspiration Index (SPEI)  [@spei]. Its construction involves: 
+
+  1) transform the average temperature (`TMED`) into potential evapotranspiration (`pet`) 
+  2) combine precipitation (`prcp`) and potential evapotranspiration (`pet`) into a single variable `diff`
+  3) aggregate the difference series with a sliding window (`.scale`) 
+  4) fit a distribution to the aggregated series, and 
+  5) derive the index value from the normal density values.
+
+Conventionally approach may combine all these steps into a single function, with some level of modularity. However, these modules may only work for the selected index offered by the package.
+
+Under the pipeline approach, analysts first need to identify which module each step belongs to. 
+
+Below shows the pseudocode for constructing SPEI with the pipeline:
 
 ```{r eval = FALSE, echo = TRUE}
 DATA %>% 
-  trans_pet(method = thornthwaite, var = tavg) %>% 
-  aggregate(scale = 12, var = d) %>% 
-  normalise(dist = gamma, fit_method = lmom) %>% 
-  augment(var = .agg_prcp)
+  var_trans(.method = thornthwaite, Tave = TMED, ..., .new_name = "pet") %>%
+  dim_red(diff = prcp - pet) %>%
+  aggregate(.var = diff, .scale = 12, .new_name = "agg") %>%
+  dist_fit(.method = "lmoms", .var = agg, .dist = DIST) %>%
+  augment(.var = agg)
 ```
 
 <!-- *FWI:*  -->
@@ -204,46 +217,51 @@ DATA %>%
 <!--   - *created variables are prefixed with dot: `.agg_prcp`* -->
 <!--   - *avoid string and use function to avoid "gamma" vs. "gam": `gamma()`, `lmom()`* -->
 
-*Change the examples to two scales values, compare how indexes look like*
+The pipeline construct allows for multiple `.scales` and `.dist` to be evaluated in `aggregate()` and `dist_fit()` to compare index under different parameterisations. The result can then be passed into the `ggplot2` to crease visualisation. @fig-toy-example compares the SPEI calculated with two distributions (log-logistic and pearson III). 
 
-Here each command corresponds to one step described above with additional arguments specific to the step. 
-The pipeline construction produces the same index value as command like `spei(...)`, as shown in @fig-toy-example, but with additional benefit:
+Apart from evaluating multiples parameters, the pipeline approach allows the the steps written for one index can be directly extrapolate to another index building within the pipeline. The flexibility of the pipeline also integrate well with other existing packages, for examples, fitting distributions using L-moment is commonly used when constructing drought indexes. The package `lmomco` provides general L-moment fits to a wide range of distributions and users can easily access to all the distributions within the pipeline. 
 
-  - Multiple scales and multiple distributions can be fitted using the `c(...)` syntax to compare index values constructed from different parameterisations; 
-  - Intermediate results can be checked after each step; and
-  - Additional steps and analysis can be wired into the workflow for index diagnostics and customised user need.
-  
-  
-  *everyone is providing single command function, this is also the same for spi*
-  
-  *may not worthwhile if only one index, as long as start changing*
-  
-  *just want to calculate index, single function is fine*
+<!-- additional benefit: -->
+
+<!--   - Multiple scales and multiple distributions can be fitted using the `c(...)` syntax to compare index values constructed from different parameterisations;  -->
+<!--   - Intermediate results can be checked after each step; and -->
+<!--   - Additional steps and analysis can be wired into the workflow for index diagnostics and customised user need. -->
 
 ```{r fig-toy-example, eval = TRUE, echo = FALSE}
 #| fig-align: center
-#| fig-cap: "Standardised Precipitation Evapotranspiration Index (SPEI) calculated with two distribution fits in Step 3 described above: generalised logistic (`glogist`) and generalised extreme value (`gev`) distribution, using the `wichita` data from the package `SPEI`."
-#| out-height: 30%
-#| out-width: 100%
-# library(indri)
-# library(dplyr)
-# library(lubridate)
-# library(lmomco)
-# library(ggplot2)
-# library(tsibble)
-# library(SPEI)
-# data(wichita)
-# 
-# dt <- wichita %>% 
-#   aggregate(var = prcp, scale = c(6, 12), index = ym, id = id, gran = month) %>%
-#   filter(!is.na(.agg)) %>%
-#   normalise(dist = list(gev(), loglogistic()), var = .agg) %>%
-#   augment(col = .agg)
-# 
-# dt %>% 
-#   ggplot(aes(x = ym, y = .index, color = .dist)) + 
-#   geom_line()
-knitr::include_graphics(here::here("figures/toy-example-spei.png"))
+#| fig-width: 10
+#| fig-height: 3
+#| fig-cap: "Standardised Precipitation Evapotranspiration Index (SPEI) calculated with two distribution fits in Step 3 described above: generalised logistic and pearson III distribution, using the `wichita` data from the package `SPEI`."
+library(indri)
+library(lmomco)
+library(ggplot2)
+library(tsibble)
+library(SPEI)
+library(tidyverse)
+library(lubridate)
+data(wichita)
+
+dt <- wichita %>%
+  mutate(ym = make_yearmonth(YEAR, MONTH), id = 1) %>% 
+  init(id = id, time = ym, indicators = PRCP:ACSH) %>%
+  var_trans(.method = thornthwaite, Tave = TMED, lat = 37.6475, .new_name = "pet") %>%
+  dim_red(diff = PRCP - pet) %>%
+  aggregate(.var = diff, .scale = 12) %>%
+  dist_fit(.dist = list(loglogistic(), pearsonIII()), .method = "lmoms", .var = .agg) %>%
+  augment(.var = .agg)
+
+dt$data %>%
+  mutate(.dist = ifelse(.dist == "parglo", "Log-logistic", "PearsonIII")) %>% 
+  ggplot(aes(x = ym, y = .index, color = .dist)) +
+  geom_line() + 
+   theme_bw() +
+  theme(
+    panel.grid = element_blank()
+  ) +
+  scale_x_yearmonth(name = "Year", date_break = "2 years", date_label = "%Y") +
+  scale_color_brewer(palette = "Dark2", name = "distribution") + 
+  ylab("SPEI")
+
 ```
 
 
@@ -507,9 +525,62 @@ where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are 
 
 <!-- # [Extending the pipeline] a different name here: alternate a module with a different (method) -->
 
+\newpage
+
 # Examples {#sec-examples}
 
 ## A drought index example
+
+Drought, as a complex natural hazard event, is difficult to measure. 
+
+There is no uniform definition on drought [@ref], a range of drought indexes are usually used simultaneously to quantify the severity of a drought event. 
+
+In the package PACKAGE, a collection of drought indexes have been implemented, including the most commonly used SPI and SPEI (`idx_spi()` and `idx_spei()`). They can be computed collectively on a dataset under `compute_indexes()`: 
+
+```{r eval = FALSE}
+DATA %>% 
+  init(id = ..., time = ...) %>% 
+  compute_indexes(
+    spei = idx_spei(...),
+    spi = idx_spei(...)
+  )
+```
+
+The individual index functions are convenient wrappers around the pipeline building blocks.
+
+For SPI and SPEI, the wrapper functions also allow for multiple inputs of scales and distribution parameters (`.scale` and `.dist`) to allow computation on multiple time scale and distribution fitting. The following code compute the two indexes (SPI and SPEI) for different time scales (6, 12, 18, 24, 30, 36) and different distributions (Pearson III, log-logistic, lognormal, and general extreme value distributions) for [NUMBER] weather stations in Eastern Australia shown in @fig-station-map: (TODO: should talk about the data source)
+
+```{r eval = FALSE}
+scale <- c(6, 12, 18, 24, 30, 36)
+dist_spei <- c(gev(), loglogistic(), pearsonIII(), lognormal())
+dist_spi <- c(gamma(), weibull())
+dt %>% 
+  compute_indexes(
+    spei = idx_spei(
+      .pet_method = "thornthwaite", .tavg = tavg, .lat = lat, 
+      .scale = scale, .dist = dist_spei),
+    spi = idx_spi(.scale = scale,  .dist = dist_spi)
+  )
+```
+
+
+```{r fig-station-map}
+#| fig-cap: "..."
+#| echo: false
+
+map_dt <- ozmaps::abs_ste %>%
+  filter(NAME %in% c("New South Wales", "Victoria", "Queensland")) %>%
+  rmapshaper::ms_simplify(keep = 0.01)
+
+map_dt %>%
+  ggplot() +
+  geom_sf(fill = "transparent") +
+  theme_void() 
+  #geom_point(data = , aes(x = long, y = lat))
+```
+
+
+
 
 -   a basic workflow and congruence with results in the `SPEI` pkg
 -   allow multiple distribution fit
@@ -611,7 +682,7 @@ The resulting data includes five more columns corresponding to the five alternat
 ```{r fig-hdi-expr}
 #| fig-height: 8
 #| fig-width: 12
-#| fig-cap: "Scatterplot matrix of country rankings computed from different dimension reduction expressions in HDI: geometric mean (`rank0`), arithmetic mean (`rank1`), principal component analysis recommended weights (`rank2`), and heavier weight on life expectancy, education, and GNI per capita (`rank3` - `rank5`). Geometric mean, arithmetic mean, and PCA produce similar rankings where countries are aligned in a diagnoal line, while country rankings varies when compare among `rank3` to `rank5`. Panel `rank5` vs. `rank4` highlights a cluster of countries that rank high by `rank5` but low by `rank4`. The plot demonstrates the necessity to test on various alternative expressions to verify the robustness of the method and to capture distinctive characteristics of different countries. "
+#| fig-cap: "Comparing country ranks from six different index constructions: geometric mean (`rank0`), arithmetic mean (`rank1`), principal component analysis recommended weights (`rank2`), and heavier weight on life expectancy, education, and GNI per capita (`rank3` - `rank5`). Geometric mean, arithmetic mean, and PCA produce similar rankings where countries are aligned in a diagnoal line, while country rankings varies when compare among `rank3` to `rank5`. Panel `rank5` vs. `rank4` highlights a cluster of countries that rank high by `rank5` but low by `rank4`. The plot demonstrates the necessity to test on various alternative expressions to verify the robustness of the method and to capture distinctive characteristics of different countries. "
 with_rank <- res2$data %>% 
   mutate(across(contains("index"), ~rank(-.x), .names = "rank.{.col}")) %>% 
   rename_with(~gsub(".index", "", .x), contains("rank.index"))
@@ -621,13 +692,17 @@ lower_cluster <- with_rank %>%
   select(country, life_exp, sch, gni_pc, index3, index4, rank3, rank4)
 
 with_highlight <- with_rank %>% 
-  mutate(highlight = ifelse(country %in% lower_cluster$country, TRUE, FALSE))
+  mutate(highlight = ifelse(country %in% lower_cluster$country, TRUE, FALSE)) %>% 
+  rename(`geometric mean` = rank0, `arithmetic mean` = rank1,
+         `PCA weights` = rank2, `weight 0.8 on life expec.` = rank3,
+         `weight 0.8 on education`  = rank4, `weight 0.8 on GNI per capita` = rank5)
 
 p1 <- ggpairs(
   with_highlight, columns = 14:19,
   lower = list(continuous = "points", combo = "facethist", 
                discrete = "facetbar", na = "na"),
-  upper = NULL, diag = NULL, switch = "both") +
+  upper = NULL, diag = NULL,  switch = "both", 
+  labeller = label_wrap_gen(width = 15, multi_line = TRUE) ) +
   theme(aspect.ratio = 1)
 
 # https://stackoverflow.com/questions/65091593/how-to-mark-certain-point-in-ggpairs
@@ -645,50 +720,51 @@ lower_cluster %>%
   knitr::kable(digits = 3)
 ```
 
-\newpage
+<!-- \newpage -->
 
-*what if the minimum value for GNI per capita is changed?*
+<!-- *what if the minimum value for GNI per capita is changed?* -->
 
-The lower limit for GNI per capita is set to be the common log of $100, with justification provided in the technical notes as:
+<!-- The lower limit for GNI per capita is set to be the common log of $100, with justification provided in the technical notes as: -->
 
-  > The low minimum value for gross national income (GNI) per capita, $100, is justified by the considerable amount of unmeasured subsistence and nonmarket production in economies close to the minimum, which is not captured in the official data
-  
-The open source data provided by United Nations Development Programme suggest the minimum GNI *per capita* is `$732` and this opens the questions on how the index/ranking will change if the lower minimum (`$100`) is raised or decreased. We can answer this question by testing on a set of different values using `.values` in the function `swap_values()`:
+<!--   > The low minimum value for gross national income (GNI) per capita, $100, is justified by the considerable amount of unmeasured subsistence and nonmarket production in economies close to the minimum, which is not captured in the official data -->
 
-```{r echo = TRUE, message = TRUE}
-(res3 <- res %>%
-  swap_values(
-    .module = var_trans, .step = rescale_minmax, .res = gni_pc,
-    .var = min, .values = log10(700),
-    .raw_data = dt)) 
-```
+<!-- The open source data provided by United Nations Development Programme suggest the minimum GNI *per capita* is `$732` and this opens the questions on how the index/ranking will change if the lower minimum (`$100`) is raised or decreased. We can answer this question by testing on a set of different values using `.values` in the function `swap_values()`: -->
 
-\newpage
+<!-- ```{r echo = TRUE, message = TRUE} -->
+<!-- (res3 <- res %>% -->
+<!--   swap_values( -->
+<!--     .module = var_trans, .step = rescale_minmax, .res = gni_pc, -->
+<!--     .var = max, .values = log10(150000), -->
+<!--     .raw_data = dt) -->
+<!--    )  -->
+<!-- ``` -->
 
-The function computes the GNI *per capita* in both the original value (`gni_pc0`) and the new value provided (`gni_pc1`). All the subsequent operations are also computed for both cases and result in `index0` and `index1`.
+<!-- \newpage -->
 
-```{r}
-#| fig-height: 6
-#| fig-width: 6
-#| fig-align: center
-new_rank <- res3$data %>%
-  mutate(across(contains("index"), ~rank(-.x), .names = "rank.{.col}")) %>%
-  rename_with(~gsub(".index", "", .x), contains("rank.index")) %>% 
-  mutate(difference = rank1 - rank0)
+<!-- The function computes the GNI *per capita* in both the original value (`gni_pc0`) and the new value provided (`gni_pc1`). All the subsequent operations are also computed for both cases and result in `index0` and `index1`. -->
 
-try <- new_rank %>%
-  dplyr::select(id, country, contains("life_exp"), contains("index"), contains("rank"), difference) %>% 
-  arrange(-abs(difference))
+<!-- ```{r} -->
+<!-- #| fig-height: 6 -->
+<!-- #| fig-width: 6 -->
+<!-- #| fig-align: center -->
+<!-- new_rank <- res3$data %>% -->
+<!--   mutate(across(contains("index"), ~rank(-.x), .names = "rank.{.col}")) %>% -->
+<!--   rename_with(~gsub(".index", "", .x), contains("rank.index")) %>%  -->
+<!--   mutate(difference = rank1 - rank0) -->
 
-new_rank %>% 
-  ggplot(aes(x = rank0, y = rank1)) + 
-  geom_point() + 
-  geom_abline(slope = 1, intercept = 0, color = "blue") +
-  # geom_text(data = try %>% filter(difference > 15), color = "red", aes(label = country)) +
-  theme(aspect.ratio = 1) +
-  xlab("log10(100) as the rescale minimum for GNI per capita") +
-  ylab("log10(700) as the rescale minimum for GNI per capita") 
-```
+<!-- try <- new_rank %>% -->
+<!--   dplyr::select(id, country, contains("gni_pc"), contains("index"), contains("rank"), difference) %>%  -->
+<!--   arrange(-abs(difference)) -->
+
+<!-- new_rank %>%  -->
+<!--   ggplot(aes(x = rank0, y = rank1)) +  -->
+<!--   geom_point() +  -->
+<!--   geom_abline(slope = 1, intercept = 0, color = "blue") + -->
+<!--   # geom_text(data = try %>% filter(difference > 15), color = "red", aes(label = country)) + -->
+<!--   theme(aspect.ratio = 1) + -->
+<!--   xlab("log10(100) as the rescale minimum for GNI per capita") + -->
+<!--   ylab("log10(700) as the rescale minimum for GNI per capita")  -->
+<!-- ``` -->
 
 
 

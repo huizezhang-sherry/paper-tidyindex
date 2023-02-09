@@ -254,7 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indexes \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, sharp corners, enhanced, boxrule=0pt, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, sharp corners, breakable, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, frame hidden, interior hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -480,63 +480,73 @@ like?}\label{how-does-the-pipeline-constructin-of-an-index-look-like}}
 
 Consider a commonly used drought index: Standardized
 Precipitation-Evapotranspiration Index (SPEI) (Vicente-Serrano,
-Beguería, and López-Moreno 2010). Its construction involves: 1)
-calculating potential evapotranspiration (PET) from average temperature,
-\texttt{tavg}, and its difference, \texttt{d}, with precipitation,
-\texttt{prcp}, 2) aggregating difference series with a time scale, 3)
-fitting the aggregated series with a chosen distribution to get density
-values, and 4) converting the density values to normal quantiles. Under
-the pipeline approach, SPEI will be constructed as:
+Beguería, and López-Moreno 2010). Its construction involves:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\tightlist
+\item
+  transform the average temperature (\texttt{TMED}) into potential
+  evapotranspiration (\texttt{pet})
+\item
+  combine precipitation (\texttt{prcp}) and potential evapotranspiration
+  (\texttt{pet}) into a single variable \texttt{diff}
+\item
+  aggregate the difference series with a sliding window
+  (\texttt{.scale})
+\item
+  fit a distribution to the aggregated series, and
+\item
+  derive the index value from the normal density values.
+\end{enumerate}
+
+Conventionally approach may combine all these steps into a single
+function, with some level of modularity. However, these modules may only
+work for the selected index offered by the package.
+
+Under the pipeline approach, analysts first need to identify which
+module each step belongs to.
+
+Below shows the pseudocode for constructing SPEI with the pipeline:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{DATA }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{trans\_pet}\NormalTok{(}\AttributeTok{method =}\NormalTok{ thornthwaite, }\AttributeTok{var =}\NormalTok{ tavg) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{aggregate}\NormalTok{(}\AttributeTok{scale =} \DecValTok{12}\NormalTok{, }\AttributeTok{var =}\NormalTok{ d) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{normalise}\NormalTok{(}\AttributeTok{dist =}\NormalTok{ gamma, }\AttributeTok{fit\_method =}\NormalTok{ lmom) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{augment}\NormalTok{(}\AttributeTok{var =}\NormalTok{ .agg\_prcp)}
+  \FunctionTok{var\_trans}\NormalTok{(}\AttributeTok{.method =}\NormalTok{ thornthwaite, }\AttributeTok{Tave =}\NormalTok{ TMED, ..., }\AttributeTok{.new\_name =} \StringTok{"pet"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{dim\_red}\NormalTok{(}\AttributeTok{diff =}\NormalTok{ prcp }\SpecialCharTok{{-}}\NormalTok{ pet) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{aggregate}\NormalTok{(}\AttributeTok{.var =}\NormalTok{ diff, }\AttributeTok{.scale =} \DecValTok{12}\NormalTok{, }\AttributeTok{.new\_name =} \StringTok{"agg"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{dist\_fit}\NormalTok{(}\AttributeTok{.method =} \StringTok{"lmoms"}\NormalTok{, }\AttributeTok{.var =}\NormalTok{ agg, }\AttributeTok{.dist =}\NormalTok{ DIST) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{augment}\NormalTok{(}\AttributeTok{.var =}\NormalTok{ agg)}
 \end{Highlighting}
 \end{Shaded}
 
-\emph{Change the examples to two scales values, compare how indexes look
-like}
+The pipeline construct allows for multiple \texttt{.scales} and
+\texttt{.dist} to be evaluated in \texttt{aggregate()} and
+\texttt{dist\_fit()} to compare index under different parameterisations.
+The result can then be passed into the \texttt{ggplot2} to crease
+visualisation. Figure~\ref{fig-toy-example} compares the SPEI calculated
+with two distributions (log-logistic and pearson III).
 
-Here each command corresponds to one step described above with
-additional arguments specific to the step. The pipeline construction
-produces the same index value as command like \texttt{spei(...)}, as
-shown in Figure~\ref{fig-toy-example}, but with additional benefit:
-
-\begin{itemize}
-\tightlist
-\item
-  Multiple scales and multiple distributions can be fitted using the
-  \texttt{c(...)} syntax to compare index values constructed from
-  different parameterisations;
-\item
-  Intermediate results can be checked after each step; and
-\item
-  Additional steps and analysis can be wired into the workflow for index
-  diagnostics and customised user need.
-\end{itemize}
-
-\emph{everyone is providing single command function, this is also the
-same for spi}
-
-\emph{may not worthwhile if only one index, as long as start changing}
-
-\emph{just want to calculate index, single function is fine}
+Apart from evaluating multiples parameters, the pipeline approach allows
+the the steps written for one index can be directly extrapolate to
+another index building within the pipeline. The flexibility of the
+pipeline also integrate well with other existing packages, for examples,
+fitting distributions using L-moment is commonly used when constructing
+drought indexes. The package \texttt{lmomco} provides general L-moment
+fits to a wide range of distributions and users can easily access to all
+the distributions within the pipeline.
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\textwidth,height=0.3\textheight]{../figures/toy-example-spei.png}
+{\centering \includegraphics{paper_files/figure-pdf/fig-toy-example-1.pdf}
 
 }
 
 \caption{\label{fig-toy-example}Standardised Precipitation
 Evapotranspiration Index (SPEI) calculated with two distribution fits in
-Step 3 described above: generalised logistic (\texttt{glogist}) and
-generalised extreme value (\texttt{gev}) distribution, using the
-\texttt{wichita} data from the package \texttt{SPEI}.}
+Step 3 described above: generalised logistic and pearson III
+distribution, using the \texttt{wichita} data from the package
+\texttt{SPEI}.}
 
 \end{figure}
 
@@ -862,11 +872,47 @@ class.
 \section{Incorporating alternative methods into the pipeline
 components}\label{sec-incorporating-new-buliding-blocks-into-the-pipeline}}
 
+\newpage
+
 \hypertarget{sec-examples}{%
 \section{Examples}\label{sec-examples}}
 
 \hypertarget{a-drought-index-example}{%
 \subsection{A drought index example}\label{a-drought-index-example}}
+
+Drought, as a complex natural hazard event, is difficult to measure.
+
+There is no uniform definition on drought (\textbf{ref?}), a range of
+drought indexes are usually used simultaneously to quantify the severity
+of a drought event.
+
+In the package PACKAGE, a collection of drought indexes have been
+implemented, including the most commonly used SPI and SPEI
+(\texttt{idx\_spi()} and \texttt{idx\_spei()}). They can be computed
+collectively on a dataset under \texttt{compute\_indexes()}:
+
+The individual index functions are convenient wrappers around the
+pipeline building blocks.
+
+For SPI and SPEI, the wrapper functions also allow for multiple inputs
+of scales and distribution parameters (\texttt{.scale} and
+\texttt{.dist}) to allow computation on multiple time scale and
+distribution fitting. The following code compute the two indexes (SPI
+and SPEI) for different time scales (6, 12, 18, 24, 30, 36) and
+different distributions (Pearson III, log-logistic, lognormal, and
+general extreme value distributions) for {[}NUMBER{]} weather stations
+in Eastern Australia shown in Figure~\ref{fig-station-map}: (TODO:
+should talk about the data source)
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-station-map-1.pdf}
+
+}
+
+\caption{\label{fig-station-map}\ldots{}}
+
+\end{figure}
 
 \begin{itemize}
 \tightlist
@@ -1026,15 +1072,15 @@ Data:
       id country                life_exp exp_sch avg_sch gni_pc   sch index
    <dbl> <chr>                     <dbl>   <dbl>   <dbl>  <dbl> <dbl> <dbl>
  1     1 Switzerland               0.984   0.917   0.924  0.983 0.920 0.962
- 2     2 Norway                    0.973   1.01    0.867  0.978 0.939 0.963
- 3     3 Iceland                   0.964   1.06    0.918  0.955 0.991 0.970
- 4     4 Hong Kong, China (SAR)    1.01    0.960   0.815  0.973 0.887 0.954
- 5     5 Australia                 0.993   1.17    0.848  0.936 1.01  0.979
- 6     6 Denmark                   0.944   1.04    0.864  0.967 0.952 0.954
- 7     7 Sweden                    0.969   1.08    0.841  0.952 0.960 0.960
- 8     8 Ireland                   0.954   1.05    0.772  1.00  0.912 0.955
+ 2     2 Norway                    0.973   1       0.867  0.978 0.933 0.961
+ 3     3 Iceland                   0.964   1       0.918  0.955 0.959 0.959
+ 4     4 Hong Kong, China (SAR)    1       0.960   0.815  0.973 0.887 0.952
+ 5     5 Australia                 0.993   1       0.848  0.936 0.924 0.951
+ 6     6 Denmark                   0.944   1       0.864  0.967 0.932 0.948
+ 7     7 Sweden                    0.969   1       0.841  0.952 0.920 0.947
+ 8     8 Ireland                   0.954   1       0.772  1     0.886 0.945
  9     9 Germany                   0.933   0.945   0.939  0.952 0.942 0.942
-10    10 Netherlands               0.949   1.04    0.839  0.956 0.939 0.948
+10    10 Netherlands               0.949   1       0.839  0.956 0.919 0.941
 # ... with 181 more rows
 \end{verbatim}
 
@@ -1155,15 +1201,15 @@ Data:
       id country   life_~1 exp_sch avg_sch gni_pc   sch index0 index1 index2 index3 index4
    <dbl> <chr>       <dbl>   <dbl>   <dbl>  <dbl> <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
  1     1 Switzerl~   0.984   0.917   0.924  0.983 0.920  0.962  0.963   1.67  0.978  0.933
- 2     2 Norway      0.973   1.01    0.867  0.978 0.939  0.963  0.963   1.67  0.970  0.946
- 3     3 Iceland     0.964   1.06    0.918  0.955 0.991  0.970  0.970   1.68  0.966  0.985
- 4     4 Hong Kon~   1.01    0.960   0.815  0.973 0.887  0.954  0.956   1.65  0.992  0.908
- 5     5 Australia   0.993   1.17    0.848  0.936 1.01   0.979  0.979   1.69  0.989  1.00 
- 6     6 Denmark     0.944   1.04    0.864  0.967 0.952  0.954  0.954   1.65  0.947  0.953
- 7     7 Sweden      0.969   1.08    0.841  0.952 0.960  0.960  0.960   1.66  0.966  0.960
- 8     8 Ireland     0.954   1.05    0.772  1.00  0.912  0.955  0.956   1.66  0.955  0.925
+ 2     2 Norway      0.973   1       0.867  0.978 0.933  0.961  0.961   1.66  0.969  0.942
+ 3     3 Iceland     0.964   1       0.918  0.955 0.959  0.959  0.959   1.66  0.963  0.959
+ 4     4 Hong Kon~   1       0.960   0.815  0.973 0.887  0.952  0.953   1.65  0.986  0.907
+ 5     5 Australia   0.993   1       0.848  0.936 0.924  0.951  0.951   1.65  0.980  0.932
+ 6     6 Denmark     0.944   1       0.864  0.967 0.932  0.948  0.948   1.64  0.945  0.937
+ 7     7 Sweden      0.969   1       0.841  0.952 0.920  0.947  0.947   1.64  0.962  0.928
+ 8     8 Ireland     0.954   1       0.772  1     0.886  0.945  0.947   1.64  0.952  0.904
  9     9 Germany     0.933   0.945   0.939  0.952 0.942  0.942  0.942   1.63  0.936  0.942
-10    10 Netherla~   0.949   1.04    0.839  0.956 0.939  0.948  0.948   1.64  0.949  0.941
+10    10 Netherla~   0.949   1       0.839  0.956 0.919  0.941  0.941   1.63  0.947  0.926
 # ... with 181 more rows, 1 more variable: index5 <dbl>, and abbreviated variable name
 #   1: life_exp
 \end{verbatim}
@@ -1195,19 +1241,19 @@ relatively low in education, which is weighted heavily in
 
 }
 
-\caption{\label{fig-hdi-expr}Scatterplot matrix of country rankings
-computed from different dimension reduction expressions in HDI:
-geometric mean (\texttt{rank0}), arithmetic mean (\texttt{rank1}),
-principal component analysis recommended weights (\texttt{rank2}), and
-heavier weight on life expectancy, education, and GNI per capita
-(\texttt{rank3} - \texttt{rank5}). Geometric mean, arithmetic mean, and
-PCA produce similar rankings where countries are aligned in a diagnoal
-line, while country rankings varies when compare among \texttt{rank3} to
-\texttt{rank5}. Panel \texttt{rank5} vs.~\texttt{rank4} highlights a
-cluster of countries that rank high by \texttt{rank5} but low by
-\texttt{rank4}. The plot demonstrates the necessity to test on various
-alternative expressions to verify the robustness of the method and to
-capture distinctive characteristics of different countries.}
+\caption{\label{fig-hdi-expr}Comparing country ranks from six different
+index constructions: geometric mean (\texttt{rank0}), arithmetic mean
+(\texttt{rank1}), principal component analysis recommended weights
+(\texttt{rank2}), and heavier weight on life expectancy, education, and
+GNI per capita (\texttt{rank3} - \texttt{rank5}). Geometric mean,
+arithmetic mean, and PCA produce similar rankings where countries are
+aligned in a diagnoal line, while country rankings varies when compare
+among \texttt{rank3} to \texttt{rank5}. Panel \texttt{rank5}
+vs.~\texttt{rank4} highlights a cluster of countries that rank high by
+\texttt{rank5} but low by \texttt{rank4}. The plot demonstrates the
+necessity to test on various alternative expressions to verify the
+robustness of the method and to capture distinctive characteristics of
+different countries.}
 
 \end{figure}
 
@@ -1266,120 +1312,12 @@ rank4
 \midrule()
 \endhead
 Andorra & 0.929 & 0.721 & 0.942 & 0.909 & 0.764 & 32 & 69 \\
-Qatar & 0.912 & 0.684 & 1.023 & 0.900 & 0.741 & 34 & 83 \\
-San Marino & 0.937 & 0.701 & 0.947 & 0.914 & 0.749 & 31 & 76 \\
+Qatar & 0.912 & 0.684 & 1.000 & 0.898 & 0.739 & 34 & 84 \\
+San Marino & 0.937 & 0.701 & 0.947 & 0.914 & 0.749 & 30 & 76 \\
 Kuwait & 0.903 & 0.670 & 0.947 & 0.884 & 0.721 & 39 & 96 \\
 Brunei Darussalam & 0.841 & 0.694 & 0.977 & 0.840 & 0.737 & 60 & 85 \\
 \bottomrule()
 \end{longtable}
-
-\newpage
-
-\emph{what if the minimum value for GNI per capita is changed?}
-
-The lower limit for GNI per capita is set to be the common log of \$100,
-with justification provided in the technical notes as:
-
-\begin{quote}
-The low minimum value for gross national income (GNI) per capita, \$100,
-is justified by the considerable amount of unmeasured subsistence and
-nonmarket production in economies close to the minimum, which is not
-captured in the official data
-\end{quote}
-
-The open source data provided by United Nations Development Programme
-suggest the minimum GNI \emph{per capita} is \texttt{\$732} and this
-opens the questions on how the index/ranking will change if the lower
-minimum (\texttt{\$100}) is raised or decreased. We can answer this
-question by testing on a set of different values using \texttt{.values}
-in the function \texttt{swap\_values()}:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{(res3 }\OtherTok{\textless{}{-}}\NormalTok{ res }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{swap\_values}\NormalTok{(}
-    \AttributeTok{.module =}\NormalTok{ var\_trans, }\AttributeTok{.step =}\NormalTok{ rescale\_minmax, }\AttributeTok{.res =}\NormalTok{ gni\_pc,}
-    \AttributeTok{.var =}\NormalTok{ min, }\AttributeTok{.values =} \FunctionTok{log10}\NormalTok{(}\DecValTok{700}\NormalTok{),}
-    \AttributeTok{.raw\_data =}\NormalTok{ dt)) }
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Index pipeline: 
-
-Summary: 
-\end{verbatim}
-
-\begin{verbatim}
-var_trans: `log(gni_pc, base = 10)` -> gni_pc
-\end{verbatim}
-
-\begin{verbatim}
-var_trans: `rescale_minmax(var = life_exp, min = 20, max = 85)` -> life_exp
-\end{verbatim}
-
-\begin{verbatim}
-var_trans: `rescale_minmax(var = exp_sch, min = 0, max = 18)` -> exp_sch
-\end{verbatim}
-
-\begin{verbatim}
-var_trans: `rescale_minmax(var = avg_sch, min = 0, max = 15)` -> avg_sch
-\end{verbatim}
-
-\begin{verbatim}
-var_trans: `rescale_minmax(var = gni_pc, min = 2, max = 4.875061)` -> gni_pc0
-\end{verbatim}
-
-\begin{verbatim}
-dim_red: `(exp_sch + avg_sch)/2` -> sch
-\end{verbatim}
-
-\begin{verbatim}
-dim_red: `(life_exp * sch * gni_pc0)^(1/3)` -> index0
-\end{verbatim}
-
-\begin{verbatim}
-var_trans: `rescale_minmax(var = gni_pc, min = 2.84509804001426, max = 4.875061)` ->
-gni_pc1
-\end{verbatim}
-
-\begin{verbatim}
-dim_red: `(life_exp * sch * gni_pc1)^(1/3)` -> index1
-\end{verbatim}
-
-\begin{verbatim}
-
-Data: 
-# A tibble: 191 x 10
-      id country              life_~1 exp_sch avg_sch gni_pc gni_pc0 index0 gni_pc1 index1
-   <dbl> <chr>                  <dbl>   <dbl>   <dbl>  <dbl>   <dbl>  <dbl>   <dbl>  <dbl>
- 1     1 Switzerland            0.984   0.917   0.924   4.83   0.983  0.962   0.976  0.960
- 2     2 Norway                 0.973   1.01    0.867   4.81   0.978  0.963   0.968  0.960
- 3     3 Iceland                0.964   1.06    0.918   4.75   0.955  0.970   0.937  0.964
- 4     4 Hong Kong, China (S~   1.01    0.960   0.815   4.80   0.973  0.954   0.961  0.951
- 5     5 Australia              0.993   1.17    0.848   4.69   0.936  0.979   0.910  0.970
- 6     6 Denmark                0.944   1.04    0.864   4.78   0.967  0.954   0.954  0.950
- 7     7 Sweden                 0.969   1.08    0.841   4.74   0.952  0.960   0.932  0.953
- 8     8 Ireland                0.954   1.05    0.772   4.88   1.00   0.955   1.00   0.956
- 9     9 Germany                0.933   0.945   0.939   4.74   0.952  0.942   0.932  0.936
-10    10 Netherlands            0.949   1.04    0.839   4.75   0.956  0.948   0.937  0.942
-# ... with 181 more rows, and abbreviated variable name 1: life_exp
-\end{verbatim}
-
-\newpage
-
-The function computes the GNI \emph{per capita} in both the original
-value (\texttt{gni\_pc0}) and the new value provided
-(\texttt{gni\_pc1}). All the subsequent operations are also computed for
-both cases and result in \texttt{index0} and \texttt{index1}.
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/unnamed-chunk-8-1.pdf}
-
-}
-
-\end{figure}
 
 \newpage
 
