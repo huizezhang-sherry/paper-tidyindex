@@ -254,7 +254,7 @@ Statistics\\Monash University\\Melbourne, VIC\\}
 indexes \sep data pipeline \sep 
 software design
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, sharp corners, breakable, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, frame hidden, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, breakable, sharp corners, frame hidden, enhanced, interior hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -891,41 +891,110 @@ implemented, including the most commonly used SPI and SPEI
 (\texttt{idx\_spi()} and \texttt{idx\_spei()}). They can be computed
 collectively on a dataset under \texttt{compute\_indexes()}:
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{DATA }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{init}\NormalTok{(}\AttributeTok{id =}\NormalTok{ ..., }\AttributeTok{time =}\NormalTok{ ...) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{compute\_indexes}\NormalTok{(}
+    \AttributeTok{spei =} \FunctionTok{idx\_spei}\NormalTok{(...),}
+    \AttributeTok{spi =} \FunctionTok{idx\_spei}\NormalTok{(...)}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
 The individual index functions are convenient wrappers around the
 pipeline building blocks.
 
 For SPI and SPEI, the wrapper functions also allow for multiple inputs
 of scales and distribution parameters (\texttt{.scale} and
 \texttt{.dist}) to allow computation on multiple time scale and
-distribution fitting. The following code compute the two indexes (SPI
-and SPEI) for different time scales (6, 12, 18, 24, 30, 36) and
-different distributions (Pearson III, log-logistic, lognormal, and
-general extreme value distributions) for {[}NUMBER{]} weather stations
-in Eastern Australia shown in Figure~\ref{fig-station-map}: (TODO:
-should talk about the data source)
+distribution fitting.
+
+The climate data is sourced from Global Historical Climatology Network
+Daily (GHCND).
+
+stations in Queensland, Australia. With precipitation, maximum and
+minimum temperature available since January 1990.
+
+This gives 29 stations.
+
+The following code compute the two indexes (SPI and SPEI) at different
+time scales (6, 12, 24, 36) and different distributions (log-logistic
+and general extreme value distributions for SPEI and gamma for SPI).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{.scale }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DecValTok{12}\NormalTok{, }\DecValTok{24}\NormalTok{, }\DecValTok{36}\NormalTok{)}
+\NormalTok{(idx }\OtherTok{\textless{}{-}}\NormalTok{ queensland }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{init}\NormalTok{(}\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{time =}\NormalTok{ ym) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{compute\_indexes}\NormalTok{(}
+    \AttributeTok{spei =} \FunctionTok{idx\_spei}\NormalTok{(}
+      \AttributeTok{.pet\_method =} \StringTok{"thornthwaite"}\NormalTok{, }\AttributeTok{.tavg =}\NormalTok{ tavg, }\AttributeTok{.lat =}\NormalTok{ lat,}
+      \AttributeTok{.scale =}\NormalTok{ .scale, }\AttributeTok{.dist =} \FunctionTok{c}\NormalTok{(}\FunctionTok{gev}\NormalTok{(), }\FunctionTok{loglogistic}\NormalTok{())),}
+    \AttributeTok{spi =} \FunctionTok{idx\_spi}\NormalTok{(}\AttributeTok{.scale =}\NormalTok{ .scale)}
+\NormalTok{  ))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 128,586 x 19
+   .idx  .period id              ym  prcp  tmax  tmin  tavg  long   lat name    pet   diff
+   <chr>   <dbl> <chr>        <mth> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <chr> <dbl>  <dbl>
+ 1 spei        6 ASN00029~ 1990 Jun   170  29.7  16.2  23.0  142. -15.5 KOWA~  67.8  102. 
+ 2 spei        6 ASN00029~ 1990 Jun   170  29.7  16.2  23.0  142. -15.5 KOWA~  67.8  102. 
+ 3 spei        6 ASN00029~ 1990 Jun     0  23.0  11.8  17.4  139. -20.7 MOUN~  30.8  -30.8
+ 4 spei        6 ASN00029~ 1990 Jun     0  23.0  11.8  17.4  139. -20.7 MOUN~  30.8  -30.8
+ 5 spei        6 ASN00031~ 1990 Jun   794  25.8  18.1  21.9  146. -16.9 CAIR~  66.3  728. 
+ 6 spei        6 ASN00031~ 1990 Jun   794  25.8  18.1  21.9  146. -16.9 CAIR~  66.3  728. 
+ 7 spei        6 ASN00031~ 1990 Jun   504  23.0  13.8  18.4  145. -17.1 WALK~  48.4  456. 
+ 8 spei        6 ASN00031~ 1990 Jun   504  23.0  13.8  18.4  145. -17.1 WALK~  48.4  456. 
+ 9 spei        6 ASN00032~ 1990 Jun  1970  23.9  16.4  20.2  146. -17.6 SOUT~  54.5 1915. 
+10 spei        6 ASN00032~ 1990 Jun  1970  23.9  16.4  20.2  146. -17.6 SOUT~  54.5 1915. 
+# ... with 128,576 more rows, and 6 more variables: .scale <dbl>, .agg <dbl>,
+#   .method <chr>, .fitted <dbl>, .dist <chr>, .index <dbl>
+\end{verbatim}
+
+The output from \texttt{compute\_indexes()} contains index values and
+associated parameter in a long tibble. Analysis and visualisation can
+then be conducted to understand the effect of scale and distribution on
+the index value or explore the spatial and temporal pattern of wet/dry
+condition as in Figure~\ref{fig-compute-spatial} and
+Figure~\ref{fig-compute-temporal}.
 
 \begin{figure}
 
-{\centering \includegraphics{paper_files/figure-pdf/fig-station-map-1.pdf}
+{\centering \includegraphics{paper_files/figure-pdf/fig-compute-spatial-1.pdf}
 
 }
 
-\caption{\label{fig-station-map}\ldots{}}
+\caption{\label{fig-compute-spatial}Spatial distribution of Standardized
+Precipitation Index (SPI-12) in Queensland, Australia during two major
+flood and drought events: 2010/11 and 2019/20. The map shows a continous
+wet period during the 2010/11 flood period and a mitigated drought
+situation, after its worst in 2019 December and 2020 Janurary, likely
+due to the increased rainfall in February from the meteorological
+record.}
 
 \end{figure}
 
-\begin{itemize}
-\tightlist
-\item
-  a basic workflow and congruence with results in the \texttt{SPEI} pkg
-\item
-  allow multiple distribution fit
-\item
-  allow bootstrap uncertainty
-\end{itemize}
+\begin{figure}
 
-easier to make comparison pick a publication, propose a new index that
-has this benefit but also correlate highly with the big name indexes
+{\centering \includegraphics{paper_files/figure-pdf/fig-compute-temporal-1.pdf}
+
+}
+
+\caption{\label{fig-compute-temporal}Time series plot of Standardized
+Precipitation-Evapotranspiration Index (SPEI) at the Texas post office
+station (highlighted by a diamond shape in panel a). The SPEI is
+calculated at four time scales (6, 12, 24, and 36 months) and fitted
+with two distributions (Log Logistic and GEV). The dashed line at -2
+represents the class ``extreme drought'' by the SPEI. A larger time
+scale gives a smoother index series, while also takes longer to recover
+from an extreme situation as seen in the 2019/20 drought period. The
+SPEI values from two distribution fits mostly agree, while GEV can
+results in more extreme values, i.e.~in 1998 and 2020.}
+
+\end{figure}
 
 \newpage
 

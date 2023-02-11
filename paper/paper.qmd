@@ -46,7 +46,12 @@ library(tidyverse)
 library(latex2exp)
 library(patchwork)
 library(indri)
+library(lmomco)
+library(lubridate)
+library(SPEI)
+library(tsibble)
 library(GGally)
+library(patchwork)
 ```
 
 # Introduction
@@ -537,7 +542,7 @@ There is no uniform definition on drought [@ref], a range of drought indexes are
 
 In the package PACKAGE, a collection of drought indexes have been implemented, including the most commonly used SPI and SPEI (`idx_spi()` and `idx_spei()`). They can be computed collectively on a dataset under `compute_indexes()`: 
 
-```{r eval = FALSE}
+```{r eval = FALSE, echo = TRUE}
 DATA %>% 
   init(id = ..., time = ...) %>% 
   compute_indexes(
@@ -548,46 +553,100 @@ DATA %>%
 
 The individual index functions are convenient wrappers around the pipeline building blocks.
 
-For SPI and SPEI, the wrapper functions also allow for multiple inputs of scales and distribution parameters (`.scale` and `.dist`) to allow computation on multiple time scale and distribution fitting. The following code compute the two indexes (SPI and SPEI) for different time scales (6, 12, 18, 24, 30, 36) and different distributions (Pearson III, log-logistic, lognormal, and general extreme value distributions) for [NUMBER] weather stations in Eastern Australia shown in @fig-station-map: (TODO: should talk about the data source)
+For SPI and SPEI, the wrapper functions also allow for multiple inputs of scales and distribution parameters (`.scale` and `.dist`) to allow computation on multiple time scale and distribution fitting. 
 
-```{r eval = FALSE}
-scale <- c(6, 12, 18, 24, 30, 36)
-dist_spei <- c(gev(), loglogistic(), pearsonIII(), lognormal())
-dist_spi <- c(gamma(), weibull())
-dt %>% 
+The climate data is sourced from Global Historical Climatology Network Daily (GHCND). 
+
+stations in Queensland, Australia. 
+With precipitation, maximum and minimum temperature available since January 1990. 
+
+This gives `r length(unique(queensland$id))` stations.
+
+The following code compute the two indexes (SPI and SPEI) at different time scales (6, 12, 24, 36) and different distributions (log-logistic and general extreme value distributions for SPEI and gamma for SPI). 
+
+```{r cache=TRUE, echo = TRUE}
+.scale <- c(6, 12, 24, 36)
+(idx <- queensland %>%
+  init(id = id, time = ym) %>%
   compute_indexes(
     spei = idx_spei(
-      .pet_method = "thornthwaite", .tavg = tavg, .lat = lat, 
-      .scale = scale, .dist = dist_spei),
-    spi = idx_spi(.scale = scale,  .dist = dist_spi)
-  )
+      .pet_method = "thornthwaite", .tavg = tavg, .lat = lat,
+      .scale = .scale, .dist = c(gev(), loglogistic())),
+    spi = idx_spi(.scale = .scale)
+  ))
+```
+
+The output from `compute_indexes()` contains index values and associated parameter in a long tibble. Analysis and visualisation can then be conducted to understand the effect of scale and distribution on the index value or explore the spatial and temporal pattern of wet/dry condition as in @fig-compute-spatial and @fig-compute-temporal.
+
+```{r}
+library(sf)
+qld_lga <- absmapsdata::lga2018 %>%
+  filter(state_name_2016 == "Queensland") %>%
+  rmapshaper::ms_simplify(keep = 0.3) %>%
+  mutate(lga_name_2018 = str_replace(lga_name_2018, " \\([S|R|C|]\\)", ""),
+         lga_name_2018 = str_replace(lga_name_2018, " \\(Qld\\)", ""))
 ```
 
 
-```{r fig-station-map}
-#| fig-cap: "..."
-#| echo: false
+<!-- maybe combine the two figures: Exploratory data analysis on the computed indexes: ??? -->
 
-map_dt <- ozmaps::abs_ste %>%
-  filter(NAME %in% c("New South Wales", "Victoria", "Queensland")) %>%
-  rmapshaper::ms_simplify(keep = 0.01)
+```{r fig-compute-spatial}
+#| fig-cap: "Spatial distribution of Standardized Precipitation Index (SPI-12) in Queensland, Australia during two major flood and drought events: 2010/11 and 2019/20. The map shows a continous wet period during the 2010/11 flood period and a mitigated drought situation, after its worst in 2019 December and 2020 Janurary, likely due to the increased rainfall in February from the meteorological record."
+#| fig-width: 12
+#| fig-height: 5
+queensland_map <- ozmaps::abs_ste %>% filter(NAME == "Queensland") %>% 
+  rmapshaper::ms_simplify(keep = 0.02)
+queensland_map %>%
+  ggplot() +
+  geom_sf(fill = "transparent", color = "grey50", linewidth = 0.4) +
+  geom_point(
+    data = idx %>%
+      filter(.idx == "spi", .scale == 12) %>%
+      filter(((year(ym) %in% c(2010, 2019) & month(ym) >= 10) )|
+               ((year(ym) %in% c(2011, 2020) & month(ym) <= 3) )), 
+    aes(x = long, y = lat, color = .index)) +
+  scale_color_distiller(palette = "BrBG", direction = 1, name = "Index", ) +
+  theme_void() +
+  facet_wrap(vars(ym), ncol = 6)
+```
 
-map_dt %>%
+```{r fig-compute-temporal}
+#| fig-cap: 'Time series plot of Standardized Precipitation-Evapotranspiration Index (SPEI) at the Texas post office station (highlighted by a diamond shape in panel a). The SPEI is calculated at four time scales (6, 12, 24, and 36 months) and fitted with two distributions (Log Logistic and GEV). The dashed line at -2 represents the class "extreme drought" by the SPEI. A larger time scale gives a smoother index series, while also takes longer to recover from an extreme situation as seen in the  2019/20 drought period. The SPEI values from two distribution fits mostly agree, while GEV can results in more extreme values, i.e. in 1998 and 2020.'
+#| fig-width: 12
+#| fig-height: 6
+texas <- idx %>%
+    filter(name == "TEXAS POST OFFICE", .idx == "spei") %>% distinct(long, lat)
+p1 <- queensland_map %>%
   ggplot() +
   geom_sf(fill = "transparent") +
-  theme_void() 
-  #geom_point(data = , aes(x = long, y = lat))
+  geom_point(data = queensland %>%
+               distinct(id, long, lat, name),
+             aes(x = long, y = lat)) +
+  geom_point(data = texas, aes(x = long, y = lat),
+             color = "orange", shape = 18, fill = "orange", size = 4) +  
+  theme_void()
+
+
+p2 <- idx %>%
+  filter(name == "TEXAS POST OFFICE", .idx == "spei") %>%
+  mutate(.dist = ifelse(.dist == "pargev", "GEV", "Log Logistic")) %>%
+  rename(scale = .scale) %>% 
+  ggplot(aes(x = ym, y = .index, color = .dist, group = .dist)) +
+  geom_line() +
+  theme_benchmark() +
+  facet_wrap(vars(scale), labeller = label_both, ncol = 1) +
+  scale_x_yearmonth(breaks = "2 year", date_labels = "%Y") +
+  scale_color_brewer(palette = "Dark2", name = "Distribution") + 
+  xlab("Year") + 
+  ylab("Index")
+
+(p1 | p2)  + 
+  patchwork::plot_annotation(tag_levels = "a") + 
+  patchwork::plot_layout(guides = "collect")  &
+  theme(legend.position = "bottom") 
+  
 ```
 
-
-
-
--   a basic workflow and congruence with results in the `SPEI` pkg
--   allow multiple distribution fit
--   allow bootstrap uncertainty
-
-easier to make comparison
-pick a publication, propose a new index that has this benefit but also correlate highly with the big name indexes
 
 \newpage
 
