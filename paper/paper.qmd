@@ -190,7 +190,7 @@ In this workflow, analysts are not limited by indexes that have been already pro
 
 # A pipeline for building statistical indexes {#sec-a-pipeline-for-building-statistical-indexes}
 
-## How does the pipeline constructin of an index look like? 
+## How does the pipeline constructin of an index look like? {#sec-toy-example}
 
 Consider a commonly used drought index: Standardized Precipitation-Evapotranspiration Index (SPEI)  [@spei]. Its construction involves: 
 
@@ -536,33 +536,11 @@ where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are 
 
 ## A drought index example
 
-Drought, as a complex natural hazard event, is difficult to measure. 
+A common task for drought researchers is to compute indexes at different parameter combinations. This can be used to identify the spatial and temporal extent of drought events, recommend the best parameter choice, or compare the effectiveness of indexes for monitoring drought. The example below computes two indexes: SPI and SPEI, at various time scales and fitted distributions, for stations in the state of Queensland in Australia. The purpose of the example is to demonstrate the interfaces the PACKAGE package built to allow easy computing at different parameter combinations. 
 
-There is no uniform definition on drought [@ref], a range of drought indexes are usually used simultaneously to quantify the severity of a drought event. 
+The state of Queensland in Australia is frequently affected by natural disaster events such as flood and drought, which can have significant impacts on its agricultural industry.  This study uses daily data from Global Historical Climatology Network Daily (GHCND), accessed via the package `rnoaa` to examine drought/flood condition in Queensland. Daily data is average into monthly and stations are excluded if monthly data contains missings, which is required for calculating both SPI and SPEI. This gives `r length(unique(queensland$id))` stations with complete records from 1990 January to 2022 April.
 
-In the package PACKAGE, a collection of drought indexes have been implemented, including the most commonly used SPI and SPEI (`idx_spi()` and `idx_spei()`). They can be computed collectively on a dataset under `compute_indexes()`: 
-
-```{r eval = FALSE, echo = TRUE}
-DATA %>% 
-  init(id = ..., time = ...) %>% 
-  compute_indexes(
-    spei = idx_spei(...),
-    spi = idx_spei(...)
-  )
-```
-
-The individual index functions are convenient wrappers around the pipeline building blocks.
-
-For SPI and SPEI, the wrapper functions also allow for multiple inputs of scales and distribution parameters (`.scale` and `.dist`) to allow computation on multiple time scale and distribution fitting. 
-
-The climate data is sourced from Global Historical Climatology Network Daily (GHCND). 
-
-stations in Queensland, Australia. 
-With precipitation, maximum and minimum temperature available since January 1990. 
-
-This gives `r length(unique(queensland$id))` stations.
-
-The following code compute the two indexes (SPI and SPEI) at different time scales (6, 12, 24, 36) and different distributions (log-logistic and general extreme value distributions for SPEI and gamma for SPI). 
+The function `compute_indexes()` can be used to collectively compute multiple indexes. The PACKAGE offers wrapper functions, with the prefix idx_, that simplify the calculation of commonly used indexes by combining a set of pipeline steps into a single function. For example, the function `idx_spei()` includes the five steps previously described in @sec-toy-example (variable transformation, dimension reduction, temporal aggregation, distribution fit, and normalise). Each `idx_xxx()` function specifies the relevant parameters relevant to the index: the thornthwaite method is used to calculate PET in SPEI, with the average temperature (`tavg`) and latitude (`lat`) used as inputs. The SPEI is computed at four time scales (6, 12, 24, and 36 months) and fitted with two distributions (Log-logistic and General Extreme Value (GEV)). The SPI is also computed at the same four time scales and uses the default gamma distribution to fit the aggregated series. 
 
 ```{r cache=TRUE, echo = TRUE}
 .scale <- c(6, 12, 24, 36)
@@ -576,7 +554,8 @@ The following code compute the two indexes (SPI and SPEI) at different time scal
   ))
 ```
 
-The output from `compute_indexes()` contains index values and associated parameter in a long tibble. Analysis and visualisation can then be conducted to understand the effect of scale and distribution on the index value or explore the spatial and temporal pattern of wet/dry condition as in @fig-compute-spatial and @fig-compute-temporal.
+The output from `compute_indexes()` contains index values and associated parameter in a long tibble. It includes the original variables (`id`, `ym`, `prcp`, `tmax`, `tmin`, `tavg`, `long`, `lat`, and `name`), index parameters (`.idx`, `.scale`, `.method`, and `.dist`), intermediate variables (`pet`, `.agg`, and `.fitted`), and the final index (`.index`). This data can be visualised across space or time, or simultaneously, to explore the wet/dry condition in Queensland. @fig-compute-spatial visualises the spatial distribution of SPI at two periods (2010 October - 2011 March and 2019 October - 2020 March) with significant natural disaster events: 2010/11 Queensland flood and 2019 Australia drought, which contributes to the notorious 2019/20 bushfire. @fig-compute-temporal displays the sensitivity of the SPEI series for one particular station, Texas post office, at different time scales and fitted distributions. These two plots demonstrate some possibilities to explore the indexes after they are computed from `compute_indexes()`. 
+
 
 ```{r}
 library(sf)
@@ -586,9 +565,6 @@ qld_lga <- absmapsdata::lga2018 %>%
   mutate(lga_name_2018 = str_replace(lga_name_2018, " \\([S|R|C|]\\)", ""),
          lga_name_2018 = str_replace(lga_name_2018, " \\(Qld\\)", ""))
 ```
-
-
-<!-- maybe combine the two figures: Exploratory data analysis on the computed indexes: ??? -->
 
 ```{r fig-compute-spatial}
 #| fig-cap: "Spatial distribution of Standardized Precipitation Index (SPI-12) in Queensland, Australia during two major flood and drought events: 2010/11 and 2019/20. The map shows a continous wet period during the 2010/11 flood period and a mitigated drought situation, after its worst in 2019 December and 2020 Janurary, likely due to the increased rainfall in February from the meteorological record."
