@@ -528,17 +528,28 @@ where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are 
 
 # Incorporating alternative methods into the pipeline components {#sec-incorporating-new-buliding-blocks-into-the-pipeline}
 
+
+<!-- # 1. unpack or the argumebt s  -->
+<!-- # 2. construct the syntax to evalute: ~rescale_minmax(life_exp, min = xxx, max = xxxx) -->
+<!-- # 3. evalute  -->
+<!-- # 4. update the data object  -->
+
+
+
+
 <!-- # [Extending the pipeline] a different name here: alternate a module with a different (method) -->
 
 # Examples {#sec-examples}
 
+\newpage
+
 ## A drought index example
 
-A common task for drought researchers is to compute indexes at different parameter combinations. This can be used to identify the spatial and temporal extent of drought events, recommend the best parameter choice, or compare the effectiveness of indexes for monitoring drought. The example below computes two indexes: SPI and SPEI, at various time scales and fitted distributions, for stations in the state of Queensland in Australia. The purpose of the example is to demonstrate the interfaces the PACKAGE package built to allow easy computing at different parameter combinations. 
+A common task for drought researchers is to compute indexes at different parameter combinations. This can be used to identify the spatial and temporal extent of drought events, recommend the best parameter choice, or compare the effectiveness of indexes for monitoring drought. The example below computes two indexes: SPI and SPEI, at various time scales and fitted distributions, for stations in the state of Queensland in Australia. The purpose of the example is to demonstrate the interfaces the tidyindex package built to allow easy computing at different parameter combinations. 
 
 The state of Queensland in Australia is frequently affected by natural disaster events such as flood and drought, which can have significant impacts on its agricultural industry.  This study uses daily data from Global Historical Climatology Network Daily (GHCND), accessed via the package `rnoaa` to examine drought/flood condition in Queensland. Daily data is average into monthly and stations are excluded if monthly data contains missings, which is required for calculating both SPI and SPEI. This gives `r length(unique(queensland$id))` stations with complete records from 1990 January to 2022 April.
 
-The function `compute_indexes()` can be used to collectively compute multiple indexes. The PACKAGE offers wrapper functions, with the prefix idx_, that simplify the calculation of commonly used indexes by combining a set of pipeline steps into a single function. For example, the function `idx_spei()` includes the five steps previously described in @sec-toy-example (variable transformation, dimension reduction, temporal aggregation, distribution fit, and normalise). Each `idx_xxx()` function specifies the relevant parameters relevant to the index: the thornthwaite method is used to calculate PET in SPEI, with the average temperature (`tavg`) and latitude (`lat`) used as inputs. The SPEI is computed at four time scales (6, 12, 24, and 36 months) and fitted with two distributions (Log-logistic and General Extreme Value (GEV)). The SPI is also computed at the same four time scales and uses the default gamma distribution to fit the aggregated series. 
+The function `compute_indexes()` can be used to collectively compute multiple indexes. The tidyindex offers wrapper functions, with the prefix idx_, that simplify the calculation of commonly used indexes by combining a set of pipeline steps into a single function. For example, the function `idx_spei()` includes the five steps previously described in @sec-toy-example (variable transformation, dimension reduction, temporal aggregation, distribution fit, and normalise). Each `idx_xxx()` function specifies the relevant parameters relevant to the index: the thornthwaite method is used to calculate PET in SPEI, with the average temperature (`tavg`) and latitude (`lat`) used as inputs. The SPEI is computed at four time scales (6, 12, 24, and 36 months) and fitted with two distributions (Log-logistic and General Extreme Value (GEV)). The SPI is also computed at the same four time scales and uses the default gamma distribution to fit the aggregated series. 
 
 ```{r cache=TRUE, echo = TRUE}
 .scale <- c(6, 12, 24, 36)
@@ -579,7 +590,7 @@ queensland_map %>%
       filter(((year(ym) %in% c(2010, 2019) & month(ym) >= 10) )|
                ((year(ym) %in% c(2011, 2020) & month(ym) <= 3) )), 
     aes(x = long, y = lat, color = .index)) +
-  scale_color_distiller(palette = "BrBG", direction = 1, name = "Index", ) +
+  colorspace::scale_color_continuous_divergingx(palette = "Geyser", rev = TRUE, name = "Index") + 
   theme_void() +
   facet_wrap(vars(ym), ncol = 6)
 ```
@@ -620,9 +631,6 @@ p2 <- idx %>%
   theme(legend.position = "bottom") 
   
 ```
-
-
-\newpage
 
 ## An example on sustainable development indicators
 
@@ -674,26 +682,17 @@ colnames(raw) <- c("id", "country", "life_exp", "exp_sch", "avg_sch", "gni_pc")
 
 ```{r echo = TRUE, message=TRUE}
 dt <- raw %>% init(id = country, indicators = life_exp:gni_pc)
-(res <- dt %>%
+res <- dt %>%
   var_trans(gni_pc = log(gni_pc, base = 10)) %>% 
   var_trans(.method = rescale_minmax, .vars = life_exp:gni_pc,
             min = c(20, 0, 0, 2), max = c(85, 18, 15, log10(75000))) %>% 
   dim_red(sch = (exp_sch + avg_sch) / 2) %>%
-  dim_red(index = (life_exp * sch * gni_pc)^(1/3)))
+  dim_red(index = (life_exp * sch * gni_pc)^(1/3))
 ```
 
-The output is an `indri` object with a summary of operations followed by the data output. The data output contains the ID, country name, rescaled variables (`life_exp`, `exp_sch`, `avg_sch`, and `gni_pc`), the aggregated education dimension (`sch`), and the final index calculated (`index`).
+<!-- The output is an `indri` object with a summary of operations followed by the data output. The data output contains the ID, country name, rescaled variables (`life_exp`, `exp_sch`, `avg_sch`, and `gni_pc`), the aggregated education dimension (`sch`), and the final index calculated (`index`). -->
 
-Index analysts can be interested in studying the property of the index and the countries through the "what-if" questions. In the context of HDI, this can be: 
-
-  - what if arithmetic mean, or different weights, is used to reduce the three dimensions into HDI? 
-  - what if an alternative maximum or minimum value is used in the rescaling step? 
-
-These questions can be answered using the function `swap_exprs()` and `swap_values()`. Both functions first use a set of arguments (`.var`, `.module`, `.step`, and `.res`) to locate the operation to be tested. Then, `.expr` and `.values` will accept a list of expressions or a vector of values for testing. Lastly, the initial `indri` (raw data) needs to be provided. 
-
-*What if an alternative dimension reduction expression is used to reduce the three dimensions into the HDI?*
-
-A common method to reduce the data dimension is through linear combination. With different weighting schemes, the combination can be compared to study the variable importance of each dimension or to reveal the underlying structures of countries. The following code tests five expressions (arithmetic mean, principal component analysis weight, and three weighting schemes emphasizing life expectancy, education, and GNI per capita respectively):
+Index analysts can be interested in studying the property of the index and the countries through the "what-if" questions. In the context of HDI, this can be what if an alternative dimension reduction expression is used to reduce the three dimensions into the HDI? Apart from the geometrical mean, linear combination is a common method to reduce the data dimension. With different weighting schemes, the combination can be compared to study the variable importance of each dimension or to reveal the underlying structures of countries. The following code tests five expressions (arithmetic mean, principal component analysis weight, and three weighting schemes emphasizing life expectancy, education, and GNI per capita respectively) using the `swap_exprs()` function. The function first locates the operation to be tested (`.var = index`), then accepts a list of expressions for testing `.expr`, before requesting the raw data:
 
 ```{r echo = TRUE, message=TRUE}
 (res2 <- res %>%
@@ -799,12 +798,13 @@ lower_cluster %>%
 <!--   ylab("log10(700) as the rescale minimum for GNI per capita")  -->
 <!-- ``` -->
 
+\newpage 
 
 # Conclusion
 
 The paper presents a data pipeline with nine modules for constructing and analysing indexes. The pipeline increases transparency in the practice for index analysts to experiment with different index design and parameter choices to better design and apply their indexes. The significance of this work is its ability to provide a universal framework for index construction, which can be applied across different domains.
 
-Examples have been given in the drought indexes and human development index to demonstrate computing of indexes with different parameters combinations and how alternative index design can provide insights to understand distinctive country characteristics that could sometimes be overlooked. The accompanied package, PACKAGE, is not meant to provide comprehensive implementation for all indexes across all domains. Instead, it demonstrates implementing individual pipeline steps that are versatile to multiple indexes and composing new indexes from existing steps. Domain experts are welcomed to adopt the pipeline approach to develop specialised packages for specific-domains indexes.
+Examples have been given in the drought indexes and human development index to demonstrate computing of indexes with different parameters combinations and how alternative index design can provide insights to understand distinctive country characteristics that could sometimes be overlooked. The accompanied package, tidyindex, is not meant to provide comprehensive implementation for all indexes across all domains. Instead, it demonstrates implementing individual pipeline steps that are versatile to multiple indexes and composing new indexes from existing steps. Domain experts are welcomed to adopt the pipeline approach to develop specialised packages for specific-domains indexes.
 
 
 # Reference
