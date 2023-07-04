@@ -251,7 +251,7 @@ Statistics, Monash University, Melbourne, VIC, Australia
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, frame hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, interior hidden, breakable, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, enhanced, borderline west={3pt}{0pt}{shadecolor}, sharp corners, breakable, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -263,65 +263,57 @@ information (variables) that need to be taken into account}
 
 Many concepts relevant to decision making cannot be directly measured,
 however, they are crucial for resource allocation, early prevention, and
-other operational purpose. For example, fire authorities would be
-interested to quantify fire risk since bushfires can have a huge impact
-on monetary loss, health, and the local ecosystem. Climatologists would
-be interested in monitoring the change in global climate since
-variability in atmospheric and oceanic conditions has a direct impact on
-global weather and climate. Usually this concept of interest is
-associated with more than one variables and these variables need to be
-integrated to make decisions on the subject matter. A common approach to
-quantify concepts like these is to construct an index using these
-relevant variables. This allows researchers to compare the quantity of
-interest across entities (i.e.~countries, regions) and also cross time.
+other operational purpose.
+
+\begin{itemize}
+\tightlist
+\item
+  USDM and European Drought Observatory publishes drought indicator to
+  {[}\ldots{]},
+\item
+  NOAA and BOM producing forecast on El Nino alert system to
+  {[}\ldots{]}
+\item
+  OECD and UN producing indexes measuring socio-economic aspects of
+  country for policy making.
+\end{itemize}
+
+There decision making often needs to consider multiple aspects and
+indexes is a statistical tool to pack these information into a single
+number, making it easier for policy makers and public communication.
 
 \textbf{Define what is an index, what is not}
 
-In this article, an index is defined as a tool to quantify a concept of
-interest that does not have a direct measure. The concept of interest
-doesn't have a direct measure can because it is impractical to measure
-at the population level. For example, it would be nearly impossible to
-include all the available stocks in the market to characterise stock
-market behavior, so indexes like Dow Jones Industrial Average, S\&P 500,
-and Nasdaq Composite select a representative set of stocks to measure
-the overall market behavior. Also belonging to this category are the
-economic indexes like the Consumer Price Index, where price changes of a
-basket of items are weighted to measure inflation. The lack of direct
-measure could also because the concept itself is an unobservable human
-construction, rather than a physical quantity that can be measured. Many
-natural hazard and social concepts falls into this category. This
-includes drought indexes constructed from meteorological, agricultural,
-hydrological, and social-economic variables, e.g.~Standardised
-Precipitation Index (SPI) (McKee et al. 1993) and Aggregated Drought
-Index (ADI) (Keyantash and Dracup 2004) among others. Social development
-indexes like Human Development Index (United Nations Development
-Programme 2022) and Global Liveability Index (Economist Intelligence
-Unit 2019) measure various aspects of the quality of human capital and
-urban life.
+\begin{itemize}
+\tightlist
+\item
+  Indexes can be composed from single variables or multiple variables
+  (composite index)
+\item
+  to make the definition even more complex is that indexes themselves
+  are used with other variables to compose indexes (many drought indexes
+  using an index called SPI).
+\item
+  Some indexes may be more simple than you think:
 
-\emph{still need to tweak the tone a bit: ``they are called index, they
-are not the index we will talk about''}
-
-Despite many quantity having the term \emph{index} in their name, they
-cannot be technically classified as indexes according to the definition
-given above. The reason for these quantities to lose their index
-memberships is that they are variables can be accurately measured given
-the instrument precision. This includes quantities like precipitation of
-the driest month or percentage of days when maximum temperature is below
-10th percentile. They are measures of precipitation and percentage of
-days under specific conditions (dries month, maximum temperature below
-10th percentile). They are variables, or indicators, that can be used to
-construct indexes but are not indexes themselves. Similarly, a set of
-remote sensing indexes are not indexes, since they are measures of
-electromagnetic wave reflectance. This includes Normalized Difference
-Vegetation Index (NDVI) (Tucker 1979), derived from the ratio of
-difference over sum on two segments in the spectrum, also called band:
-near-infrared (NIR) and red. So are the ``indexes'' derived from NDVI,
-e.g.~Vegetation Condition Index (Kogan 1995). Notice that this does not
-exclude all the construction derived from remotes sensor variables to be
-valid indexes. For example, Vegetation Drought Response Index (Brown et
-al. 2008) is a valid index since it integrates climate, satellite, and
-biophysical variables to quantify vegetation stress.
+  \begin{itemize}
+  \tightlist
+  \item
+    a single transformation (NDVI (Tucker 1979) takes two spectrum: red
+    and near-infrared and calculates as
+    \((\text{NIR} + \text{Red})/(\text{NIR} + \text{Red})\))
+  \item
+    indexes sometimes are similar to features extracted from time series
+    data: ETCCDI climate change indices (Zhang 2020): SU - number of
+    summer days: annual count of days when TX \textgreater{} 25 degree
+  \end{itemize}
+\item
+  The index pipeline and software implementation we propose are
+  applicable to all indexes mentioned above, while the main focus of
+  this paper is on indexes that combine multiple variables/indexes since
+  more skills are required to diagnose those indexes to understand how
+  they behave.
+\end{itemize}
 
 \textbf{What is the challenges with current index construction}
 
@@ -1325,42 +1317,10 @@ develop specialised packages for specific-domains indexes.
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-brown_vegetation_2008}{}}%
-Brown, Jesslyn F., Brian D. Wardlow, Tsegaye Tadesse, Michael J. Hayes,
-and Bradley C. Reed. 2008. {``The {Vegetation} {Drought} {Response}
-{Index} ({VegDRI}): {A} {New} {Integrated} {Approach} for {Monitoring}
-{Drought} {Stress} in {Vegetation}.''} \emph{GIScience \& Remote
-Sensing} 45 (1): 16--46.
-\url{https://doi.org/10.2747/1548-1603.45.1.16}.
-
 \leavevmode\vadjust pre{\hypertarget{ref-buja_elements_1988}{}}%
 Buja, A, D Asimov, C Hurley, and JA McDonald. 1988. {``Elements of a
 Viewing Pipeline for Data Analysis.''} In \emph{Dynamic Graphics for
 Statistics}, 277--308. Wadsworth, Belmont.
-
-\leavevmode\vadjust pre{\hypertarget{ref-gli}{}}%
-Economist Intelligence Unit. 2019. {``The Global Liveability Index
-2019.''} The Economist.
-\url{https://www.cbeinternational.ca/pdf/Liveability-Free-report-2019.pdf}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-keyantash_aggregate_2004}{}}%
-Keyantash, John A., and John A. Dracup. 2004. {``An Aggregate Drought
-Index: {Assessing} Drought Severity Based on Fluctuations in the
-Hydrologic Cycle and Surface Water Storage.''} \emph{Water Resources
-Research} 40 (9). \url{https://doi.org/10.1029/2003WR002610}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-kogan_application_1995}{}}%
-Kogan, F. N. 1995. {``Application of Vegetation Index and Brightness
-Temperature for Drought Detection.''} \emph{Advances in Space Research},
-Natural {Hazards}: {Monitoring} and {Assessment} {Using} {Remote}
-{Sensing} {Technique}, 15 (11): 91--100.
-\url{https://doi.org/10.1016/0273-1177(95)00079-T}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-mckee1993relationship}{}}%
-McKee, Thomas B, Nolan J Doesken, John Kleist, et al. 1993. {``The
-Relationship of Drought Frequency and Duration to Time Scales.''} In
-\emph{Proceedings of the 8th Conference on Applied Climatology},
-17:179--83. 22. Boston, MA, USA.
 
 \leavevmode\vadjust pre{\hypertarget{ref-oecd_handbook_2008}{}}%
 OECD, European Union, and Joint Research Centre - European Commission.
@@ -1386,10 +1346,6 @@ United Nations Development Programme. 2021. {``Human Development Report
 2021-2022: The Next Frontier: Human Development and the Anthropocene.''}
 \url{https://hdr.undp.org/sites/default/files/2021-22_HDR/hdr2021-22_technical_notes.pdf}.
 
-\leavevmode\vadjust pre{\hypertarget{ref-hdi}{}}%
----------. 2022. {``Human Development Report 2021-22.''} New York.
-\url{http://report.hdr.undp.org}.
-
 \leavevmode\vadjust pre{\hypertarget{ref-spei}{}}%
 Vicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno.
 2010. {``A {Multiscalar} {Drought} {Index} {Sensitive} to {Global}
@@ -1413,6 +1369,10 @@ Xie, Yihui, Heike Hofmann, and Xiaoyue Cheng. 2014. {``Reactive
 {Programming} for {Interactive} {Graphics}.''} \emph{Statistical
 Science} 29 (2): 201--13.
 \url{https://www.jstor.org/stable/43288470?seq=1}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-climate-indexes}{}}%
+Zhang, Xuebin. 2020. {``ETCCDI Climate Change Indices.''}
+\url{http://etccdi.pacificclimate.org/index.shtml}.
 
 \end{CSLReferences}
 
