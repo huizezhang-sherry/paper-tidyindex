@@ -41,7 +41,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
-options(width = 90)
+options(width = 70)
 library(tidyverse)
 library(latex2exp)
 library(patchwork)
@@ -97,64 +97,36 @@ So are the "indexes" derived from NDVI, e.g. Vegetation Condition Index [@kogan_
 Notice that this does not exclude all the construction derived from remotes sensor variables to be valid indexes.
 For example, Vegetation Drought Response Index [@brown_vegetation_2008] is a valid index since it integrates climate, satellite, and biophysical variables to quantify vegetation stress.
 
-<!-- FYI:  -->
-
-<!--   - A measure is a variable, but is not an index.  -->
-<!--   - Not all multivariate quantities are indexes (i.e. those remote sensor measures). It is possible that an index is constructed from a single variable (i.e. SPI). -->
-<!--   - indexes is not a single/ set of measures -->
-
-
-
-
-
 
 **What is the challenges with current index construction**
 
-*see if there is any paper describing this type of pains*
-
-*useful to reference tidy data and tidy model that makes the workflow on modelling tidy somewhere in introduction*
-
-Currently, index construction lacks a standardised workflow. 
-It is often up to researchers or research institutions to decide whether to provide open source code on the new indexes, what would be the best user interface for other researchers to use the new indexes, and how easily the new indexes can be compared with other existing indexes. 
-This makes the computation lack transparency and indexes cumbersome to experiment with: 
-  
-  - Researchers who wish to validate the indexes calculated from large institutes need to reinvent the wheels themselves since the source code used for computing is often not available for public consumption;
-  - Open-source code provided by research groups has a narrow margin for exploring other options outside the provided;
-  - Similar steps used by different indexes are difficult to spot since the design of the user interface for indexes often includes all the steps under a single function call; and
-  - It is generally hard to inspect intermediate results during the index construction if users wish to check the output of a certain step. 
-
-<!-- Institutes like National Oceanic and Atmospheric Administration (NOAA) and United States Drought Monitor (USDM) moderate indexes in their domains. -->
-<!-- They provide public information to describe the methodology used in the calculation, publish the index values for public consumption while the source code used for computing is often not available for public consumption.  -->
-
-
-<!-- For example, many indexes involve a step to fit variables into a particular distribution. -->
-<!-- Index researchers may provide options for different fits, but it is generally hard to experiment with options outside the provided distributions. -->
-
-<!-- For example, many indexes needs standardisation in its workflow, it can be used to rescale the input variables or the index series. -->
-<!-- But the current construction does not make it clear through its user interface but sweep it, along with all the other steps in the index construction, under a single function call.  -->
-
+  - Difficult to reach consensus on composite/multivariate indexes. 
+  - Given the complexity of multivariate indexes as compared to univariate indexes, it raises more doubt to persuade people to use it. 
+  - Typical ways to evaluate new indexes is to compare it with the standard indexes (i.e. SPI in drought index) or a response variable (i.e. crop yield for monitoring agricultural drought). 
+  - However, more doubt can still raises: Whether the variable used to construct the index is a good set of variables. 
+  - Does the index series capture the variables measures. Whether other ways of combining the variables results in difference in the index. 
+  - Being able to answer these questions help to prove the robustness, extendibility and dimensionality of the index, as proposed by xxx as criteria for (selecting?) indexes.
 
 **what can be done if people adopt this pipeline/ why it is beneficial?**
 
-This paper proposes a data pipeline for index construction. 
-By recognising the common steps shared by many indexes, we develop a pipeline that breaks down index construction into multiple modules and allow operations in various modules to be combined like building blocks to construct indexes.
-The pipeline approach is general while adaptable to most index construction. 
-It allows indexes to be created, studied, and compared in a structured tidy form and enables statistical analysis of indexes to be performed easily: 
-More specifically, it enables researchers to 1) validate the indexes calculated from external organisations, 2) unify various indexes under the same framework for computing, 3) swap or adjust individual steps in the index construction to study their contribution, 4) calculate uncertainty on indexes through bootstrap or others, 5) enhance existing indexes through comparing and studying their statistical properties, and finally, 6) propose new indexes from combining different steps in existing indexes. 
+  - In order to evaluate indexes, indexes need to be broken down into pieces that it constitutes and then we can analyse how each component will affect the index. 
+  - The OECD handbook [@oecd_handbook_2008] provides technical guidelines to construct composite indexes for comparing country performance for policy-making. 
+  This paper identifies a more general pipeline framework where statistical indexes (of all kinds) can be built from. 
+  Based on the pipeline, an R package is built to validate the indexes, [more details on the functionality here] from understanding multivariate relationships to uncertainty analysis. 
+
+<!-- The pipeline approach is general while adaptable to most index construction.  -->
+<!-- It allows indexes to be created, studied, and compared in a structured tidy form and enables statistical analysis of indexes to be performed easily:  -->
 
 
 **who would benefit from this paper**
 
-This work is of interest to researchers actively developing new indexes since it encourages new indexes to be delivered in an easy-to-reproduce design. 
-It would also provide analysts who wish to compute a range of indexes in their analysis a uniform interface to build relevant indexes from raw data. 
-For statisticians and software developing engineers, this work frames the process of index construction in a more user-oriented workflow and could motivate similar research for other process in scientific computing.
+  - This work provides researchers actively developing new indexes with tools to evaluate the proposed indexes. 
+  - Helping index analysts to identify weakness in existing indexes for methodology improvement. 
 
 
-The rest of the paper is structured as follows: @sec-data-pipeline-in-r reviews the concept of data pipeline in R. 
-The pipeline framework for index construction is presented in @sec-a-pipeline-for-building-statistical-indexes.  @sec-incorporating-new-buliding-blocks-into-the-pipeline explains how to include a new building block in each pipeline module. 
-Examples are given in @sec-examples to demonstrate the index construction with the pipeline built. 
+The rest of the paper is structured as follows: @sec-pipeline reviews the concept of data pipeline in R. The pipeline framework for index construction is presented in @sec-index-pipeline. @sec-dev explains how to include a new building block in each pipeline module. Examples are given in @sec-examples to demonstrate the index construction with the pipeline built. 
 
-# Data pipeline {#sec-data-pipeline-in-r}
+# Data pipeline {#sec-pipeline}
 
 *Think about if there is another word for data pipeline*
 
@@ -192,7 +164,7 @@ This increases the cost of maintaining and understanding the code base, gives an
 A pipeline approach unites a range of indexes under a single data pipeline and analysts can compose indexes from pipeline steps like building Legos from individual bricks.
 In this workflow, analysts are not limited by indexes that have been already proposed and can easily combine pipeline steps to compose novel indexes.  Analysis of the indexes (i.e. calculation of uncertainty) is also feasible by adding external code into the pipeline.
 
-# A pipeline for building statistical indexes {#sec-a-pipeline-for-building-statistical-indexes}
+# A pipeline for building statistical indexes {#sec-index-pipeline}
 
 ## How does the pipeline constructin of an index look like? {#sec-toy-example}
 
@@ -236,7 +208,7 @@ Apart from evaluating multiples parameters, the pipeline approach allows the the
 <!--   - Intermediate results can be checked after each step; and -->
 <!--   - Additional steps and analysis can be wired into the workflow for index diagnostics and customised user need. -->
 
-```{r}
+```{r width = "100%"}
 knitr::include_graphics(here::here("figures/toy-example-spei.png"))
 ```
 
@@ -532,7 +504,7 @@ C_z & c_z \leq x(s_i; t_j)
 
 where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are the thresholds for each category. In SPI, droughts are sorted into four categories: mild drought: $[-0.99, 0]$; moderate drought: $[-1.49, -1]$; severe drought: $[-1.99, -1.5]$, and extreme drought: $[-\infty, -2]$. In this case, $C_0, C_1, C_2, C_3$ are the drought categories: mild, moderate, severe, and extreme drought ($z = 3$) and $c_0 =0, c_1 = -1, c_2 = -1.5, c_3 = -2$ are the cutoff value for each class.
 
-# Incorporating alternative methods into the pipeline components {#sec-incorporating-new-buliding-blocks-into-the-pipeline}
+# Incorporating alternative methods into the pipeline components {#sec-dev}
 
 
 <!-- # 1. unpack or the argumebt s  -->

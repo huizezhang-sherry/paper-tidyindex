@@ -251,7 +251,7 @@ Statistics, Monash University, Melbourne, VIC, Australia
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, sharp corners, interior hidden, frame hidden, enhanced, breakable, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, frame hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, interior hidden, breakable, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -325,79 +325,71 @@ biophysical variables to quantify vegetation stress.
 
 \textbf{What is the challenges with current index construction}
 
-\emph{see if there is any paper describing this type of pains}
-
-\emph{useful to reference tidy data and tidy model that makes the
-workflow on modelling tidy somewhere in introduction}
-
-Currently, index construction lacks a standardised workflow. It is often
-up to researchers or research institutions to decide whether to provide
-open source code on the new indexes, what would be the best user
-interface for other researchers to use the new indexes, and how easily
-the new indexes can be compared with other existing indexes. This makes
-the computation lack transparency and indexes cumbersome to experiment
-with:
-
 \begin{itemize}
 \tightlist
 \item
-  Researchers who wish to validate the indexes calculated from large
-  institutes need to reinvent the wheels themselves since the source
-  code used for computing is often not available for public consumption;
+  Difficult to reach consensus on composite/multivariate indexes.
 \item
-  Open-source code provided by research groups has a narrow margin for
-  exploring other options outside the provided;
+  Given the complexity of multivariate indexes as compared to univariate
+  indexes, it raises more doubt to persuade people to use it.
 \item
-  Similar steps used by different indexes are difficult to spot since
-  the design of the user interface for indexes often includes all the
-  steps under a single function call; and
+  Typical ways to evaluate new indexes is to compare it with the
+  standard indexes (i.e.~SPI in drought index) or a response variable
+  (i.e.~crop yield for monitoring agricultural drought).
 \item
-  It is generally hard to inspect intermediate results during the index
-  construction if users wish to check the output of a certain step.
+  However, more doubt can still raises: Whether the variable used to
+  construct the index is a good set of variables.
+\item
+  Does the index series capture the variables measures. Whether other
+  ways of combining the variables results in difference in the index.
+\item
+  Being able to answer these questions help to prove the robustness,
+  extendibility and dimensionality of the index, as proposed by xxx as
+  criteria for (selecting?) indexes.
 \end{itemize}
 
 \textbf{what can be done if people adopt this pipeline/ why it is
 beneficial?}
 
-This paper proposes a data pipeline for index construction. By
-recognising the common steps shared by many indexes, we develop a
-pipeline that breaks down index construction into multiple modules and
-allow operations in various modules to be combined like building blocks
-to construct indexes. The pipeline approach is general while adaptable
-to most index construction. It allows indexes to be created, studied,
-and compared in a structured tidy form and enables statistical analysis
-of indexes to be performed easily: More specifically, it enables
-researchers to 1) validate the indexes calculated from external
-organisations, 2) unify various indexes under the same framework for
-computing, 3) swap or adjust individual steps in the index construction
-to study their contribution, 4) calculate uncertainty on indexes through
-bootstrap or others, 5) enhance existing indexes through comparing and
-studying their statistical properties, and finally, 6) propose new
-indexes from combining different steps in existing indexes.
+\begin{itemize}
+\tightlist
+\item
+  In order to evaluate indexes, indexes need to be broken down into
+  pieces that it constitutes and then we can analyse how each component
+  will affect the index.
+\item
+  The OECD handbook (OECD, European Union, and Joint Research Centre -
+  European Commission 2008) provides technical guidelines to construct
+  composite indexes for comparing country performance for policy-making.
+  This paper identifies a more general pipeline framework where
+  statistical indexes (of all kinds) can be built from. Based on the
+  pipeline, an R package is built to validate the indexes, {[}more
+  details on the functionality here{]} from understanding multivariate
+  relationships to uncertainty analysis.
+\end{itemize}
 
 \textbf{who would benefit from this paper}
 
-This work is of interest to researchers actively developing new indexes
-since it encourages new indexes to be delivered in an easy-to-reproduce
-design. It would also provide analysts who wish to compute a range of
-indexes in their analysis a uniform interface to build relevant indexes
-from raw data. For statisticians and software developing engineers, this
-work frames the process of index construction in a more user-oriented
-workflow and could motivate similar research for other process in
-scientific computing.
+\begin{itemize}
+\tightlist
+\item
+  This work provides researchers actively developing new indexes with
+  tools to evaluate the proposed indexes.
+\item
+  Helping index analysts to identify weakness in existing indexes for
+  methodology improvement.
+\end{itemize}
 
 The rest of the paper is structured as follows:
-Section~\ref{sec-data-pipeline-in-r} reviews the concept of data
-pipeline in R. The pipeline framework for index construction is
-presented in
-Section~\ref{sec-a-pipeline-for-building-statistical-indexes}.
-Section~\ref{sec-incorporating-new-buliding-blocks-into-the-pipeline}
-explains how to include a new building block in each pipeline module.
-Examples are given in Section~\ref{sec-examples} to demonstrate the
-index construction with the pipeline built.
+Section~\ref{sec-pipeline} reviews the concept of data pipeline in R.
+The pipeline framework for index construction is presented in
+Section~\ref{sec-index-pipeline}. Section~\ref{sec-dev} explains how to
+include a new building block in each pipeline module. Examples are given
+in Section~\ref{sec-examples} to demonstrate the index construction with
+the pipeline built.
 
-\hypertarget{sec-data-pipeline-in-r}{%
-\section{Data pipeline}\label{sec-data-pipeline-in-r}}
+\hypertarget{sec-pipeline}{%
+\section{Data pipeline}\label{sec-pipeline}}
 
 \emph{Think about if there is another word for data pipeline}
 
@@ -467,9 +459,9 @@ already proposed and can easily combine pipeline steps to compose novel
 indexes. Analysis of the indexes (i.e.~calculation of uncertainty) is
 also feasible by adding external code into the pipeline.
 
-\hypertarget{sec-a-pipeline-for-building-statistical-indexes}{%
+\hypertarget{sec-index-pipeline}{%
 \section{A pipeline for building statistical
-indexes}\label{sec-a-pipeline-for-building-statistical-indexes}}
+indexes}\label{sec-index-pipeline}}
 
 \hypertarget{sec-toy-example}{%
 \subsection{How does the pipeline constructin of an index look
@@ -849,9 +841,9 @@ severe, and extreme drought (\(z = 3\)) and
 \(c_0 =0, c_1 = -1, c_2 = -1.5, c_3 = -2\) are the cutoff value for each
 class.
 
-\hypertarget{sec-incorporating-new-buliding-blocks-into-the-pipeline}{%
+\hypertarget{sec-dev}{%
 \section{Incorporating alternative methods into the pipeline
-components}\label{sec-incorporating-new-buliding-blocks-into-the-pipeline}}
+components}\label{sec-dev}}
 
 \hypertarget{sec-examples}{%
 \section{Examples}\label{sec-examples}}
@@ -1130,19 +1122,23 @@ var_trans: `log(gni_pc, base = 10)` -> gni_pc
 \end{verbatim}
 
 \begin{verbatim}
-var_trans: `rescale_minmax(var = life_exp, min = 20, max = 85)` -> life_exp
+var_trans: `rescale_minmax(var = life_exp, min = 20, max = 85)` ->
+life_exp
 \end{verbatim}
 
 \begin{verbatim}
-var_trans: `rescale_minmax(var = exp_sch, min = 0, max = 18)` -> exp_sch
+var_trans: `rescale_minmax(var = exp_sch, min = 0, max = 18)` ->
+exp_sch
 \end{verbatim}
 
 \begin{verbatim}
-var_trans: `rescale_minmax(var = avg_sch, min = 0, max = 15)` -> avg_sch
+var_trans: `rescale_minmax(var = avg_sch, min = 0, max = 15)` ->
+avg_sch
 \end{verbatim}
 
 \begin{verbatim}
-var_trans: `rescale_minmax(var = gni_pc, min = 2, max = 4.875061)` -> gni_pc
+var_trans: `rescale_minmax(var = gni_pc, min = 2, max = 4.875061)` ->
+gni_pc
 \end{verbatim}
 
 \begin{verbatim}
@@ -1177,20 +1173,21 @@ dim_red: `0.1 * life_exp + 0.1 * sch + 0.8 * gni_pc` -> index5
 
 Data: 
 # A tibble: 191 x 13
-      id country  life_exp exp_sch avg_sch gni_pc   sch index0 index1 index2 index3 index4
-   <dbl> <chr>       <dbl>   <dbl>   <dbl>  <dbl> <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
- 1     1 Switzer~    0.984   0.917   0.924  0.983 0.920  0.962  0.963   1.67  0.978  0.933
- 2     2 Norway      0.973   1       0.867  0.978 0.933  0.961  0.961   1.66  0.969  0.942
- 3     3 Iceland     0.964   1       0.918  0.955 0.959  0.959  0.959   1.66  0.963  0.959
- 4     4 Hong Ko~    1       0.960   0.815  0.973 0.887  0.952  0.953   1.65  0.986  0.907
- 5     5 Austral~    0.993   1       0.848  0.936 0.924  0.951  0.951   1.65  0.980  0.932
- 6     6 Denmark     0.944   1       0.864  0.967 0.932  0.948  0.948   1.64  0.945  0.937
- 7     7 Sweden      0.969   1       0.841  0.952 0.920  0.947  0.947   1.64  0.962  0.928
- 8     8 Ireland     0.954   1       0.772  1     0.886  0.945  0.947   1.64  0.952  0.904
- 9     9 Germany     0.933   0.945   0.939  0.952 0.942  0.942  0.942   1.63  0.936  0.942
-10    10 Netherl~    0.949   1       0.839  0.956 0.919  0.941  0.941   1.63  0.947  0.926
+      id country   life_exp exp_sch avg_sch gni_pc   sch index0 index1
+   <dbl> <chr>        <dbl>   <dbl>   <dbl>  <dbl> <dbl>  <dbl>  <dbl>
+ 1     1 Switzerl~    0.984   0.917   0.924  0.983 0.920  0.962  0.963
+ 2     2 Norway       0.973   1       0.867  0.978 0.933  0.961  0.961
+ 3     3 Iceland      0.964   1       0.918  0.955 0.959  0.959  0.959
+ 4     4 Hong Kon~    1       0.960   0.815  0.973 0.887  0.952  0.953
+ 5     5 Australia    0.993   1       0.848  0.936 0.924  0.951  0.951
+ 6     6 Denmark      0.944   1       0.864  0.967 0.932  0.948  0.948
+ 7     7 Sweden       0.969   1       0.841  0.952 0.920  0.947  0.947
+ 8     8 Ireland      0.954   1       0.772  1     0.886  0.945  0.947
+ 9     9 Germany      0.933   0.945   0.939  0.952 0.942  0.942  0.942
+10    10 Netherla~    0.949   1       0.839  0.956 0.919  0.941  0.941
 # i 181 more rows
-# i 1 more variable: index5 <dbl>
+# i 4 more variables: index2 <dbl>, index3 <dbl>, index4 <dbl>,
+#   index5 <dbl>
 \end{verbatim}
 
 The resulting data includes five more columns corresponding to the five
@@ -1364,6 +1361,12 @@ McKee, Thomas B, Nolan J Doesken, John Kleist, et al. 1993. {``The
 Relationship of Drought Frequency and Duration to Time Scales.''} In
 \emph{Proceedings of the 8th Conference on Applied Climatology},
 17:179--83. 22. Boston, MA, USA.
+
+\leavevmode\vadjust pre{\hypertarget{ref-oecd_handbook_2008}{}}%
+OECD, European Union, and Joint Research Centre - European Commission.
+2008. \emph{Handbook on {Constructing} {Composite} {Indicators}:
+{Methodology} and {User} {Guide}}. OECD.
+\url{https://doi.org/10.1787/9789264043466-en}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-sutherland_orca_2000}{}}%
 Sutherland, Peter, Anthony Rossini, Thomas Lumley, Nicholas Lewin-Koh,
