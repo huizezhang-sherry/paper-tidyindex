@@ -195,8 +195,8 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Demo arXiv template},
-  pdfauthor={H. Sherry Zhang; Collaborators},
+  pdftitle={A Tidy Framework and Infrastructure to Systematically Assemble Spatio-temporal Indexes from Multivariate Data},
+  pdfauthor={H. Sherry Zhang; Dianne Cook; Ursula Laa; Nicolas Langrené; Patricia Menéndez},
   pdfkeywords={indexes, data pipeline, software design},
   colorlinks=true,
   linkcolor={blue},
@@ -205,9 +205,14 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
-\title{Demo arXiv template}
+\title{A Tidy Framework and Infrastructure to Systematically Assemble
+Spatio-temporal Indexes from Multivariate Data}
 \author{H. Sherry
-Zhang$\textsuperscript{1}$~\orcidlink{0000-0002-7122-1463}, Collaborators$\textsuperscript{1}$}
+Zhang$\textsuperscript{1}$~\orcidlink{0000-0002-7122-1463}, Dianne
+Cook$\textsuperscript{1}$~\orcidlink{0000-0002-3813-7155}, Ursula
+Laa$\textsuperscript{2}$~\orcidlink{0000-0002-0249-6439}, Nicolas
+Langrené$\textsuperscript{3}$~\orcidlink{0000-0001-7601-4618}, Patricia
+Menéndez$\textsuperscript{1}$~\orcidlink{0000-0003-0701-6315}}
 
 \thanks{CONTACT: H. Sherry
 Zhang. Email: \href{mailto:huize.zhang@monash.edu}{\nolinkurl{huize.zhang@monash.edu}}. }
@@ -215,7 +220,12 @@ Zhang. Email: \href{mailto:huize.zhang@monash.edu}{\nolinkurl{huize.zhang@monash
 \captionsetup{labelsep=space}
 \maketitle
 \textsuperscript{1} Department of Econometrics and Business
-Statistics, Monash University, Melbourne, VIC, Australia
+Statistics, Monash University, Melbourne,
+Victoria, Australia\\ \textsuperscript{2} Institute of
+Statistics, University of Natural Resources and Life
+Sciences, Vienna, Austria\\ \textsuperscript{3} Department of
+Mathematical Sciences, BNU-HKBU United International College, Zhuhai,
+Guangdong, China
 \begin{abstract}
 \begin{itemize}
 \tightlist
@@ -251,7 +261,7 @@ Statistics, Monash University, Melbourne, VIC, Australia
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, enhanced, borderline west={3pt}{0pt}{shadecolor}, sharp corners, breakable, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, interior hidden, boxrule=0pt, enhanced, frame hidden, breakable, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -282,52 +292,53 @@ There decision making often needs to consider multiple aspects and
 indexes is a statistical tool to pack these information into a single
 number, making it easier for policy makers and public communication.
 
+While the {[}decision to make{]} is often multi-faceted, simple indexes
+tend to be favoured when it comes to communicating to stakeholders and
+public.
+
 \textbf{Define what is an index, what is not}
 
-\begin{itemize}
-\tightlist
-\item
-  Indexes can be composed from single variables or multiple variables
-  (composite index)
-\item
-  to make the definition even more complex is that indexes themselves
-  are used with other variables to compose indexes (many drought indexes
-  using an index called SPI).
-\item
-  Some indexes may be more simple than you think:
+While indexes are commonly used in operation and research, their
+compositions and structures can vary substantially. An index can be
+composed from a singe variable, such as the Standardized Precipitation
+Index (SPI) (McKee, Doesken, and Kleist 1993), or multiple variables,
+also known as composite indexes or composite indicators, like the Human
+Development Index (United Nations Development Programme 2022). Some
+indexes can be expressed as a single equation, like Normalized
+Difference Vegetation Index (NDVI) (Tucker 1979), calculated as
+\((\text{NIR} + \text{Red})/(\text{NIR} + \text{Red})\). In other cases,
+indexes themselves can be used as variables to construct indexes. For
+example, SPI is used to in many complex indexes, such as the U.S.
+Drought monitor and European Combined Drought Index (CDI)
+(Sepulcre-Canto et al. 2012). While the index framework proposed in this
+paper applies to all the aforementioned indexes, our focus will be on
+studying complex indexes that combine multiple variables using
+statistical methods.
 
-  \begin{itemize}
-  \tightlist
-  \item
-    a single transformation (NDVI (Tucker 1979) takes two spectrum: red
-    and near-infrared and calculates as
-    \((\text{NIR} + \text{Red})/(\text{NIR} + \text{Red})\))
-  \item
-    indexes sometimes are similar to features extracted from time series
-    data: ETCCDI climate change indices (Zhang 2020): SU - number of
-    summer days: annual count of days when TX \textgreater{} 25 degree
-  \end{itemize}
-\item
-  The index pipeline and software implementation we propose are
-  applicable to all indexes mentioned above, while the main focus of
-  this paper is on indexes that combine multiple variables/indexes since
-  more skills are required to diagnose those indexes to understand how
-  they behave.
-\end{itemize}
+The initial plan aims to investigate how variable combinations can
+affect the indexes and whether we can use statistical methods to
+recommend better combination for decision making. However, when
+analysing specific index examples, we find the composition of indexes is
+much more complicated than originally expected. In addition to combining
+multiple variables, indexes can have a spatial and/or temporal component
+to capture the neighbouring effect in space and the prolonged effect in
+time. {[}Constructing indexes from combining variables with spatial and
+temporal component is further complicated by different treatments to
+process data from different sources such as satellite imageries, in-situ
+stations, and large physical models.{]}
 
 \textbf{What is the challenges with current index construction}
 
+While numerous indexes are proposed by researchers, most well-known
+indexes only use one or two variables. More complex indexes tend to have
+difficulties to reach consensus given the uncertainty of their behaviors
+in different scenarios. Typical ways to evaluate new indexes is to
+compare it with the standard/ well-known indexes, such as SPI or SPEI
+for drought indexes, or a response variable relevant for the monitoring
+purpose, i.e.~crop yield for monitoring agricultural drought.
+
 \begin{itemize}
 \tightlist
-\item
-  Difficult to reach consensus on composite/multivariate indexes.
-\item
-  Given the complexity of multivariate indexes as compared to univariate
-  indexes, it raises more doubt to persuade people to use it.
-\item
-  Typical ways to evaluate new indexes is to compare it with the
-  standard indexes (i.e.~SPI in drought index) or a response variable
-  (i.e.~crop yield for monitoring agricultural drought).
 \item
   However, more doubt can still raises: Whether the variable used to
   construct the index is a good set of variables.
@@ -515,11 +526,11 @@ drought indexes. The package \texttt{lmomco} provides general L-moment
 fits to a wide range of distributions and users can easily access to all
 the distributions within the pipeline.
 
-\includegraphics[width=10in,height=\textheight]{figures/toy-example-spei.png}
+\includegraphics[width=1\textwidth,height=\textheight]{figures/toy-example-spei.png}
 
-\hypertarget{pipeline-steps-for-constructing-indies}{%
+\hypertarget{pipeline-steps-for-constructing-indexes}{%
 \subsection{Pipeline steps for constructing
-indies}\label{pipeline-steps-for-constructing-indies}}
+indexes}\label{pipeline-steps-for-constructing-indexes}}
 
 \emph{any index can be broken down into multiple steps and then we can
 do things with it: swap, change parameter, etc}
@@ -537,6 +548,18 @@ prior to this that are crucial to the success of an index. For example,
 the defined index needs to be useful for measuring the concept of
 interest and variables need to be collected from reliable sources with
 proper quality control.
+
+\begin{itemize}
+\tightlist
+\item
+  align the spatial resolution and temporal frequency of data collected
+  from different satellite products
+\item
+  obtain and clean variables from countries, potentially aggregate from
+  regional data into country level
+\item
+  merge ground-based and satellite-based data
+\end{itemize}
 
 Before elaborating each of the eight pipeline modules as subsections,
 the data notation will be first introduced. Let
@@ -1322,11 +1345,24 @@ Buja, A, D Asimov, C Hurley, and JA McDonald. 1988. {``Elements of a
 Viewing Pipeline for Data Analysis.''} In \emph{Dynamic Graphics for
 Statistics}, 277--308. Wadsworth, Belmont.
 
+\leavevmode\vadjust pre{\hypertarget{ref-spi}{}}%
+McKee, Thomas B, Nolan J Doesken, and John Kleist. 1993. {``The
+Relationship of Drought Frequency and Duration to Time Scales.''} In
+\emph{Proceedings of the 8th Conference of Applied Climatology},
+179--84. Anaheim, CA: American Meteorological Society.
+
 \leavevmode\vadjust pre{\hypertarget{ref-oecd_handbook_2008}{}}%
 OECD, European Union, and Joint Research Centre - European Commission.
 2008. \emph{Handbook on {Constructing} {Composite} {Indicators}:
 {Methodology} and {User} {Guide}}. OECD.
 \url{https://doi.org/10.1787/9789264043466-en}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-cdi}{}}%
+Sepulcre-Canto, G., S. Horion, A. Singleton, H. Carrao, and J. Vogt.
+2012. {``Development of a {Combined} {Drought} {Indicator} to Detect
+Agricultural Drought in {Europe}.''} \emph{Natural Hazards and Earth
+System Sciences} 12 (11): 3519--31.
+\url{https://doi.org/10.5194/nhess-12-3519-2012}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-sutherland_orca_2000}{}}%
 Sutherland, Peter, Anthony Rossini, Thomas Lumley, Nicholas Lewin-Koh,
@@ -1335,7 +1371,7 @@ Julie Dickerson, Zach Cox, and Dianne Cook. 2000. {``Orca: {A}
 \emph{Journal of Computational and Graphical Statistics} 9 (3): 509--29.
 \url{https://www.jstor.org/stable/1390943}.
 
-\leavevmode\vadjust pre{\hypertarget{ref-tucker_red_1979}{}}%
+\leavevmode\vadjust pre{\hypertarget{ref-ndvi}{}}%
 Tucker, Compton J. 1979. {``Red and Photographic Infrared Linear
 Combinations for Monitoring Vegetation.''} \emph{Remote Sensing of
 Environment} 8 (2): 127--50.
@@ -1345,6 +1381,10 @@ Environment} 8 (2): 127--50.
 United Nations Development Programme. 2021. {``Human Development Report
 2021-2022: The Next Frontier: Human Development and the Anthropocene.''}
 \url{https://hdr.undp.org/sites/default/files/2021-22_HDR/hdr2021-22_technical_notes.pdf}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-hdi}{}}%
+---------. 2022. {``Human Development Report 2021-22.''} New York.
+\url{http://report.hdr.undp.org}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-spei}{}}%
 Vicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno.
@@ -1369,10 +1409,6 @@ Xie, Yihui, Heike Hofmann, and Xiaoyue Cheng. 2014. {``Reactive
 {Programming} for {Interactive} {Graphics}.''} \emph{Statistical
 Science} 29 (2): 201--13.
 \url{https://www.jstor.org/stable/43288470?seq=1}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-climate-indexes}{}}%
-Zhang, Xuebin. 2020. {``ETCCDI Climate Change Indices.''}
-\url{http://etccdi.pacificclimate.org/index.shtml}.
 
 \end{CSLReferences}
 
