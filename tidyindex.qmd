@@ -98,33 +98,11 @@ While the [decision to make] is often multi-faceted, simple indexes tend to be f
 
 While indexes are commonly used in operation and research, their compositions and structures can vary substantially. An index can be composed from a singe variable, such as the Standardized Precipitation Index (SPI) [@spi], or multiple variables, also known as composite indexes or composite indicators, like the Human Development Index [@hdi]. Some indexes can be expressed as a single equation, like Normalized Difference Vegetation Index (NDVI) [@ndvi], calculated as $(\text{NIR} + \text{Red})/(\text{NIR} + \text{Red})$. In other cases, indexes themselves can be used as variables to construct indexes. For example, SPI is used to in many complex indexes, such as the U.S. Drought monitor and European Combined Drought Index (CDI) [@cdi]. While the index framework proposed in this paper applies to all the aforementioned indexes, our focus will be on studying complex indexes that combine multiple variables using statistical methods. 
 
-The initial plan aims to investigate how variable combinations can affect the indexes and whether we can use statistical methods to recommend better combination for decision making. However, when analysing specific index examples, we find the composition of indexes is much more complicated than originally expected. In addition to combining multiple variables, indexes can have a spatial and/or temporal component to capture the neighbouring effect in space and the prolonged effect in time. [Constructing indexes from combining variables with spatial and temporal component is further complicated by different treatments to process data from different sources such as satellite imageries, in-situ stations, and large physical models.]
+The initial plan aims to investigate how variable combinations can affect the indexes and whether we can use statistical methods to recommend better combination for decision making. However, when analysing specific index examples, we find indexes are often not just a simple weighted linear aggregation of variables. When indexes have a spatial and/or temporal component, different choices on aggregating space and time will introduce uncertainty. [There is always new variables found to be related to make the decision and should be introduced into the index. The decision made in pre-processing data coming from different sources such as satellite imageries, in-situ stations, and large physical models.] While numerous indexes are proposed in the literature, the well-known ones tend to prefer a simple procedure: they may only consider one or two variables, i.e. SPI or use a decision-tree based process to incorporate multiple variables, i.e. (How El Nino is monitored by major climate institutes). More complex indexes often have difficulties to reach consensus, due to their uncertainty when applied in different scenarios.
 
-**What is the challenges with current index construction**
+**What is the challenges with current index construction**/ **what can be done if people adopt this pipeline/ why it is beneficial?**/**who would benefit from this paper**
 
-While numerous indexes are proposed by researchers, most well-known indexes only use one or two variables. More complex indexes tend to have difficulties to reach consensus given the uncertainty of their behaviors in different scenarios. Typical ways to evaluate new indexes is to compare it with the standard/ well-known indexes, such as SPI or SPEI for drought indexes, or a response variable relevant for the monitoring purpose, i.e.  crop yield for monitoring agricultural drought. 
-
-
-  - However, more doubt can still raises: Whether the variable used to construct the index is a good set of variables. 
-  - Does the index series capture the variables measures. Whether other ways of combining the variables results in difference in the index. 
-  - Being able to answer these questions help to prove the robustness, extendibility and dimensionality of the index, as proposed by xxx as criteria for (selecting?) indexes.
-
-**what can be done if people adopt this pipeline/ why it is beneficial?**
-
-  - In order to evaluate indexes, indexes need to be broken down into pieces that it constitutes and then we can analyse how each component will affect the index. 
-  - The OECD handbook [@oecd_handbook_2008] provides technical guidelines to construct composite indexes for comparing country performance for policy-making. 
-  This paper identifies a more general pipeline framework where statistical indexes (of all kinds) can be built from. 
-  Based on the pipeline, an R package is built to validate the indexes, [more details on the functionality here] from understanding multivariate relationships to uncertainty analysis. 
-
-<!-- The pipeline approach is general while adaptable to most index construction.  -->
-<!-- It allows indexes to be created, studied, and compared in a structured tidy form and enables statistical analysis of indexes to be performed easily:  -->
-
-
-**who would benefit from this paper**
-
-  - This work provides researchers actively developing new indexes with tools to evaluate the proposed indexes. 
-  - Helping index analysts to identify weakness in existing indexes for methodology improvement. 
-
+Typical ways to evaluate indexes is to compare it with the standard/ well-known indexes, such as SPI or SPEI for drought indexes, or a response variable relevant for the monitoring purpose, i.e. crop yield for monitoring agricultural drought. While these evaluations show the accuracy of the index to capture, they doesn't address the robustness of the index,[ given variation of the input parameters, or a change of different study areas or across time.] To evaluate the robustness of indexes, indexes need to be broken down into their fundamental building blocks, and then analyse the effect of each component. The OECD handbook [@oecd_handbook_2008] has recommended a set of guidelines for construct composite indexes for measuring country's socio-economic performance. This paper identifies a more general pipeline framework from which indexes can be built from. Based on the pipeline, an R package, tidyindex, is developed to [validate the indexes]. This work provides researchers actively developing new indexes with tools to evaluate the proposed indexes. It also helps index analysts to identify weakness in existing indexes for methodology improvement. 
 
 The rest of the paper is structured as follows: @sec-pipeline reviews the concept of data pipeline in R. The pipeline framework for index construction is presented in @sec-index-pipeline. @sec-dev explains how to include a new building block in each pipeline module. Examples are given in @sec-examples to demonstrate the index construction with the pipeline built. 
 
