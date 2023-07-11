@@ -80,31 +80,28 @@ library(patchwork)
 
 # Introduction
 
-**Why index is useful, why people care about indexes**
+  <!-- - Why index is useful, why people care about indexes -->
+  <!-- - Define what is an index, what is not -->
+  <!-- - What is the challenges with current index construction -->
+  <!-- - what can be done if people adopt this pipeline/ why it is beneficial? -->
+  <!-- - who would benefit from this paper -->
 
-*incorporate the following in why using index: multiple pieces of information (variables) that need to be taken into account*
 
-Many concepts relevant to decision making cannot be directly measured, however, they are crucial for resource allocation, early prevention, and other operational purpose. 
-  
-  - USDM and European Drought Observatory publishes drought indicator to [...], 
-  - NOAA and BOM producing forecast on El Nino alert system to [...]
-  - OECD and UN producing indexes measuring socio-economic aspects of country for policy making.
+Indexes are commonly-used tools to monitor, communicate and make decisions across various domains in society. Their applications can be found in the environment (e.g. Air Quality Index, El Niño-Southern Oscillation Index), in the economy (Consumer Price Index, stock market indexes), and in the social sciences (e.g. QS University Rankings, Human Development Index). 
 
-There decision making often needs to consider multiple aspects and indexes is a statistical tool to pack these information into a single number, making it easier for policy makers and public communication. 
+To construct an index, experts typically first define an underlying concept of interest to measure, then collect relevant variables for measuring the concept, and lastly summarise these variables into a single numerical or categorical value. An index can be as simple as counting the number of days when the maximum temperature is greater than 25 degree. This is "the number of summer days" (SU), a climate index listed in ETCCDI Climate Change Indices [@climate-indexes]. In some cases, indexes are weighted linear combinations of variables. For example, Human Development Index (HDI) [@hdi] combines the three aspects (life expectancy, years of schooling, and GNI per capita) to measure country's development. In more complex scenarios, indexes are constructed by combining multiple variables, often accompanied by spatial and temporal considerations arising from diverse data formats, including in-situ stations, satellite imageries, and model outputs. An example of this is the Combined Drought Index (CDI) [@cdi], curated by the European Drought Observatory, which uses a decision tree to combine Standardized Precipitation Index (SPI) [@spi] with the satellite measure, Fraction of Absorbed Photosynthetically Active Radiation (FAPAR), and modelled soil moisture.
 
-While the [decision to make] is often multi-faceted, simple indexes tend to be favoured when it comes to communicating to stakeholders and public.
+Our initial interest is to understand how different variable combinations contribute to the uncertainty of an index. However, as we start to understand how indexes are composed, we find many other steps in the construction also introduce uncertainty. In order to evaluate the uncertainty, an index needs to be broken down into its fundamental building blocks to analyse the effect of each component. This shifts the focus to investigate the decomposition of indexes into their constituent parts for analysing uncertainty. While the OECD handbook [@oecd_handbook_2008] has provided a set of steps for constructing composite socio-economic indexes, there is a need to extend these guidelines to accommodate more complex construction steps required for indexes in general.
 
-**Define what is an index, what is not**
-
-While indexes are commonly used in operation and research, their compositions and structures can vary substantially. An index can be composed from a singe variable, such as the Standardized Precipitation Index (SPI) [@spi], or multiple variables, also known as composite indexes or composite indicators, like the Human Development Index [@hdi]. Some indexes can be expressed as a single equation, like Normalized Difference Vegetation Index (NDVI) [@ndvi], calculated as $(\text{NIR} + \text{Red})/(\text{NIR} + \text{Red})$. In other cases, indexes themselves can be used as variables to construct indexes. For example, SPI is used to in many complex indexes, such as the U.S. Drought monitor and European Combined Drought Index (CDI) [@cdi]. While the index framework proposed in this paper applies to all the aforementioned indexes, our focus will be on studying complex indexes that combine multiple variables using statistical methods. 
-
-The initial plan aims to investigate how variable combinations can affect the indexes and whether we can use statistical methods to recommend better combination for decision making. However, when analysing specific index examples, we find indexes are often not just a simple weighted linear aggregation of variables. When indexes have a spatial and/or temporal component, different choices on aggregating space and time will introduce uncertainty. [There is always new variables found to be related to make the decision and should be introduced into the index. The decision made in pre-processing data coming from different sources such as satellite imageries, in-situ stations, and large physical models.] While numerous indexes are proposed in the literature, the well-known ones tend to prefer a simple procedure: they may only consider one or two variables, i.e. SPI or use a decision-tree based process to incorporate multiple variables, i.e. (How El Nino is monitored by major climate institutes). More complex indexes often have difficulties to reach consensus, due to their uncertainty when applied in different scenarios.
-
-**What is the challenges with current index construction**/ **what can be done if people adopt this pipeline/ why it is beneficial?**/**who would benefit from this paper**
-
-Typical ways to evaluate indexes is to compare it with the standard/ well-known indexes, such as SPI or SPEI for drought indexes, or a response variable relevant for the monitoring purpose, i.e. crop yield for monitoring agricultural drought. While these evaluations show the accuracy of the index to capture, they doesn't address the robustness of the index,[ given variation of the input parameters, or a change of different study areas or across time.] To evaluate the robustness of indexes, indexes need to be broken down into their fundamental building blocks, and then analyse the effect of each component. The OECD handbook [@oecd_handbook_2008] has recommended a set of guidelines for construct composite indexes for measuring country's socio-economic performance. This paper identifies a more general pipeline framework from which indexes can be built from. Based on the pipeline, an R package, tidyindex, is developed to [validate the indexes]. This work provides researchers actively developing new indexes with tools to evaluate the proposed indexes. It also helps index analysts to identify weakness in existing indexes for methodology improvement. 
+In this work, we develop a data pipeline framework where indexes from different domains can be built from. Based on the pipeline, an R package, tidyindex, is developed for practitioners to construct indexes and understand how an index responds to changes in different components in the pipeline. This work provides researchers actively developing new indexes with tools to evaluate the proposed indexes on their robustness for wider adoption. It also helps index analysts to diagnose an index to identify its weakness for methodology improvement. 
 
 The rest of the paper is structured as follows: @sec-pipeline reviews the concept of data pipeline in R. The pipeline framework for index construction is presented in @sec-index-pipeline. @sec-dev explains how to include a new building block in each pipeline module. Examples are given in @sec-examples to demonstrate the index construction with the pipeline built. 
+
+<!-- Evaluating indexes is challenging because the underlying concept an index measures is often a latent variable and lacks direct benchmarks for comparison. In literature, researchers typically demonstrate the accuracy of an index through comparing it to some well-known indexes, such as SPI for drought indexes, or to a relevant response variable, such as crop yield for monitoring agricultural drought. For social indexes, @uncertainty proposes a Monte Carlo algorithm to compute index uncertainty through sampling the linear weights.  -->
+
+<!-- These sometimes make indexes difficult to reach consensus for wider use and large institutes often prefer simple indexes for more stable performance and easier interpretation. -->
+
+<!-- When indexes have a spatial and/or temporal component, different choices on how space and time is aggregated will introduce uncertainty. A slight change in the variable value can sometimes introduce a big difference for the index.  -->
 
 # Data pipeline {#sec-pipeline}
 
@@ -765,6 +762,10 @@ lower_cluster %>%
 The paper presents a data pipeline with nine modules for constructing and analysing indexes. The pipeline increases transparency in the practice for index analysts to experiment with different index design and parameter choices to better design and apply their indexes. The significance of this work is its ability to provide a universal framework for index construction, which can be applied across different domains.
 
 Examples have been given in the drought indexes and human development index to demonstrate computing of indexes with different parameters combinations and how alternative index design can provide insights to understand distinctive country characteristics that could sometimes be overlooked. The accompanied package, tidyindex, is not meant to provide comprehensive implementation for all indexes across all domains. Instead, it demonstrates implementing individual pipeline steps that are versatile to multiple indexes and composing new indexes from existing steps. Domain experts are welcomed to adopt the pipeline approach to develop specialised packages for specific-domains indexes.
+
+Future work:
+  - integrate more complex dimension reduction methods to calculate weights 
+  - strengthen the spatial processing module
 
 
 # Reference
