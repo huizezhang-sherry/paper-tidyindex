@@ -65,7 +65,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
-options(width = 70)
+#options(width = 70)
 library(tidyverse)
 library(latex2exp)
 library(patchwork)
@@ -76,6 +76,7 @@ library(SPEI)
 library(tsibble)
 library(GGally)
 library(patchwork)
+library(tourr)
 ```
 
 # Introduction
@@ -589,173 +590,119 @@ p2 <- idx %>%
   
 ```
 
-## An example on sustainable development indicators
+## Global Gender Gap Index
 
-<!-- Indexes are commonly used in social science is to rank entities (i.e. countries) on a topic through a range of indicators. This includes university ranking from QS, Times Higher Education; the Sustainable Development Goals (SDG) Index [@SDSN_Bertelsmann_2021] by the Sustainable Development Solutions Network (SDSN), the Human Development Index (HDI) [@UNDP_2021] by United Nations Development Programme (UNDP), etc. These indexes, or rankings, typically have a set of predefined dimensions, or pillars, and indicators are first reduced to these pillars and then reduced to an index.  -->
-
-In the following example, the Human Development Index (HDI) will first be constructed using the pipeline syntax. The section will then demonstrate how expressions or parameters in the pipeline can be swapped to alternatives to study the index property.
-
-Human Development Index (HDI) measures the development of countries through more than just economic growth, but also people's life expectancy and opportunity to receive education. These three identified dimensions are measured using four indicators: life expectancy at birth (health), expected years of schooling (education), mean years of schooling (education), and Gross National Income (GNI) *per capita* (standard of living). The technical notes [@UNDP_2021_tech_notes] have documented the procedures to calculate HDI and they are summarised below: 
-
-  1. take log on GNI *per capita*,
-  2. rescale the four indicators into [0, 1] using mini-max,
-  3. aggregate the two education indicators using arithmetic mean, and
-  4. aggregate the three dimensions into the index using geometric mean.
-  
-The values used in mini-max rescaling are summarised in @tbl-rescale-params and the justification of these numbers can be found in the technical notes mentioned above.
-
-```{r}
-#| tbl-cap-location: bottom
-#| tbl-cap: Maximum and minimum values used to rescale the four HDI indicators into [0, 1] range. The maximum of GNI per capita is taken as the common log of 75,000, approximatly 4.875.
-#| label: tbl-rescale-params
-scaling_params <- tibble::tribble(
-   ~Dimension, ~Indicator, ~Variable,  ~Minimum, ~Maximum,
-  "Health",              "Life expectancy at birth (years)",   "life_exp",    "20",          "85",
-  "Education",           "Expected years of schooling (years)",  "exp_sch",    "0",          "18",
-  "Education",           "Mean years of schooling (years)",   "avg_sch",      "0",          "15",
-  "Standard of living",  "GNI per capita (2017 PPP$)",     "gni_pc",       "100",      "75000"
-  ) %>%
-  mutate(across(contains("mum"), as.numeric),
-         across(contains("mum"), ~ifelse(Variable == "gni_pc", log10(.x), .x)))
-knitr::kable(scaling_params, digits = 3)
+```{r eval = FALSE}
+a <- dim_weights %>% select(-variable) %>% t() %>% as_tibble(rownames = "id")
+colnames(a) <- c("id", dim_weights$variable)
+a %>% 
+  pivot_longer(-id, names_to = "vars", values_to = "value") %>% 
+  ggplot(aes(x = value, group = vars)) + 
+  geom_histogram() + 
+  facet_wrap(vars(vars))
 ```
 
-Among the four steps listed in the calculation, the first two are variable transformation. The next two can be considered as the dimension reduction step in the data pipeline given its intention to combine multivariate data into univariate. With the index pipeline proposed in the paper, HDI can be calculated as: 
 
-```{r}
-dt <- readxl::read_xlsx(path = here::here("data/hdi.xlsx") , skip = 4)
-raw <- dt %>%
-  janitor::clean_names() %>%
-  dplyr::select(-paste0("x", seq(4, 14, 2))) %>%
-  dplyr::rename(id = x1, countries = x2) %>%
-  dplyr::mutate(across(c(id, human_development_index_hdi:hdi_rank), as.numeric)) %>%
-  dplyr::filter(!is.na(id)) %>%
-  dplyr::mutate(across(4:7, ~round(.x, digits = 3))) %>% 
-  dplyr::select(-c(human_development_index_hdi,
-                   gni_per_capita_rank_minus_hdi_rank, 
-                   hdi_rank)) 
-colnames(raw) <- c("id", "country", "life_exp", "exp_sch", "avg_sch", "gni_pc")
+```{r gggi-verify}
+set.seed(123)
+n <- 1000
+w_idx <- map(1:n, function(x){
+  w_idx <- stats::runif(4, min = 0.1, max = 1)
+  w_idx <- w_idx/sum(w_idx)
+  w_idx %>% as.matrix(nrow = 4, ncol = 1)
+  })
+rand_w <- reduce(w_idx, cbind) %>% as_tibble()
+colnames(rand_w) <- paste0("V", 1:n)
+
+dim_weights <- gggi_weights %>%
+  filter(!is.na(pillar_weight)) %>%
+  select(variable, pillar_weight) %>% 
+  bind_cols(rand_w)
+
+dt <- gggi %>% 
+  select(country:political_empowerment) %>% 
+  init(id = country) %>%
+  add_meta(dim_weights, var_col = variable)
+
+dt2 <- dt %>%
+  dimension_reduction(
+    index_new = aggregate_linear(
+      ~economic_participation_and_opportunity:political_empowerment,
+      weight = pillar_weight))
+
+dt2$data %>%
+  ggplot(aes(x = index, y = index_new)) +
+  geom_abline(slope = 1, intercept = 0, color = "grey") + 
+  geom_point() +
+  theme_bw() + 
+  theme(aspect.ratio = 1, panel.grid.minor = element_blank()) 
 ```
 
-```{r echo = TRUE, message=TRUE}
-dt <- raw %>% init(id = country, indicators = life_exp:gni_pc)
-res <- dt %>%
-  var_trans(gni_pc = log(gni_pc, base = 10)) %>% 
-  var_trans(.method = rescale_minmax, .vars = life_exp:gni_pc,
-            min = c(20, 0, 0, 2), max = c(85, 18, 15, log10(75000))) %>% 
-  dim_red(sch = (exp_sch + avg_sch) / 2) %>%
-  dim_red(index = (life_exp * sch * gni_pc)^(1/3))
+```{r gggi-weights, fig.height=20, fig.align='center', fig.width=10}
+dt3 <- dt2 %>%
+  swap_values(.id = 1, .param = weight,
+              .value = list(pillar_weight, paste0("V", 2:100)),
+              .raw_data = dt)
+
+idx_wide <- dt3$data %>% select(country, dplyr::contains("index_new"))
+idx_wide2 <- idx_wide %>% mutate(index_avg = rowMeans(idx_wide[,2:(ncol(idx_wide))]))
+idx_long2 <- idx_wide2 %>% pivot_longer(-country, names_to = "index", values_to = "value") %>% 
+  left_join(gggi %>% select(country, rank), by = "country")
+
+idx_long2 %>%
+  ggplot(aes(x = value, y = fct_reorder(country, -rank), group = country)) +
+  geom_boxplot() + 
+  #geom_point(color = "grey80", size = 0.5) +
+  geom_point(data = idx_long2 %>% filter(index == "index_new1"), color = "red") + 
+  theme_bw() + 
+  ylab("Country") + 
+  xlab("Index")
 ```
 
-<!-- The output is an `indri` object with a summary of operations followed by the data output. The data output contains the ID, country name, rescaled variables (`life_exp`, `exp_sch`, `avg_sch`, and `gni_pc`), the aggregated education dimension (`sch`), and the final index calculated (`index`). -->
+```{r eval = FALSE}
+dt <- tidyindex::gggi %>% 
+  dplyr::select(country: political_empowerment) %>%
+  filter(region %in% c("South Asia", "Sub-Saharan Africa")) %>%
+  arrange(index) 
+colnames(dt) <- c(colnames(dt)[1:4], "economy", "education", "health", "politics")
 
-Index analysts can be interested in studying the property of the index and the countries through the "what-if" questions. In the context of HDI, this can be what if an alternative dimension reduction expression is used to reduce the three dimensions into the HDI? Apart from the geometrical mean, linear combination is a common method to reduce the data dimension. With different weighting schemes, the combination can be compared to study the variable importance of each dimension or to reveal the underlying structures of countries. The following code tests five expressions (arithmetic mean, principal component analysis weight, and three weighting schemes emphasizing life expectancy, education, and GNI per capita respectively) using the `swap_exprs()` function. The function first locates the operation to be tested (`.var = index`), then accepts a list of expressions for testing `.expr`, before requesting the raw data:
+w_proj2idx <- function(w){w/sum(w)}
+w_idx2proj <- function(w){w/(sqrt(sum(w^2))) %>% matrix(nrow = length(w))}
+find_next <- function(matrix){
+  start <- matrix(c(0.25, 0.25, 0.25, 0.25), ncol = 1)
+  tourr:::step_angle(tourr:::geodesic_info(start, matrix), 0.4)
+}
+b <- array(dim = c(4, 1, 9))
+b[,,c(1,3,5,7,9)] <- matrix(c(0.25, 0.25, 0.25, 0.25), ncol = 1) %>% w_idx2proj()
+b[,,2] <- matrix(c(0.5, 0.2, 0.2, 0.1), ncol = 1) %>% find_next()
+b[,,4] <- matrix(c(0.2, 0.5, 0.2, 0.1), ncol= 1) %>% find_next()
+b[,,6] <- matrix(c(0.1, 0.2, 0.5, 0.2), ncol= 1) %>% find_next()
+b[,,8] <- matrix(c(0.15, 0.2, 0.15, 0.5), ncol = 1) %>% find_next()
 
-```{r echo = TRUE, message=TRUE}
-(res2 <- res %>%
-  swap_exprs(
-    .var = index,
-    .expr = list(
-      index1 = (life_exp + sch + gni_pc)/3,
-      # PCA recommended weight
-      index2 = 0.569 * life_exp + 0.576 * sch + 0.586 * gni_pc, 
-      index3 = 0.8 * life_exp + 0.1 * sch + 0.1 * gni_pc,
-      index4 = 0.1 * life_exp + 0.8 * sch + 0.1 * gni_pc,
-      index5 = 0.1 * life_exp + 0.1 * sch + 0.8 * gni_pc),
-    .raw_data = dt))
+render(
+  dt[,5:8], planned2_tour(b), dev = "png",
+  display_idx(cex = 2, label_cex = 2,
+              label = dt$country, abb_vars = FALSE),
+  width = 800, height = 1300, apf = 1/20, frames = 100,
+  here::here("figures/idx-tour/idx-tour-%03d.png")
+)
+
+gifski::gifski(
+  list.files(here::here("figures/idx-tour"), full.names = TRUE),
+  gif_file = here::here("figures/idx-tour.gif"),
+  delay = 0.15, width = 800, height = 1300)
+
 ```
 
-The resulting data includes five more columns corresponding to the five alternative indexes. The country ranking can be further computed on the data and plotted in a scatterplot matrix as in @fig-hdi-expr. The plot shows almost similar ranks suggested by the indexes calculated using geometric mean (`rank0`), the arithmetic mean (`rank1`), and the PCA recommended weights (`rank2`). The agreement of the three methods supports the use of geometric mean as the dimension reduction method in the original index. The scatterplot matrix also reveals the difference in ranking when the three dimensions are given different weights in `rank3`, `rank4`, and `rank5`. The panel `rank4` vs `rank5` shows a cluster of highlighted points with relatively high ranks according to `rank5` but low in `rank4`.  These countries are printed in @tbl-hdi-expr prints along with their three dimensions, calculated indexes, and rankings. While having a high life expectancy and GNI *per capita*, these countries (Andorra, Qatar, San Marino, Kuwait, and Brunei Darussalam) score relatively low in education, which is weighted heavily in `index4` (`0.1 * life_exp + 0.1 * sch + 0.8 * gni_pc`).
 
-
-```{r fig-hdi-expr}
-#| fig-height: 8
-#| fig-width: 12
-#| fig-cap: "Comparing country ranks from six different index constructions: geometric mean (`rank0`), arithmetic mean (`rank1`), principal component analysis recommended weights (`rank2`), and heavier weight on life expectancy, education, and GNI per capita (`rank3` - `rank5`). Geometric mean, arithmetic mean, and PCA produce similar rankings where countries are aligned in a diagnoal line, while country rankings varies when compare among `rank3` to `rank5`. Panel `rank5` vs. `rank4` highlights a cluster of countries that rank high by `rank5` but low by `rank4`. The plot demonstrates the necessity to test on various alternative expressions to verify the robustness of the method and to capture distinctive characteristics of different countries. "
-with_rank <- res2$data %>% 
-  mutate(across(contains("index"), ~rank(-.x), .names = "rank.{.col}")) %>% 
-  rename_with(~gsub(".index", "", .x), contains("rank.index"))
-
-lower_cluster <- with_rank %>% 
-  filter(rank5 < 30, rank4 > 50) %>% 
-  select(country, life_exp, sch, gni_pc, index3, index4, rank3, rank4)
-
-with_highlight <- with_rank %>% 
-  mutate(highlight = ifelse(country %in% lower_cluster$country, TRUE, FALSE)) %>% 
-  rename(`geometric mean` = rank0, `arithmetic mean` = rank1,
-         `PCA weights` = rank2, `weight 0.8 on life expec.` = rank3,
-         `weight 0.8 on education`  = rank4, `weight 0.8 on GNI per capita` = rank5)
-
-p1 <- ggpairs(
-  with_highlight, columns = 14:19,
-  lower = list(continuous = "points", combo = "facethist", 
-               discrete = "facetbar", na = "na"),
-  upper = NULL, diag = NULL,  switch = "both", 
-  labeller = label_wrap_gen(width = 15, multi_line = TRUE) ) +
-  theme(aspect.ratio = 1)
-
-# https://stackoverflow.com/questions/65091593/how-to-mark-certain-point-in-ggpairs
-p1$plots[[35]]$mapping <- 
-    `class<-`(c(p1$plots[[35]]$mapping, aes(color = highlight)), "uneval")
-p1 <- p1 + scale_color_manual(values = c("black", "red"))
-p1
+```{r idx-tour, fig.align='center', fig.height= 12, fig.width=12}
+#| fig-cap: "Five frames selected from varying the linear weights of four dimensions in Global Gender Gap Index. The weights vary slightly from the official simple average weights (0.25, 0.25, 0.25, 0.25) to observe how the index and ranking reponse. Full animation is available at [vimeo link]."
+frames <- c("001", "013", "037", "061", "085")
+ani <- paste0(here::here("figures/"), "idx-tour/", "idx-tour-", frames, ".png")
+rl <- lapply(ani, png::readPNG)
+gl <-  lapply(rl, grid::rasterGrob)
+wrap_plots(gl, ncol = 3) 
 ```
-
-```{r echo = FALSE}
-#| tbl-cap: A selected number of countries with low rankings when education is given a heavy weight (`index4`) while ranks high when a heavier weight is given on GNI per capital (`index5`).
-#| label: tbl-hdi-expr
-lower_cluster %>% 
-  rename( `life expectancy` = life_exp, education = sch, `GNI per capita` = gni_pc) %>% 
-  knitr::kable(digits = 3)
-```
-
-<!-- \newpage -->
-
-<!-- *what if the minimum value for GNI per capita is changed?* -->
-
-<!-- The lower limit for GNI per capita is set to be the common log of $100, with justification provided in the technical notes as: -->
-
-<!--   > The low minimum value for gross national income (GNI) per capita, $100, is justified by the considerable amount of unmeasured subsistence and nonmarket production in economies close to the minimum, which is not captured in the official data -->
-
-<!-- The open source data provided by United Nations Development Programme suggest the minimum GNI *per capita* is `$732` and this opens the questions on how the index/ranking will change if the lower minimum (`$100`) is raised or decreased. We can answer this question by testing on a set of different values using `.values` in the function `swap_values()`: -->
-
-<!-- ```{r echo = TRUE, message = TRUE} -->
-<!-- (res3 <- res %>% -->
-<!--   swap_values( -->
-<!--     .module = var_trans, .step = rescale_minmax, .res = gni_pc, -->
-<!--     .var = max, .values = log10(150000), -->
-<!--     .raw_data = dt) -->
-<!--    )  -->
-<!-- ``` -->
-
-<!-- \newpage -->
-
-<!-- The function computes the GNI *per capita* in both the original value (`gni_pc0`) and the new value provided (`gni_pc1`). All the subsequent operations are also computed for both cases and result in `index0` and `index1`. -->
-
-<!-- ```{r} -->
-<!-- #| fig-height: 6 -->
-<!-- #| fig-width: 6 -->
-<!-- #| fig-align: center -->
-<!-- new_rank <- res3$data %>% -->
-<!--   mutate(across(contains("index"), ~rank(-.x), .names = "rank.{.col}")) %>% -->
-<!--   rename_with(~gsub(".index", "", .x), contains("rank.index")) %>%  -->
-<!--   mutate(difference = rank1 - rank0) -->
-
-<!-- try <- new_rank %>% -->
-<!--   dplyr::select(id, country, contains("gni_pc"), contains("index"), contains("rank"), difference) %>%  -->
-<!--   arrange(-abs(difference)) -->
-
-<!-- new_rank %>%  -->
-<!--   ggplot(aes(x = rank0, y = rank1)) +  -->
-<!--   geom_point() +  -->
-<!--   geom_abline(slope = 1, intercept = 0, color = "blue") + -->
-<!--   # geom_text(data = try %>% filter(difference > 15), color = "red", aes(label = country)) + -->
-<!--   theme(aspect.ratio = 1) + -->
-<!--   xlab("log10(100) as the rescale minimum for GNI per capita") + -->
-<!--   ylab("log10(700) as the rescale minimum for GNI per capita")  -->
-<!-- ``` -->
-
-\newpage 
 
 # Conclusion
 

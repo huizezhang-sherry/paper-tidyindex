@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, breakable, sharp corners, enhanced, interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, sharp corners, borderline west={3pt}{0pt}{shadecolor}, frame hidden, interior hidden, enhanced, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -926,324 +926,32 @@ results in more extreme values, i.e.~in 1998 and 2020.}
 
 \end{figure}
 
-\hypertarget{an-example-on-sustainable-development-indicators}{%
-\subsection{An example on sustainable development
-indicators}\label{an-example-on-sustainable-development-indicators}}
+\hypertarget{global-gender-gap-index}{%
+\subsection{Global Gender Gap Index}\label{global-gender-gap-index}}
 
-In the following example, the Human Development Index (HDI) will first
-be constructed using the pipeline syntax. The section will then
-demonstrate how expressions or parameters in the pipeline can be swapped
-to alternatives to study the index property.
-
-Human Development Index (HDI) measures the development of countries
-through more than just economic growth, but also people's life
-expectancy and opportunity to receive education. These three identified
-dimensions are measured using four indicators: life expectancy at birth
-(health), expected years of schooling (education), mean years of
-schooling (education), and Gross National Income (GNI) \emph{per capita}
-(standard of living). The technical notes (United Nations Development
-Programme 2021) have documented the procedures to calculate HDI and they
-are summarised below:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  take log on GNI \emph{per capita},
-\item
-  rescale the four indicators into {[}0, 1{]} using mini-max,
-\item
-  aggregate the two education indicators using arithmetic mean, and
-\item
-  aggregate the three dimensions into the index using geometric mean.
-\end{enumerate}
-
-The values used in mini-max rescaling are summarised in
-Table~\ref{tbl-rescale-params} and the justification of these numbers
-can be found in the technical notes mentioned above.
-
-\hypertarget{tbl-rescale-params}{}
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2375}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.4500}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1125}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1000}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1000}}@{}}
-\caption{\label{tbl-rescale-params}Maximum and minimum values used to
-rescale the four HDI indicators into {[}0, 1{]} range. The maximum of
-GNI per capita is taken as the common log of 75,000, approximatly
-4.875.}\tabularnewline
-\toprule()
-\begin{minipage}[b]{\linewidth}\raggedright
-Dimension
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Indicator
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Variable
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-Minimum
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-Maximum
-\end{minipage} \\
-\midrule()
-\endfirsthead
-\toprule()
-\begin{minipage}[b]{\linewidth}\raggedright
-Dimension
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Indicator
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Variable
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-Minimum
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-Maximum
-\end{minipage} \\
-\midrule()
-\endhead
-Health & Life expectancy at birth (years) & life\_exp & 20 & 85.000 \\
-Education & Expected years of schooling (years) & exp\_sch & 0 &
-18.000 \\
-Education & Mean years of schooling (years) & avg\_sch & 0 & 15.000 \\
-Standard of living & GNI per capita (2017 PPP\$) & gni\_pc & 2 &
-4.875 \\
-\bottomrule()
-\end{longtable}
-
-Among the four steps listed in the calculation, the first two are
-variable transformation. The next two can be considered as the dimension
-reduction step in the data pipeline given its intention to combine
-multivariate data into univariate. With the index pipeline proposed in
-the paper, HDI can be calculated as:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{dt }\OtherTok{\textless{}{-}}\NormalTok{ raw }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{init}\NormalTok{(}\AttributeTok{id =}\NormalTok{ country, }\AttributeTok{indicators =}\NormalTok{ life\_exp}\SpecialCharTok{:}\NormalTok{gni\_pc)}
-\NormalTok{res }\OtherTok{\textless{}{-}}\NormalTok{ dt }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{var\_trans}\NormalTok{(}\AttributeTok{gni\_pc =} \FunctionTok{log}\NormalTok{(gni\_pc, }\AttributeTok{base =} \DecValTok{10}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{var\_trans}\NormalTok{(}\AttributeTok{.method =}\NormalTok{ rescale\_minmax, }\AttributeTok{.vars =}\NormalTok{ life\_exp}\SpecialCharTok{:}\NormalTok{gni\_pc,}
-            \AttributeTok{min =} \FunctionTok{c}\NormalTok{(}\DecValTok{20}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{), }\AttributeTok{max =} \FunctionTok{c}\NormalTok{(}\DecValTok{85}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{15}\NormalTok{, }\FunctionTok{log10}\NormalTok{(}\DecValTok{75000}\NormalTok{))) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{dim\_red}\NormalTok{(}\AttributeTok{sch =}\NormalTok{ (exp\_sch }\SpecialCharTok{+}\NormalTok{ avg\_sch) }\SpecialCharTok{/} \DecValTok{2}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{dim\_red}\NormalTok{(}\AttributeTok{index =}\NormalTok{ (life\_exp }\SpecialCharTok{*}\NormalTok{ sch }\SpecialCharTok{*}\NormalTok{ gni\_pc)}\SpecialCharTok{\^{}}\NormalTok{(}\DecValTok{1}\SpecialCharTok{/}\DecValTok{3}\NormalTok{))}
-\end{Highlighting}
-\end{Shaded}
-
-Index analysts can be interested in studying the property of the index
-and the countries through the ``what-if'' questions. In the context of
-HDI, this can be what if an alternative dimension reduction expression
-is used to reduce the three dimensions into the HDI? Apart from the
-geometrical mean, linear combination is a common method to reduce the
-data dimension. With different weighting schemes, the combination can be
-compared to study the variable importance of each dimension or to reveal
-the underlying structures of countries. The following code tests five
-expressions (arithmetic mean, principal component analysis weight, and
-three weighting schemes emphasizing life expectancy, education, and GNI
-per capita respectively) using the \texttt{swap\_exprs()} function. The
-function first locates the operation to be tested
-(\texttt{.var\ =\ index}), then accepts a list of expressions for
-testing \texttt{.expr}, before requesting the raw data:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{(res2 }\OtherTok{\textless{}{-}}\NormalTok{ res }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{swap\_exprs}\NormalTok{(}
-    \AttributeTok{.var =}\NormalTok{ index,}
-    \AttributeTok{.expr =} \FunctionTok{list}\NormalTok{(}
-      \AttributeTok{index1 =}\NormalTok{ (life\_exp }\SpecialCharTok{+}\NormalTok{ sch }\SpecialCharTok{+}\NormalTok{ gni\_pc)}\SpecialCharTok{/}\DecValTok{3}\NormalTok{,}
-      \CommentTok{\# PCA recommended weight}
-      \AttributeTok{index2 =} \FloatTok{0.569} \SpecialCharTok{*}\NormalTok{ life\_exp }\SpecialCharTok{+} \FloatTok{0.576} \SpecialCharTok{*}\NormalTok{ sch }\SpecialCharTok{+} \FloatTok{0.586} \SpecialCharTok{*}\NormalTok{ gni\_pc, }
-      \AttributeTok{index3 =} \FloatTok{0.8} \SpecialCharTok{*}\NormalTok{ life\_exp }\SpecialCharTok{+} \FloatTok{0.1} \SpecialCharTok{*}\NormalTok{ sch }\SpecialCharTok{+} \FloatTok{0.1} \SpecialCharTok{*}\NormalTok{ gni\_pc,}
-      \AttributeTok{index4 =} \FloatTok{0.1} \SpecialCharTok{*}\NormalTok{ life\_exp }\SpecialCharTok{+} \FloatTok{0.8} \SpecialCharTok{*}\NormalTok{ sch }\SpecialCharTok{+} \FloatTok{0.1} \SpecialCharTok{*}\NormalTok{ gni\_pc,}
-      \AttributeTok{index5 =} \FloatTok{0.1} \SpecialCharTok{*}\NormalTok{ life\_exp }\SpecialCharTok{+} \FloatTok{0.1} \SpecialCharTok{*}\NormalTok{ sch }\SpecialCharTok{+} \FloatTok{0.8} \SpecialCharTok{*}\NormalTok{ gni\_pc),}
-    \AttributeTok{.raw\_data =}\NormalTok{ dt))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Index pipeline: 
-
-Summary: 
-\end{verbatim}
-
-\begin{verbatim}
-var_trans: `log(gni_pc, base = 10)` -> gni_pc
-\end{verbatim}
-
-\begin{verbatim}
-var_trans: `rescale_minmax(var = life_exp, min = 20, max = 85)` ->
-life_exp
-\end{verbatim}
-
-\begin{verbatim}
-var_trans: `rescale_minmax(var = exp_sch, min = 0, max = 18)` ->
-exp_sch
-\end{verbatim}
-
-\begin{verbatim}
-var_trans: `rescale_minmax(var = avg_sch, min = 0, max = 15)` ->
-avg_sch
-\end{verbatim}
-
-\begin{verbatim}
-var_trans: `rescale_minmax(var = gni_pc, min = 2, max = 4.875061)` ->
-gni_pc
-\end{verbatim}
-
-\begin{verbatim}
-dim_red: `(exp_sch + avg_sch)/2` -> sch
-\end{verbatim}
-
-\begin{verbatim}
-dim_red: `(life_exp * sch * gni_pc)^(1/3)` -> index0
-\end{verbatim}
-
-\begin{verbatim}
-dim_red: `(life_exp + sch + gni_pc)/3` -> index1
-\end{verbatim}
-
-\begin{verbatim}
-dim_red: `0.569 * life_exp + 0.576 * sch + 0.586 * gni_pc` -> index2
-\end{verbatim}
-
-\begin{verbatim}
-dim_red: `0.8 * life_exp + 0.1 * sch + 0.1 * gni_pc` -> index3
-\end{verbatim}
-
-\begin{verbatim}
-dim_red: `0.1 * life_exp + 0.8 * sch + 0.1 * gni_pc` -> index4
-\end{verbatim}
-
-\begin{verbatim}
-dim_red: `0.1 * life_exp + 0.1 * sch + 0.8 * gni_pc` -> index5
-\end{verbatim}
-
-\begin{verbatim}
-
-Data: 
-# A tibble: 191 x 13
-      id country   life_exp exp_sch avg_sch gni_pc   sch index0 index1
-   <dbl> <chr>        <dbl>   <dbl>   <dbl>  <dbl> <dbl>  <dbl>  <dbl>
- 1     1 Switzerl~    0.984   0.917   0.924  0.983 0.920  0.962  0.963
- 2     2 Norway       0.973   1       0.867  0.978 0.933  0.961  0.961
- 3     3 Iceland      0.964   1       0.918  0.955 0.959  0.959  0.959
- 4     4 Hong Kon~    1       0.960   0.815  0.973 0.887  0.952  0.953
- 5     5 Australia    0.993   1       0.848  0.936 0.924  0.951  0.951
- 6     6 Denmark      0.944   1       0.864  0.967 0.932  0.948  0.948
- 7     7 Sweden       0.969   1       0.841  0.952 0.920  0.947  0.947
- 8     8 Ireland      0.954   1       0.772  1     0.886  0.945  0.947
- 9     9 Germany      0.933   0.945   0.939  0.952 0.942  0.942  0.942
-10    10 Netherla~    0.949   1       0.839  0.956 0.919  0.941  0.941
-# i 181 more rows
-# i 4 more variables: index2 <dbl>, index3 <dbl>, index4 <dbl>,
-#   index5 <dbl>
-\end{verbatim}
-
-The resulting data includes five more columns corresponding to the five
-alternative indexes. The country ranking can be further computed on the
-data and plotted in a scatterplot matrix as in
-Figure~\ref{fig-hdi-expr}. The plot shows almost similar ranks suggested
-by the indexes calculated using geometric mean (\texttt{rank0}), the
-arithmetic mean (\texttt{rank1}), and the PCA recommended weights
-(\texttt{rank2}). The agreement of the three methods supports the use of
-geometric mean as the dimension reduction method in the original index.
-The scatterplot matrix also reveals the difference in ranking when the
-three dimensions are given different weights in \texttt{rank3},
-\texttt{rank4}, and \texttt{rank5}. The panel \texttt{rank4} vs
-\texttt{rank5} shows a cluster of highlighted points with relatively
-high ranks according to \texttt{rank5} but low in \texttt{rank4}. These
-countries are printed in Table~\ref{tbl-hdi-expr} prints along with
-their three dimensions, calculated indexes, and rankings. While having a
-high life expectancy and GNI \emph{per capita}, these countries
-(Andorra, Qatar, San Marino, Kuwait, and Brunei Darussalam) score
-relatively low in education, which is weighted heavily in
-\texttt{index4}
-(\texttt{0.1\ *\ life\_exp\ +\ 0.1\ *\ sch\ +\ 0.8\ *\ gni\_pc}).
+\includegraphics{tidyindex_files/figure-pdf/gggi-verify-1.pdf}
 
 \begin{figure}
 
-{\centering \includegraphics{tidyindex_files/figure-pdf/fig-hdi-expr-1.pdf}
+{\centering \includegraphics{tidyindex_files/figure-pdf/gggi-weights-1.pdf}
 
 }
 
-\caption{\label{fig-hdi-expr}Comparing country ranks from six different
-index constructions: geometric mean (\texttt{rank0}), arithmetic mean
-(\texttt{rank1}), principal component analysis recommended weights
-(\texttt{rank2}), and heavier weight on life expectancy, education, and
-GNI per capita (\texttt{rank3} - \texttt{rank5}). Geometric mean,
-arithmetic mean, and PCA produce similar rankings where countries are
-aligned in a diagnoal line, while country rankings varies when compare
-among \texttt{rank3} to \texttt{rank5}. Panel \texttt{rank5}
-vs.~\texttt{rank4} highlights a cluster of countries that rank high by
-\texttt{rank5} but low by \texttt{rank4}. The plot demonstrates the
-necessity to test on various alternative expressions to verify the
-robustness of the method and to capture distinctive characteristics of
-different countries.}
-
 \end{figure}
 
-\hypertarget{tbl-hdi-expr}{}
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.2118}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1882}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1176}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1765}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0824}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0824}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0706}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0706}}@{}}
-\caption{\label{tbl-hdi-expr}A selected number of countries with low
-rankings when education is given a heavy weight (\texttt{index4}) while
-ranks high when a heavier weight is given on GNI per capital
-(\texttt{index5}).}\tabularnewline
-\toprule()
-\begin{minipage}[b]{\linewidth}\raggedright
-country
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-life expectancy
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-education
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-GNI per capita
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-index3
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-index4
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-rank3
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-rank4
-\end{minipage} \\
-\midrule()
-\endfirsthead
-\toprule()
-\begin{minipage}[b]{\linewidth}\raggedright
-country
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-life expectancy
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-education
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-GNI per capita
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-index3
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-index4
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-rank3
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-rank4
-\end{minipage} \\
-\midrule()
-\endhead
-Andorra & 0.929 & 0.721 & 0.942 & 0.909 & 0.764 & 32 & 69 \\
-Qatar & 0.912 & 0.684 & 1.000 & 0.898 & 0.739 & 34 & 84 \\
-San Marino & 0.937 & 0.701 & 0.947 & 0.914 & 0.749 & 30 & 76 \\
-Kuwait & 0.903 & 0.670 & 0.947 & 0.884 & 0.721 & 39 & 96 \\
-Brunei Darussalam & 0.841 & 0.694 & 0.977 & 0.840 & 0.737 & 60 & 85 \\
-\bottomrule()
-\end{longtable}
+\begin{figure}
 
-\newpage
+{\centering \includegraphics{tidyindex_files/figure-pdf/idx-tour-1.pdf}
+
+}
+
+\caption{Five frames selected from varying the linear weights of four
+dimensions in Global Gender Gap Index. The weights vary slightly from
+the official simple average weights (0.25, 0.25, 0.25, 0.25) to observe
+how the index and ranking reponse. Full animation is available at
+{[}vimeo link{]}.}
+
+\end{figure}
 
 \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}
@@ -1307,14 +1015,9 @@ Julie Dickerson, Zach Cox, and Dianne Cook. 2000. {``Orca: {A}
 \emph{Journal of Computational and Graphical Statistics} 9 (3): 509--29.
 \url{https://www.jstor.org/stable/1390943}.
 
-\leavevmode\vadjust pre{\hypertarget{ref-UNDP_2021_tech_notes}{}}%
-United Nations Development Programme. 2021. {``Human Development Report
-2021-2022: The Next Frontier: Human Development and the Anthropocene.''}
-\url{https://hdr.undp.org/sites/default/files/2021-22_HDR/hdr2021-22_technical_notes.pdf}.
-
 \leavevmode\vadjust pre{\hypertarget{ref-hdi}{}}%
----------. 2022. {``Human Development Report 2021-22.''} New York.
-\url{http://report.hdr.undp.org}.
+United Nations Development Programme. 2022. {``Human Development Report
+2021-22.''} New York. \url{http://report.hdr.undp.org}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-spei}{}}%
 Vicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno.
