@@ -87,10 +87,13 @@ library(tourr)
   <!-- - what can be done if people adopt this pipeline/ why it is beneficial? -->
   <!-- - who would benefit from this paper -->
 
+Indexes are commonly used to combine multivariate information into a single number for monitoring, communicating, and decision-making across various domains in society. Their applications can be found in the environment (e.g. Air Quality Index, El Niño-Southern Oscillation Index), in the economy (Consumer Price Index, stock market indexes), and in the social sciences (e.g. QS University Rankings, Human Development Index). 
 
-Indexes are commonly-used tools to monitor, communicate and make decisions across various domains in society. Their applications can be found in the environment (e.g. Air Quality Index, El Niño-Southern Oscillation Index), in the economy (Consumer Price Index, stock market indexes), and in the social sciences (e.g. QS University Rankings, Human Development Index). 
+To construct an index, experts typically first define an underlying concept of interest to measure, then collect relevant variables for measuring the concept, and lastly summarise these variables into a single numerical or categorical value. Many decisions are factored into this process and 
 
-To construct an index, experts typically first define an underlying concept of interest to measure, then collect relevant variables for measuring the concept, and lastly summarise these variables into a single numerical or categorical value. An index can be as simple as counting the number of days when the maximum temperature is greater than 25 degree. This is "the number of summer days" (SU), a climate index listed in ETCCDI Climate Change Indices [@climate-indexes]. In some cases, indexes are weighted linear combinations of variables. For example, Human Development Index (HDI) [@hdi] combines the three aspects (life expectancy, years of schooling, and GNI per capita) to measure country's development. In more complex scenarios, indexes are constructed by combining multiple variables, often accompanied by spatial and temporal considerations arising from diverse data formats, including in-situ stations, satellite imageries, and model outputs. An example of this is the Combined Drought Index (CDI) [@cdi], curated by the European Drought Observatory, which uses a decision tree to combine Standardized Precipitation Index (SPI) [@spi] with the satellite measure, Fraction of Absorbed Photosynthetically Active Radiation (FAPAR), and modelled soil moisture.
+
+
+An index can be as simple as counting the number of days when the maximum temperature is greater than 25 degree. This is "the number of summer days" (SU), a climate index listed in ETCCDI Climate Change Indices [@climate-indexes]. In some cases, indexes are weighted linear combinations of variables. For example, Human Development Index (HDI) [@hdi] combines the three aspects (life expectancy, years of schooling, and GNI per capita) to measure country's development. In more complex scenarios, indexes are constructed by combining multiple variables, often accompanied by spatial and temporal considerations arising from diverse data formats, including in-situ stations, satellite imageries, and model outputs. An example of this is the Combined Drought Index (CDI) [@cdi], curated by the European Drought Observatory, which uses a decision tree to combine Standardized Precipitation Index (SPI) [@spi] with the satellite measure, Fraction of Absorbed Photosynthetically Active Radiation (FAPAR), and modelled soil moisture.
 
 Our initial interest is to understand how different variable combinations contribute to the uncertainty of an index. However, as we start to understand how indexes are composed, we find many other steps in the construction also introduce uncertainty. In order to evaluate the uncertainty, an index needs to be broken down into its fundamental building blocks to analyse the effect of each component. This shifts the focus to investigate the decomposition of indexes into their constituent parts for analysing uncertainty. While the OECD handbook [@oecd_handbook_2008] has provided a set of steps for constructing composite socio-economic indexes, there is a need to extend these guidelines to accommodate more complex construction steps required for indexes in general.
 
@@ -592,6 +595,36 @@ p2 <- idx %>%
 
 ## Global Gender Gap Index
 
+Global Gender Gap Index (GGGI) [@WEF2023] is published by the World Economic Forum to measure the gender parity of 146 countries across four dimensions: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment. The index is expressed as a percentage and can be interpreted as the percentage of the gender gap that has been closed. Fourteen variables from the four dimensions are collected for both genders and calculated as females-to-males ratios. Within each dimension, variables are linear aggregated with weights shown in @tbl-gggi-weights. The weights is determined so that a one percentage point change in the standard deviation of each variable contributes equally to the index and is calculated as taking the inverse of the standard deviation of each variable and scaling them to sum to 1 within each dimension. The four dimensions are then aggregated with equal weights (0.25) into the final index. The 2023 GGGI data is available in the country's economy profile from the Global Gender Gap Report 2023 [@WEF2023] and can be accessed through the `tidyindex` package as `gggi`, along with the corresponding weights `gggi_weights`.
+
+```{r tbl-gggi-weights}
+#| tbl-cap: Weights of the fourteen variables in Global Gender Gap Index
+#| tbl-cap-location: bottom
+gggi_weights %>%  
+   mutate(variable = str_replace_all(variable, "_", " ") %>%
+            str_to_sentence()) %>% 
+  select(c(1,2, 5:7)) %>% 
+  mutate(dimension = c(rep("Economy", 5), rep("Education" ,4), 
+                       rep("Health", 2), rep("Politics", 3))) %>% 
+  set_names(str_to_sentence) %>% 
+  knitr::kable(digits = 3)
+```
+
+
+A natural thing to do when provided with the index data is to reproduce the index using the described methodology to verify the index calculation. In the case of GGGI, the construction can be simplified as a single linear aggregation with variable weight (rescaled inverse of variable standard deviation) multiplied by the dimension weight (0.25 for all dimensions): 
+
+````
+gggi %>% 
+  init(id = country) %>%
+  add_meta(gggi_weights, var_col = variable) %>% 
+  dimension_reduction(
+    index_new = aggregate_linear(
+      ~labour_force_participation:years_with_female_head_of_state,
+      weight = weight)) 
+````
+
+The result can be compared with the GGGI values available from the report as shown in @fig-compare-gggi, validating the reproducibility of the index from the country data.
+
 ```{r eval = FALSE}
 a <- dim_weights %>% select(-variable) %>% t() %>% as_tibble(rownames = "id")
 colnames(a) <- c("id", dim_weights$variable)
@@ -602,8 +635,8 @@ a %>%
   facet_wrap(vars(vars))
 ```
 
-
-```{r gggi-verify}
+```{r fig-compare-gggi}
+#| fig-cap: "Verifying the calculation of the Global Gender Gap Index (GGGI). The index can be reproduced from the methodology described in the Global Gender Gap Report 2023 after removing the countries with missing variables, the treatment of which is unclear."
 set.seed(123)
 n <- 1000
 w_idx <- map(1:n, function(x){
@@ -614,31 +647,26 @@ w_idx <- map(1:n, function(x){
 rand_w <- reduce(w_idx, cbind) %>% as_tibble()
 colnames(rand_w) <- paste0("V", 1:n)
 
-dim_weights <- gggi_weights %>%
-  filter(!is.na(pillar_weight)) %>%
-  select(variable, pillar_weight) %>% 
-  bind_cols(rand_w)
-
-dt <- gggi %>% 
-  select(country:political_empowerment) %>% 
+dt2 <- gggi %>% 
   init(id = country) %>%
-  add_meta(dim_weights, var_col = variable)
-
-dt2 <- dt %>%
+  add_meta(gggi_weights, var_col = variable) %>% 
   dimension_reduction(
     index_new = aggregate_linear(
-      ~economic_participation_and_opportunity:political_empowerment,
-      weight = pillar_weight))
-
+      ~labour_force_participation:years_with_female_head_of_state,
+      weight = weight)) 
+  
 dt2$data %>%
+  filter(!is.na(index_new)) %>% 
   ggplot(aes(x = index, y = index_new)) +
   geom_abline(slope = 1, intercept = 0, color = "grey") + 
   geom_point() +
   theme_bw() + 
-  theme(aspect.ratio = 1, panel.grid.minor = element_blank()) 
+  theme(aspect.ratio = 1, panel.grid.minor = element_blank()) + 
+  xlab("Benchmark") + 
+  ylab("Index calculated")
 ```
 
-```{r gggi-weights, fig.height=20, fig.align='center', fig.width=10}
+```{r eval = FALSE, gggi-weights, fig.height=20, fig.align='center', fig.width=10}
 dt3 <- dt2 %>%
   swap_values(.id = 1, .param = weight,
               .value = list(pillar_weight, paste0("V", 2:100)),
@@ -658,6 +686,10 @@ idx_long2 %>%
   ylab("Country") + 
   xlab("Index")
 ```
+
+Index analysts could be interested in understanding how the index values and country ranking change when the weights assigned the each dimension is slightly changed. This can help assess the sensitivity of the country ranking, test the robustness of the indexes to different variables, and identify the strengths and weaknesses of countries in each aspect. We run a local tour focusing on the four dimensions of countries in the South Asia and Sub-Saharan Africa region. The local tour generates an animation starting with an equal weight of 0.25 for all four dimensions and gradually increases and reduces the weight of one variable at a time. In @fig-idx-tour, we select five frames from the tour animation: the first frame represents equal weights, and the subsequent four frames have a higher weight for each of the four dimensions. When health receives a higher weight, the impact on the index value is minimal. Index values and ranking change slightly when the dimension economy and education are given a greater weight, highlighting countries with a relatively better (moving right) or worse (moving left) in these single dimensions. For example, when economy is given a higher weight, the index moves to the left for Ethiopia and Senegal, revealing it as a weakness for these two countries to improve compared to their peers with similar rankings. These information will not be observed when using a single equal weight scheme since the advantageous and disadvantageous dimension of a country will be averaged out.
+
+Notably, increasing the weight of the politics dimension leads to a pronounced decrease of index value for almost all the countries. This can further impact the interpretation on how much of the gender gap has been closed. Analysts need to further consider the robustness of the index and potentially investigate the construction of the politics dimension, including the variable selection process.
 
 ```{r eval = FALSE}
 dt <- tidyindex::gggi %>% 
@@ -695,7 +727,7 @@ gifski::gifski(
 ```
 
 
-```{r idx-tour, fig.align='center', fig.height= 12, fig.width=12}
+```{r fig-idx-tour, fig.align='center', fig.height= 12, fig.width=12}
 #| fig-cap: "Five frames selected from varying the linear weights of four dimensions in Global Gender Gap Index. The weights vary slightly from the official simple average weights (0.25, 0.25, 0.25, 0.25) to observe how the index and ranking reponse. Full animation is available at [vimeo link]."
 frames <- c("001", "013", "037", "061", "085")
 ani <- paste0(here::here("figures/"), "idx-tour/", "idx-tour-", frames, ".png")
