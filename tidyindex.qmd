@@ -728,7 +728,7 @@ gifski::gifski(
 
 
 ```{r fig-idx-tour, fig.align='center', fig.height= 12, fig.width=12}
-#| fig-cap: "Five frames selected from varying the linear weights of four dimensions in Global Gender Gap Index. The weights vary slightly from the official simple average weights (0.25, 0.25, 0.25, 0.25) to observe how the index and ranking reponse. Full animation is available at [vimeo link]."
+#| fig-cap: "Five frames selected from varying the linear weights of four dimensions in Global Gender Gap Index. The weights vary slightly from the official simple average weights (0.25, 0.25, 0.25, 0.25) to observe how the index and ranking reponse. Full animation is available at https://vimeo.com/847874016?share=copy."
 frames <- c("001", "013", "037", "061", "085")
 ani <- paste0(here::here("figures/"), "idx-tour/", "idx-tour-", frames, ".png")
 rl <- lapply(ani, png::readPNG)
