@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced, frame hidden, interior hidden, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, frame hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -281,14 +281,12 @@ available variables are then defined and collected for measuring the
 concept and combined as an index using statistical methods. Many
 decisions are factored into the construction process of an index. For
 example, decision on which variables to include may depend on the data
-availability and the choice in other similar indexes. Indexes using
-weighted linear combination of variables, for example, Human Development
-Index (HDI) (United Nations Development Programme 2022) combines the
-three aspects (life expectancy, years of schooling, and GNI per capita),
-needs to decide on the weights of each variable. In the case of a
-drought index, analysts may need to decide among similar indexes, on the
-time scale to aggregate precipitation, and the distribution used to fit
-the data. All these decisions can introduce uncertainty to the index and
+availability and the choice in other similar indexes. In indexes
+constructed from linear combination of variables, decisions need to be
+made on the weight assigned to each variable. In the case of a drought
+index, analysts may need to decide among similar indexes, on the time
+scale to aggregate precipitation, and the distribution used to fit the
+data. All these decisions can introduce uncertainty to the index and
 lead to different interpretation and actions in operation.
 
 To understand how different factors contribute to the uncertainty of an
@@ -792,8 +790,17 @@ components}\label{sec-dev}}
 \hypertarget{sec-examples}{%
 \section{Examples}\label{sec-examples}}
 
-\hypertarget{a-drought-index-example}{%
-\subsection{A drought index example}\label{a-drought-index-example}}
+This section uses the example of drought and social indexes to show the
+analysis made possible with the index pipeline. The drought index
+example computes two indexes with various time scales and distributions
+simultaneously using the pipeline framework to understand the flood and
+drought events in Queensland. The social index example focuses on the
+dimension reduction in Global Gender Gap Index to explore the impact of
+weight changes in linear combination on index value and country ranking.
+
+\hypertarget{every-distribution-every-scale-every-index-all-at-once}{%
+\subsection{Every distribution, every scale, every index all at
+once}\label{every-distribution-every-scale-every-index-all-at-once}}
 
 A common task for drought researchers is to compute indexes at different
 parameter combinations. This can be used to identify the spatial and
@@ -922,8 +929,9 @@ results in more extreme values, i.e.~in 1998 and 2020.}
 
 \end{figure}
 
-\hypertarget{global-gender-gap-index}{%
-\subsection{Global Gender Gap Index}\label{global-gender-gap-index}}
+\hypertarget{does-a-minor-change-in-variable-weights-cause-a-tornado}{%
+\subsection{Does a minor change in variable weights cause a
+tornado?}\label{does-a-minor-change-in-variable-weights-cause-a-tornado}}
 
 The Global Gender Gap Index (GGGI), published annually by the World
 Economic Forum, measures gender parity by assessing relative gaps
@@ -1127,10 +1135,6 @@ Julie Dickerson, Zach Cox, and Dianne Cook. 2000. {``Orca: {A}
 {Visualization} {Toolkit} for {High}-{Dimensional} {Data}.''}
 \emph{Journal of Computational and Graphical Statistics} 9 (3): 509--29.
 \url{https://www.jstor.org/stable/1390943}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-hdi}{}}%
-United Nations Development Programme. 2022. {``Human Development Report
-2021-22.''} New York. \url{http://report.hdr.undp.org}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-spei}{}}%
 Vicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno.

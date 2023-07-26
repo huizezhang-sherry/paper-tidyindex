@@ -89,7 +89,7 @@ library(tourr)
 
 Indexes are commonly used to combine multivariate information into a single number for monitoring, communicating, and decision-making across various domains in society. Their applications can be found in the environment (e.g. Air Quality Index, El Niño-Southern Oscillation Index), in the economy (Consumer Price Index, stock market indexes), and in the social sciences (e.g. QS University Rankings, Human Development Index). 
 
-To construct an index, experts typically first define an underlying concept of interest to measure. This concept is latent and often without direct measure but of social and public importance. Relevant and available variables are then defined and collected for measuring the concept and combined as an index using statistical methods. Many decisions are factored into the construction process of an index. For example, decision on which variables to include may depend on the data availability and the choice in other similar indexes. Indexes using weighted linear combination of variables, for example, Human Development Index (HDI) [@hdi] combines the three aspects (life expectancy, years of schooling, and GNI per capita), needs to decide on the weights of each variable. In the case of a drought index, analysts may need to decide among similar indexes, on the time scale to aggregate precipitation, and the distribution used to fit the data. All these decisions can introduce uncertainty to the index and lead to different interpretation and actions in operation.
+To construct an index, experts typically first define an underlying concept of interest to measure. This concept is latent and often without direct measure but of social and public importance. Relevant and available variables are then defined and collected for measuring the concept and combined as an index using statistical methods. Many decisions are factored into the construction process of an index. For example, decision on which variables to include may depend on the data availability and the choice in other similar indexes. In indexes constructed from linear combination of variables, decisions need to be made on the weight assigned to each variable. In the case of a drought index, analysts may need to decide among similar indexes, on the time scale to aggregate precipitation, and the distribution used to fit the data. All these decisions can introduce uncertainty to the index and lead to different interpretation and actions in operation.
 
 To understand how different factors contribute to the uncertainty of an index, it needs to be broken down into its fundamental building blocks to analyse the effect of each component. Indexes from various disciplines, i.e. [...] seems very different, can be boiled down into a [...]. Such decomposition of indexes standardise the index construction pipeline and offers benefit for comparing among indexes. In social indexes, the OECD handbook [@oecd_handbook_2008] has provided a set of steps for constructing composite socio-economic indexes, but there is a need to extend these guidelines to accommodate more complex construction steps required for indexes in general.
 
@@ -500,7 +500,9 @@ where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are 
 
 # Examples {#sec-examples}
 
-## A drought index example
+This section uses the example of drought and social indexes to show the analysis made possible with the index pipeline. The drought index example computes two indexes with various time scales and distributions simultaneously using the pipeline framework to understand the flood and drought events in Queensland. The social index example focuses on the dimension reduction in Global Gender Gap Index to explore the impact of weight changes in linear combination on index value and country ranking. 
+
+## Every distribution, every scale, every index all at once
 
 A common task for drought researchers is to compute indexes at different parameter combinations. This can be used to identify the spatial and temporal extent of drought events, recommend the best parameter choice, or compare the effectiveness of indexes for monitoring drought. The example below computes two indexes: SPI and SPEI, at various time scales and fitted distributions, for stations in the state of Queensland in Australia. The purpose of the example is to demonstrate the interfaces the tidyindex package built to allow easy computing at different parameter combinations. 
 
@@ -589,9 +591,9 @@ p2 <- idx %>%
   
 ```
 
-## Global Gender Gap Index
+## Does a minor change in variable weights cause a tornado? 
 
-The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index is composed of 14 variables, expressed as female-to-male ratios, which are first aggregated in a linear combination into the four dimensions using the weight from the `V-weight` column in @tbl-gggi-weights. The weight is calculated as the inverse of the standard deviation of each variable and scaling to sum to 1 within each dimension to allow a one percentage point change in the standard deviation of each variable to contribute equally to the index. The four dimensions are then aggregated in another linear combination with equal weight tp obtain the index. The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the country's economy profile and can be accessed in R via the `tidyindex` package as `gggi`, along with the corresponding weights `gggi_weights`.
+The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index is composed of 14 variables, expressed as female-to-male ratios, which are first aggregated in a linear combination into the four dimensions using the weight from the `V-weight` column in @tbl-gggi-weights. The weight is calculated as the inverse of the standard deviation of each variable and scaling to sum to 1 within each dimension to allow a one percentage point change in the standard deviation of each variable to contribute equally to the index. The four dimensions are then aggregated in another linear combination with equal weight to obtain the index. The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the country's economy profile and can be accessed in R via the `tidyindex` package as `gggi`, along with the corresponding weights `gggi_weights`.
 
 ```{r tbl-gggi-weights}
 #| tbl-cap: Weights of the fourteen variables in Global Gender Gap Index
@@ -692,7 +694,7 @@ Many insights can be derived from the animation and these selected frames. These
 ```{r eval = FALSE}
 dt <- tidyindex::gggi %>% 
   dplyr::select(country: political_empowerment) %>%
-  filter(region %in% c("South Asia", "Sub-Saharan Africa")) %>%
+  filter(region %in% c("Sub-Saharan Africa")) %>%
   arrange(index) 
 colnames(dt) <- c(colnames(dt)[1:4], "economy", "education", "health", "politics")
 
