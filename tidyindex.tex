@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, frame hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, sharp corners, frame hidden, enhanced, boxrule=0pt, interior hidden, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -277,29 +277,29 @@ Index).
 To construct an index, experts typically first define an underlying
 concept of interest to measure. This concept is latent and often without
 direct measure but of social and public importance. Relevant and
-available variables are then defined and collected for measuring the
-concept and combined as an index using statistical methods. Many
-decisions are factored into the construction process of an index. For
-example, decision on which variables to include may depend on the data
-availability and the choice in other similar indexes. In indexes
-constructed from linear combination of variables, decisions need to be
-made on the weight assigned to each variable. In the case of a drought
-index, analysts may need to decide among similar indexes, on the time
-scale to aggregate precipitation, and the distribution used to fit the
-data. All these decisions can introduce uncertainty to the index and
-lead to different interpretation and actions in operation.
+available variables are then defined, collected, and combined as an
+index using statistical methods to approximate the concept. This
+construction process is often not straight forward and many decisions
+need to be made, whether explicitly or not. For example, decision on
+which variables to include may depend on the data availability and the
+choice in other similar indexes. Indexes constructed from linear
+combination of variables need to decide on the weight assigned to each
+variable. Some indexes have a spatial and/or temporal component and
+variables can be aggregated to different spatial resolutions and
+temporal scales for different monitoring purpose. These decisions can
+result in different index values and have different practical
+implication.
 
-To understand how different factors contribute to the uncertainty of an
-index, it needs to be broken down into its fundamental building blocks
-to analyse the effect of each component. Indexes from various
-disciplines, i.e.~{[}\ldots{]} seems very different, can be boiled down
-into a {[}\ldots{]}. Such decomposition of indexes standardise the index
-construction pipeline and offers benefit for comparing among indexes. In
-social indexes, the OECD handbook (OECD, European Union, and Joint
-Research Centre - European Commission 2008) has provided a set of steps
-for constructing composite socio-economic indexes, but there is a need
-to extend these guidelines to accommodate more complex construction
-steps required for indexes in general.
+To be able to test different decision choices systematically for an
+index, the index needs to be broken down into its fundamental building
+blocks to analyse the effect of each component. Such decomposition of
+indexes standardise the index construction pipeline and offers benefit
+for comparing among indexes and calculate index uncertainty. In social
+indexes, the OECD handbook (OECD, European Union, and Joint Research
+Centre - European Commission 2008) has provided a set of steps for
+constructing composite socio-economic indexes, but there is a need to
+extend these guidelines to accommodate more complex construction steps
+required for indexes in general.
 
 In this work, we develop a data pipeline framework where indexes from
 different domains can be built from. Based on the pipeline, an R
@@ -468,30 +468,19 @@ An overview of the pipeline is given in Figure~\ref{fig-pipeline-steps}
 to illustrate the construction from raw data to the final indexes. The
 pipeline includes eight modules for operations in the spatial, temporal,
 and multivariate aspects of the data as well as modules for comparing
-and communicating indexes. Analysts are free to select the modules they
-need and arrange them in the order they see fit to construct indexes.
-While the starting point of the pipeline is raw data, there are steps
-prior to this that are crucial to the success of an index. For example,
-the defined index needs to be useful for measuring the concept of
-interest and variables need to be collected from reliable sources with
-proper quality control.
+and communicating indexes. Analysts can choose a subset of modules and
+reorder them as needed to construct an index.
 
-\begin{itemize}
-\tightlist
-\item
-  align the spatial resolution and temporal frequency of data collected
-  from different satellite products
-\item
-  obtain and clean variables from countries, potentially aggregate from
-  regional data into country level
-\item
-  merge ground-based and satellite-based data
-\end{itemize}
+Data pre-processing may happen before the start of the index pipeline to
+prepare multivariate data from different locations/ countries ready for
+constructing an index. For remote sensing data, it includes aligning the
+spatial resolution and temporal frequency of data collected from
+different satellite products, or merging in-situ stations with the
+satellite data.
 
-Before elaborating each of the eight pipeline modules as subsections,
-the data notation will be first introduced. Let
-\(\mathbf{x}(\mathbf{s};\mathbf{t})\) denote the raw data with spatial,
-temporal, and multivariate aspects: the spatial dimension
+The notation used for introducing the pipeline modules is as follows.
+Let \(\mathbf{x}(\mathbf{s};\mathbf{t})\) denote the raw data with
+spatial, temporal, and multivariate aspects: the spatial dimension
 \(\mathbf{s} = (s_1, s_2, \cdots, s_n)^\prime\) is defined in the 2D
 space: \(\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2\), the
 temporal dimension \(\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime\) is
@@ -657,10 +646,9 @@ x_{p^*}(\mathbf{s}; \mathbf{t}) \rightarrow x_p(\mathbf{s}; \mathbf{t}),
 
 where \(p^* = 1, 2, \cdots, P^*\) and \(p = 1, 2, \cdots, P\) reduce the
 variable dimension from \(P\) to \(P^*\). The most commonly used
-dimension reduction technique is Principal Component Analysis (PCA),
-also called Empirical Orthogonal Function (EOF) in earth science. It can
-be seen as a special case of weighting, where variables are summed up in
-a linear combination:
+dimension reduction technique is Principal Component Analysis (PCA). It
+can be seen as a special case of weighting, where variables are summed
+up in a linear combination:
 \[x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t}),\]
 with restrictions imposed on the weight coefficient:
 \(\sum_{p=1}^P\lambda_p^2 = 1\). In other cases of weighting, the
@@ -946,7 +934,7 @@ the standard deviation of each variable and scaling to sum to 1 within
 each dimension to allow a one percentage point change in the standard
 deviation of each variable to contribute equally to the index. The four
 dimensions are then aggregated in another linear combination with equal
-weight tp obtain the index. The 2023 GGGI data is available from the
+weight to obtain the index. The 2023 GGGI data is available from the
 Global Gender Gap Report 2023 in the country's economy profile and can
 be accessed in R via the \texttt{tidyindex} package as \texttt{gggi},
 along with the corresponding weights \texttt{gggi\_weights}.

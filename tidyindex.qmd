@@ -89,9 +89,9 @@ library(tourr)
 
 Indexes are commonly used to combine multivariate information into a single number for monitoring, communicating, and decision-making across various domains in society. Their applications can be found in the environment (e.g. Air Quality Index, El Niño-Southern Oscillation Index), in the economy (Consumer Price Index, stock market indexes), and in the social sciences (e.g. QS University Rankings, Human Development Index). 
 
-To construct an index, experts typically first define an underlying concept of interest to measure. This concept is latent and often without direct measure but of social and public importance. Relevant and available variables are then defined and collected for measuring the concept and combined as an index using statistical methods. Many decisions are factored into the construction process of an index. For example, decision on which variables to include may depend on the data availability and the choice in other similar indexes. In indexes constructed from linear combination of variables, decisions need to be made on the weight assigned to each variable. In the case of a drought index, analysts may need to decide among similar indexes, on the time scale to aggregate precipitation, and the distribution used to fit the data. All these decisions can introduce uncertainty to the index and lead to different interpretation and actions in operation.
+To construct an index, experts typically first define an underlying concept of interest to measure. This concept is latent and often without direct measure but of social and public importance. Relevant and available variables are then defined, collected, and combined as an index using statistical methods to approximate the concept. This construction process is often not straight forward and many decisions need to be made, whether explicitly or not. For example, decision on which variables to include may depend on the data availability and the choice in other similar indexes. Indexes constructed from linear combination of variables need to decide on the weight assigned to each variable. Some indexes have a spatial and/or temporal component and variables can be aggregated to different spatial resolutions and temporal scales for different monitoring purpose. These decisions can result in different index values and have different practical implication.
 
-To understand how different factors contribute to the uncertainty of an index, it needs to be broken down into its fundamental building blocks to analyse the effect of each component. Indexes from various disciplines, i.e. [...] seems very different, can be boiled down into a [...]. Such decomposition of indexes standardise the index construction pipeline and offers benefit for comparing among indexes. In social indexes, the OECD handbook [@oecd_handbook_2008] has provided a set of steps for constructing composite socio-economic indexes, but there is a need to extend these guidelines to accommodate more complex construction steps required for indexes in general.
+To be able to test different decision choices systematically for an index, the index needs to be broken down into its fundamental building blocks to analyse the effect of each component. Such decomposition of indexes standardise the index construction pipeline and offers benefit for comparing among indexes and calculate index uncertainty. In social indexes, the OECD handbook [@oecd_handbook_2008] has provided a set of steps for constructing composite socio-economic indexes, but there is a need to extend these guidelines to accommodate more complex construction steps required for indexes in general.
 
 In this work, we develop a data pipeline framework where indexes from different domains can be built from. Based on the pipeline, an R package, tidyindex, is developed for practitioners to construct indexes and understand how an index responds to changes in different components in the pipeline. This work provides researchers actively developing new indexes with tools to evaluate the proposed indexes on their robustness for wider adoption. It also helps index analysts to diagnose an index to identify its weakness for methodology improvement. 
 
@@ -238,15 +238,11 @@ dt$data %>%
 
 An overview of the pipeline is given in @fig-pipeline-steps to illustrate the construction from raw data to the final indexes.
 The pipeline includes eight modules for operations in the spatial, temporal, and multivariate aspects of the data as well as modules for comparing and communicating indexes.
-Analysts are free to select the modules they need and arrange them in the order they see fit to construct indexes.
-While the starting point of the pipeline is raw data, there are steps prior to this that are crucial to the success of an index. 
-For example, the defined index needs to be useful for measuring the concept of interest and variables need to be collected from reliable sources with proper quality control. 
+Analysts can choose a subset of modules and reorder them as needed to construct an index.
 
-  * align the spatial resolution and temporal frequency of data collected from different satellite products
-  * obtain and clean variables from countries, potentially aggregate from regional data into country level
-  * merge ground-based and satellite-based data 
+Data pre-processing may happen before the start of the index pipeline to prepare multivariate data from different locations/ countries ready for constructing an index. For remote sensing data, it includes aligning the spatial resolution and temporal frequency of data collected from different satellite products, or merging in-situ stations with the satellite data. 
 
-Before elaborating each of the eight pipeline modules as subsections, the data notation will be first introduced. Let $\mathbf{x}(\mathbf{s};\mathbf{t})$ denote the raw data with spatial, temporal, and multivariate aspects: the spatial dimension $\mathbf{s} =  (s_1, s_2, \cdots, s_n)^\prime$ is defined in the 2D space: $\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2$, the temporal dimension $\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime$ is defined in the 1D space: $\mathbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}$. When more than one variable is involved, the multivariate data can also be written as: $\mathbf{x}(\mathbf{s}; \mathbf{t}) = (x_1(\mathbf{s}; \mathbf{t}), x_2(\mathbf{s}; \mathbf{t}), \cdots, x_P(\mathbf{s}; \mathbf{t}))^\prime$.
+The notation used for introducing the pipeline modules is as follows. Let $\mathbf{x}(\mathbf{s};\mathbf{t})$ denote the raw data with spatial, temporal, and multivariate aspects: the spatial dimension $\mathbf{s} =  (s_1, s_2, \cdots, s_n)^\prime$ is defined in the 2D space: $\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2$, the temporal dimension $\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime$ is defined in the 1D space: $\mathbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}$. When more than one variable is involved, the multivariate data can also be written as: $\mathbf{x}(\mathbf{s}; \mathbf{t}) = (x_1(\mathbf{s}; \mathbf{t}), x_2(\mathbf{s}; \mathbf{t}), \cdots, x_P(\mathbf{s}; \mathbf{t}))^\prime$.
 
 ```{r fig-pipeline-steps}
 #| fig-align: center
@@ -396,7 +392,7 @@ x_{p^*}(\mathbf{s}; \mathbf{t}) \rightarrow x_p(\mathbf{s}; \mathbf{t}),
 \end{equation}
 
 where $p^* = 1, 2, \cdots, P^*$ and $p = 1, 2, \cdots, P$ reduce the variable dimension from $P$ to $P^*$. 
-The most commonly used dimension reduction technique is Principal Component Analysis (PCA), also called Empirical Orthogonal Function (EOF) in earth science. It can be seen as a special case of weighting, where variables are summed up in a linear combination: $$x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t}),$$ with restrictions imposed on the weight coefficient: $\sum_{p=1}^P\lambda_p^2 = 1$. In other cases of weighting, the coefficients can be as simple as giving equal weight to each variables. 
+The most commonly used dimension reduction technique is Principal Component Analysis (PCA). It can be seen as a special case of weighting, where variables are summed up in a linear combination: $$x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t}),$$ with restrictions imposed on the weight coefficient: $\sum_{p=1}^P\lambda_p^2 = 1$. In other cases of weighting, the coefficients can be as simple as giving equal weight to each variables. 
 
 Some dimension reduction can also be formulated from domain-specific knowledge. This can be theories that describe the physics of the phenomenon being indexed or practical formulations used to extract useful features from the raw variables. For example, in the index SPEI, a difference series is calculated between precipitation and potential evapotranspiration (PET) and the validity of this formulation is backed up by climate water balance model [Thornthwaite, 1948], which describes [...]. *Add another example of remote sensing variables i.e. NDVI = (NIR - Red) / (NIR + Red)?*
 
@@ -690,11 +686,12 @@ idx_long2 %>%
 To understand the uncertainty of this dimension reduction step while avoiding the missingness issue on the variable level, we can run a local tour to slightly vary the weight of each dimension to see how index value and country ranking changes. We select countries in the South Asia and Sub-Saharan Africa region and gradually increase the weight of one variable and reduce back to equal weight all four dimensions, one at a time, to produce an animation of how GGGI changes in each country. Five frames (equal weights and one for each dimension with a relatively higher weight) selected from the tour animation are shown in @fig-idx-tour and you can find the link to the full animation in figure caption. 
 
 Many insights can be derived from the animation and these selected frames. These can be helpful in understanding the sensitivity of the index value and country ranking to each variable and identifying the strengths and weaknesses of each country relative to others. When economy and education are given a greater weight, the variation in index values and ranking highlights countries that performs relatively better (moving right) or worse (moving left) in these two single dimensions. For example, the index moves to the left for Ethiopia and Senegal when economy is given a higher weight. This reveals the economy as a weakness for these two countries compared to their similarly-ranked peers. When health receives a higher weight, the impact on the index value is minimal. Notably, increasing the weight in politics leads to a pronounced decrease of index value for almost all the countries. Given the index value has a direct interpretation on how much of the gender gap has been closed, such a weight variation can cast a negative light on the progression to gender parity. Analysts need to further investigate the construction of the politics dimension and consider whether this is desirable for the index.
-
+ 
 ```{r eval = FALSE}
 dt <- tidyindex::gggi %>% 
   dplyr::select(country: political_empowerment) %>%
-  filter(region %in% c("Sub-Saharan Africa")) %>%
+  filter(country %in% c("Namibia", "South Africa", "Bangladesh", "Botswana",
+                        "Ethiopia", "Kenya", "Senegal", "Afghanistan")) %>%
   arrange(index) 
 colnames(dt) <- c(colnames(dt)[1:4], "economy", "education", "health", "politics")
 
@@ -706,34 +703,34 @@ find_next <- function(matrix){
 }
 b <- array(dim = c(4, 1, 9))
 b[,,c(1,3,5,7,9)] <- matrix(c(0.25, 0.25, 0.25, 0.25), ncol = 1) %>% w_idx2proj()
-b[,,2] <- matrix(c(0.5, 0.2, 0.2, 0.1), ncol = 1) %>% find_next()
-b[,,4] <- matrix(c(0.2, 0.5, 0.2, 0.1), ncol= 1) %>% find_next()
-b[,,6] <- matrix(c(0.1, 0.2, 0.5, 0.2), ncol= 1) %>% find_next()
-b[,,8] <- matrix(c(0.15, 0.2, 0.15, 0.5), ncol = 1) %>% find_next()
+b[,,2] <- matrix(c(0.7, 0.1, 0.1, 0.1), ncol = 1) %>% find_next()
+b[,,4] <- matrix(c(0.1, 0.7, 0.1, 0.1), ncol= 1) %>% find_next()
+b[,,6] <- matrix(c(0.1, 0.1, 0.5, 0.1), ncol= 1) %>% find_next()
+b[,,8] <- matrix(c(0.1, 0.1, 0.1, 0.5), ncol = 1) %>% find_next()
 
 render(
   dt[,5:8], planned2_tour(b), dev = "png",
-  display_idx(cex = 2, label_cex = 2,
+  display_idx(cex = 4, label_cex = 3.5, panel_height_ratio = c(3,1), 
+              axis_cex = 2.5, weight_cex = 3, label_col = "grey70", 
               label = dt$country, abb_vars = FALSE),
-  width = 800, height = 1300, apf = 1/20, frames = 100,
+  width = 900, height = 900, apf = 1/20, frames = 100,
   here::here("figures/idx-tour/idx-tour-%03d.png")
 )
 
 gifski::gifski(
   list.files(here::here("figures/idx-tour"), full.names = TRUE),
   gif_file = here::here("figures/idx-tour.gif"),
-  delay = 0.15, width = 800, height = 1300)
+  delay = 0.15, width = 900, height = 900)
 
 ```
 
-
-```{r fig-idx-tour, fig.align='center', fig.height= 12, fig.width=12}
+```{r fig-idx-tour, fig.align='center', fig.height=8} 
 #| fig-cap: "Five frames selected from varying the linear weights of four dimensions in Global Gender Gap Index. The weights vary slightly from the official simple average weights (0.25, 0.25, 0.25, 0.25) to observe how the index and ranking reponse. Full animation is available at https://vimeo.com/847874016?share=copy."
 frames <- c("001", "013", "037", "061", "085")
 ani <- paste0(here::here("figures/"), "idx-tour/", "idx-tour-", frames, ".png")
 rl <- lapply(ani, png::readPNG)
 gl <-  lapply(rl, grid::rasterGrob)
-wrap_plots(gl, ncol = 3) 
+wrap_plots(gl, ncol = 2)  
 ```
 
 # Conclusion
