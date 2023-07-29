@@ -385,16 +385,19 @@ trans_df %>%
 
 ### Dimension reduction
 
-When indexes are constructed from multivariate information, dimension reduction methods combine that information into a univariate series. In the pipeline, dimension reduction includes methods that take multivariate inputs and output the data in a lower dimension (often univariate): 
+Dimension reduction summarises the multivariate information into univariate, which can be denoted as: 
 
 \begin{equation}
-x_{p^*}(\mathbf{s}; \mathbf{t}) \rightarrow x_p(\mathbf{s}; \mathbf{t}),
+x_p(\mathbf{s}; \mathbf{t}) \rightarrow x(\mathbf{s}; \mathbf{t}),
 \end{equation}
 
-where $p^* = 1, 2, \cdots, P^*$ and $p = 1, 2, \cdots, P$ reduce the variable dimension from $P$ to $P^*$. 
-The most commonly used dimension reduction technique is Principal Component Analysis (PCA). It can be seen as a special case of weighting, where variables are summed up in a linear combination: $$x_{p^*}(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t}),$$ with restrictions imposed on the weight coefficient: $\sum_{p=1}^P\lambda_p^2 = 1$. In other cases of weighting, the coefficients can be as simple as giving equal weight to each variables. 
+where $p = 1, 2, \cdots, P$. The combination can be based on domain-specific knowledge, originated from theories describing the underlying physical process. For example, the SPEI uses a water balance model ($D = P - \text{PET}$) to calculate the difference series ($D$) from precipitation ($P$) and potential evapotranspiration ($\text{PET}$). 
 
-Some dimension reduction can also be formulated from domain-specific knowledge. This can be theories that describe the physics of the phenomenon being indexed or practical formulations used to extract useful features from the raw variables. For example, in the index SPEI, a difference series is calculated between precipitation and potential evapotranspiration (PET) and the validity of this formulation is backed up by climate water balance model [Thornthwaite, 1948], which describes [...]. *Add another example of remote sensing variables i.e. NDVI = (NIR - Red) / (NIR + Red)?*
+Another widely used approach is linear combination, which aggregates a collection of variables in a linear additive structure, expressed as: $$x(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t}),$$
+
+where $\lambda_p$ denotes the weight assigned to variable $x_p$. Most indexes uses an equal weight that sum to 1, which allows each variable to contribute equally to the index. A linear combination can also be viewed as a linear projection of multivariate information by the weight vector. Projecting data from higher to lower dimension inevitably leads to information loss. For example, two countries can receive similar index, but their components could significantly differ -- one with average scores across all components and another with extreme scores the opposite ends. The selected set of weights need to be examined to understand its effect on the index and its implications for decision-making. To do this, analysts can vary the coefficients in the linear projection to observe how the index value and countries' ranking change. These changes can also be visualized using a method called tour by generating an animation of the projections among different sets of weights.
+
+<!-- Other weight constraint used includes $\sum_{p=1}^P\lambda_p^2 = 1$, is used by principal component analysis.  -->
 
 
 <!-- Spectral satellite imageries often collected at different bands and it is common to combine values from multiple bands to compose new variables relevant to the index. The most common example of this is the Normalized Difference Vegetation Index (NDVI), which uses near-infrared (NIR) ($x_1(s;t)$) and red channel ($x_2(s;t)$): -->
@@ -405,8 +408,6 @@ Some dimension reduction can also be formulated from domain-specific knowledge. 
 
 <!-- which is used to evaluate the vegetation from near-infrared (NIR) and red channel. -->
 
-While suggested weights and formulas can indicate norms adored by practitioners, analysts should be given the flexibility to experiment with different combinations when constructing indexes. 
-This could help understand index behavior from its sensitivity to the variables and suggest alternative weights that better suit the specific tasks.
 
 
 ### Distribution fit
