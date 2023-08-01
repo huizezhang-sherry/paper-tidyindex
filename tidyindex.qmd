@@ -143,98 +143,8 @@ In this workflow, analysts are not limited by indexes that have been already pro
 
 # A pipeline for building statistical indexes {#sec-index-pipeline}
 
-## How does the pipeline constructin of an index look like? {#sec-toy-example}
-
-Consider a commonly used drought index: Standardized Precipitation-Evapotranspiration Index (SPEI)  [@spei]. Its construction involves: 
-
-  1) transform the average temperature (`TMED`) into potential evapotranspiration (`pet`) 
-  2) combine precipitation (`prcp`) and potential evapotranspiration (`pet`) into a single variable `diff`
-  3) aggregate the difference series with a sliding window (`.scale`) 
-  4) fit a distribution to the aggregated series, and 
-  5) derive the index value from the normal density values.
-
-Conventionally approach may combine all these steps into a single function, with some level of modularity. However, these modules may only work for the selected index offered by the package.
-
-Under the pipeline approach, analysts first need to identify which module each step belongs to. 
-
-Below shows the pseudocode for constructing SPEI with the pipeline:
-
-````
-DATA %>% 
-  var_trans(.method = thornthwaite, Tave = TMED, ..., .new_name = "pet") %>%
-  dim_red(diff = prcp - pet) %>%
-  aggregate(.var = diff, .scale = 12, .new_name = "agg") %>%
-  dist_fit(.method = "lmoms", .var = agg, .dist = DIST) %>%
-  augment(.var = agg)
-````
-
-<!-- *FWI:*  -->
-
-<!--   - *verbs as name for each step: `aggregate`, `normalise`* -->
-<!--   - *use NSE for variable name: `prcp`, `c(tavg, prcp)`* -->
-<!--   - *created variables are prefixed with dot: `.agg_prcp`* -->
-<!--   - *avoid string and use function to avoid "gamma" vs. "gam": `gamma()`, `lmom()`* -->
-
-The pipeline construct allows for multiple `.scales` and `.dist` to be evaluated in `aggregate()` and `dist_fit()` to compare index under different parameterisations. The result can then be passed into the `ggplot2` to crease visualisation. @fig-toy-example compares the SPEI calculated with two distributions (log-logistic and pearson III). 
-
-Apart from evaluating multiples parameters, the pipeline approach allows the the steps written for one index can be directly extrapolate to another index building within the pipeline. The flexibility of the pipeline also integrate well with other existing packages, for examples, fitting distributions using L-moment is commonly used when constructing drought indexes. The package `lmomco` provides general L-moment fits to a wide range of distributions and users can easily access to all the distributions within the pipeline. 
-
-<!-- additional benefit: -->
-
-<!--   - Multiple scales and multiple distributions can be fitted using the `c(...)` syntax to compare index values constructed from different parameterisations;  -->
-<!--   - Intermediate results can be checked after each step; and -->
-<!--   - Additional steps and analysis can be wired into the workflow for index diagnostics and customised user need. -->
-
-```{r out.width = "100%"}
-knitr::include_graphics(here::here("figures/toy-example-spei.png"))
-```
-
-
-```{r fig-toy-example, eval = FALSE, echo = FALSE}
-#| fig-align: center
-#| fig-width: 10
-#| fig-height: 3
-#| fig-cap: "Standardised Precipitation Evapotranspiration Index (SPEI) calculated with two distribution fits in Step 3 described above: generalised logistic and pearson III distribution, using the `wichita` data from the package `SPEI`."
-library(tidyindex)
-library(lmomco)
-library(ggplot2)
-library(tsibble)
-library(SPEI)
-library(tidyverse)
-library(lubridate)
-data(wichita)
-
-dt <- wichita %>%
-  mutate(ym = make_yearmonth(YEAR, MONTH), id = 1) %>% 
-  init(id = id, time = ym) %>%
-  var_trans(.pet_method = "thornthwaite", .vars = TMED, .lat = 37.6475) %>%
-  dim_red(diff = PRCP - pet) %>%
-  aggregate(.var = diff, .scale = 12) %>%
-  dist_fit(.dist = list(loglogistic(), pearsonIII()), .method = "lmoms", .var = .agg) %>%
-  augment(.var = .agg)
-
-dt$data %>%
-  mutate(.dist = ifelse(.dist == "parglo", "Log-logistic", "PearsonIII")) %>% 
-  ggplot(aes(x = ym, y = .index, color = .dist)) +
-  geom_line() + 
-   theme_bw() +
-  theme(
-    panel.grid = element_blank()
-  ) +
-  scale_x_yearmonth(name = "Year", date_break = "2 years", date_label = "%Y") +
-  scale_color_brewer(palette = "Dark2", name = "distribution") + 
-  ylab("SPEI")
-
-```
 
 ## Pipeline steps for constructing indexes
-
-<!-- *constructing time series index should also be encapsulated in the framework* -->
-
-*any index can be broken down into multiple steps and then we can do things with it: swap, change parameter, etc*
-
-
-*variables == indicators*
 
 An overview of the pipeline is given in @fig-pipeline-steps to illustrate the construction from raw data to the final indexes.
 The pipeline includes eight modules for operations in the spatial, temporal, and multivariate aspects of the data as well as modules for comparing and communicating indexes.
@@ -254,7 +164,11 @@ knitr::include_graphics(here::here("figures/pipeline-overall.png"))
 
 ### Temporal processing
 
-The construction of an index sometimes needs to consider information from neighbouring time periods.
+**Input: **
+
+**Output: **
+
+**Computation:** The construction of an index sometimes needs to consider information from neighbouring time periods.
 The temporal processing is a general operator on the time dimension of the data in the form of  
 
 \begin{equation}
@@ -273,7 +187,11 @@ The choice of time scales parameter $k$ can result in variation in the calculate
 
 ### Spatial processing
 
-Spatial processing may be needed when indexes are not calculated independently on each collected location or when variables collected from multiple sources need to be fused before further processing. The process can be written as a general operation in the form of 
+**Input: **
+
+**Output: **
+
+**Computation:** Spatial processing may be needed when indexes are not calculated independently on each collected location or when variables collected from multiple sources need to be fused before further processing. The process can be written as a general operation in the form of 
 
 \begin{equation}
 x(\mathbf{s}^\prime;\mathbf{t}) = g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})),
@@ -291,7 +209,11 @@ where $i \in i^\prime$ includes all the cells from the finer resolution in the c
 
 ### Variable transformation 
 
-The purpose of variable transformation is to create variables that fits assumptions for further computing. These assumptions include a stable variance, normal distribution, or a certain scale required by some algorithms down the pipeline. Variable transformation is a general notion of a functional transformation on the variable: 
+**Input: **
+
+**Output: **
+
+**Computation:** The purpose of variable transformation is to create variables that fits assumptions for further computing. These assumptions include a stable variance, normal distribution, or a certain scale required by some algorithms down the pipeline. Variable transformation is a general notion of a functional transformation on the variable: 
 
 \begin{equation}
 h_{\tau}(x(\mathbf{s};\mathbf{t})),
@@ -303,7 +225,11 @@ where $\tau \in T \subseteq \mathbb{R}^{d_{\tau}}$ is the parameter in the trans
 
 ### Scaling
 
-While scaling can be seen as a specific type of variable transformation, it is separated into its own step to make the step explicit in the pipeline.
+**Input: **
+
+**Output: **
+
+**Computation:** While scaling can be seen as a specific type of variable transformation, it is separated into its own step to make the step explicit in the pipeline.
 The key difference between the two steps is that variable transformation typically changes the shape of the data while scaling only changes the data scale and can usually be written in the form of 
 
 \begin{equation}
@@ -380,12 +306,13 @@ trans_df %>%
   theme(legend.position = "bottom")
 ```
 
-
-\newpage
-
 ### Dimension reduction
 
-Dimension reduction summarises the multivariate information into univariate, which can be denoted as: 
+**Input: **
+
+**Output: **
+
+**Computation:** Dimension reduction summarises the multivariate information into univariate, which can be denoted as: 
 
 \begin{equation}
 x_p(\mathbf{s}; \mathbf{t}) \rightarrow x(\mathbf{s}; \mathbf{t}),
@@ -414,8 +341,11 @@ where $\lambda_p$ denotes the weight assigned to variable $x_p$. Most indexes us
 
 *model fit? *
 
-<!-- With a probability model imposed,  -->
-Distribution fit can be seen as the model fitting in its simplest term. It can be represented by 
+**Input: **
+
+**Output: **
+
+**Computation:** Distribution fit can be seen as the model fitting in its simplest term. It can be represented by 
 
 \begin{equation}
 F_{\eta}(x(\mathbf{s}; \mathbf{t})), 
@@ -427,7 +357,11 @@ While it is useful to find the ultimate best distribution to fits the data, from
 
 ### Normalising
 
-This step maps the univariate series into a different scale, typically for ease of comparison across regions. 
+**Input: **
+
+**Output: **
+
+**Computation:** This step maps the univariate series into a different scale, typically for ease of comparison across regions. 
 For example, a normal scale, [0, 1], or [0, 100] may be favored for reporting certain indexes. 
 In drought indexes, i.e. SPI or SPEI, the quantiles from the fitted distribution are converted into the normal scale via the normal reverse CDF function: $\Phi^{-1}(.)$. 
 Normalising is usually used at the end of the pipeline and its main difference from the scaling step is that here the change of scale also changes the distribution of the variable. 
@@ -462,12 +396,20 @@ dt %>%
 
 ### Benchmarking
 
-Benchmarking sets a constant value to allow the constructed index to be compared across time.
+**Input: **
+
+**Output: **
+
+**Computation:** Benchmarking sets a constant value to allow the constructed index to be compared across time.
 Here we denote it with $u[x(s_i, t_j)]$ where $u$ is a scalar of interest in the index constructed. A benchmark value could be a constant or a function of the data, i.e. mean.
 
 ### Simplification
 
-In public communication, the index values are usually accompanied by a categorical grade. The categorised grades are an ordered set of descriptive words or colors to communicate the severity or guide the comprehension of the indexes. 
+**Input: **
+
+**Output: **
+
+**Computation:** In public communication, the index values are usually accompanied by a categorical grade. The categorised grades are an ordered set of descriptive words or colors to communicate the severity or guide the comprehension of the indexes. 
 The mapping from continuous index values to the discrete grades is called simplification in the pipeline and it can be written as a piece-wise function: 
 
 \begin{equation}
@@ -482,7 +424,7 @@ C_z & c_z \leq x(s_i; t_j)
 
 where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are the thresholds for each category. In SPI, droughts are sorted into four categories: mild drought: $[-0.99, 0]$; moderate drought: $[-1.49, -1]$; severe drought: $[-1.99, -1.5]$, and extreme drought: $[-\infty, -2]$. In this case, $C_0, C_1, C_2, C_3$ are the drought categories: mild, moderate, severe, and extreme drought ($z = 3$) and $c_0 =0, c_1 = -1, c_2 = -1.5, c_3 = -2$ are the cutoff value for each class.
 
-# Incorporating alternative methods into the pipeline components {#sec-dev}
+# Software design {#sec-dev}
 
 
 <!-- # 1. unpack or the argumebt s  -->
@@ -762,3 +704,5 @@ Future work:
 
 
 # Reference
+
+
