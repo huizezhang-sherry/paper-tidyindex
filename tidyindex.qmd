@@ -249,7 +249,7 @@ The notation used for introducing the pipeline modules is as follows. Let $\math
 #| fig-cap: "Diagram of pipeline steps for index construction. will need to be updated with better design and the distribution fitting step."
 #| out-height: 90%
 #| out-width: 100%
-knitr::include_graphics(here::here("figures/pipeline-steps.png"))
+knitr::include_graphics(here::here("figures/pipeline-overall.png"))
 ```
 
 ### Temporal processing
@@ -505,18 +505,26 @@ A common task for drought researchers is to compute indexes at different paramet
 
 The state of Queensland in Australia is frequently affected by natural disaster events such as flood and drought, which can have significant impacts on its agricultural industry.  This study uses daily data from Global Historical Climatology Network Daily (GHCND), accessed via the package `rnoaa` to examine drought/flood condition in Queensland. Daily data is average into monthly and stations are excluded if monthly data contains missings, which is required for calculating both SPI and SPEI. This gives `r length(unique(queensland$id))` stations with complete records from 1990 January to 2022 April.
 
+```{r fig-pipeline-spei}
+#| fig-align: center
+#| fig-cap: "Diagram of pipeline steps for index construction. will need to be updated with better design and the distribution fitting step."
+#| out-height: 90%
+#| out-width: 100%
+knitr::include_graphics(here::here("figures/pipeline-spei.png"))
+```
+
 The function `compute_indexes()` can be used to collectively compute multiple indexes. The tidyindex offers wrapper functions, with the prefix idx_, that simplify the calculation of commonly used indexes by combining a set of pipeline steps into a single function. For example, the function `idx_spei()` includes the five steps previously described in @sec-toy-example (variable transformation, dimension reduction, temporal aggregation, distribution fit, and normalise). Each `idx_xxx()` function specifies the relevant parameters relevant to the index: the thornthwaite method is used to calculate PET in SPEI, with the average temperature (`tavg`) and latitude (`lat`) used as inputs. The SPEI is computed at four time scales (6, 12, 24, and 36 months) and fitted with two distributions (Log-logistic and General Extreme Value (GEV)). The SPI is also computed at the same four time scales and uses the default gamma distribution to fit the aggregated series. 
 
-```{r cache=TRUE, echo = TRUE}
+```{r cache=TRUE, echo = TRUE, message=FALSE}
 .scale <- c(6, 12, 24, 36)
-(idx <- queensland %>%
+idx <- queensland %>%
   init(id = id, time = ym) %>%
   compute_indexes(
     spei = idx_spei(
       .pet_method = "thornthwaite", .tavg = tavg, .lat = lat,
       .scale = .scale, .dist = c(gev(), loglogistic())),
     spi = idx_spi(.scale = .scale)
-  ))
+  )
 ```
 
 The output from `compute_indexes()` contains index values and associated parameter in a long tibble. It includes the original variables (`id`, `ym`, `prcp`, `tmax`, `tmin`, `tavg`, `long`, `lat`, and `name`), index parameters (`.idx`, `.scale`, `.method`, and `.dist`), intermediate variables (`pet`, `.agg`, and `.fitted`), and the final index (`.index`). This data can be visualised across space or time, or simultaneously, to explore the wet/dry condition in Queensland. @fig-compute-spatial visualises the spatial distribution of SPI at two periods (2010 October - 2011 March and 2019 October - 2020 March) with significant natural disaster events: 2010/11 Queensland flood and 2019 Australia drought, which contributes to the notorious 2019/20 bushfire. @fig-compute-temporal displays the sensitivity of the SPEI series for one particular station, Texas post office, at different time scales and fitted distributions. These two plots demonstrate some possibilities to explore the indexes after they are computed from `compute_indexes()`. 
@@ -609,6 +617,14 @@ gggi_weights %>%
 ```
 
 A natural thing to do when provided with the index data is to reproduce the index. This helps index analysts to verify the index calculation and become familiar with the methodology. For GGGI, the construction can be simplified as a single linear aggregation step in the dimension reduction module, with the `Weight` column in @tbl-gggi-weights, which is the product of the variable weight (`V-weight`) and dimension weight (`D-weight`). 
+
+```{r fig-pipeline-steps-gggi}
+#| fig-align: center
+#| fig-cap: "Diagram of pipeline steps for index construction. will need to be updated with better design and the distribution fitting step."
+#| out-height: 90%
+#| out-width: 100%
+knitr::include_graphics(here::here("figures/pipeline-gggi.png"))
+```
 
 ````
 gggi %>% 
