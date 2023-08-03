@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, sharp corners, enhanced, breakable, borderline west={3pt}{0pt}{shadecolor}, frame hidden, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, boxrule=0pt, enhanced, interior hidden, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -328,53 +328,35 @@ the pipeline built.
 \hypertarget{sec-pipeline}{%
 \section{Data pipeline}\label{sec-pipeline}}
 
-\emph{Think about if there is another word for data pipeline}
+Data pipeline refers to data transforming through a series of functions,
+resembling the concept of function composition in mathematics. To
+accomplish specific tasks, analysts initially write lines of code and
+later generalise them into functions. This generalization transforms the
+code from a specific use-case to something reuseable and easy to control
+with arguments. A pipeline represents a further generalization of
+functions into a workflow. It chains individual functions together,
+rather than creating a single monolithic pieces, to solve a data
+analysis problem. The resulting pipeline can be reused for other similar
+problems, and ideally, allows for easy switching of functions within the
+pipeline, similar to controlling function parameters through arguments.
 
-\textbf{Why you should care about pipeline}
-
-Data pipeline is not a new concept to computing. It refers to a set of
-data processing elements connected in series, where the output of one
-element is the input of the next one. Wickham et al. (2009) argues that
-whether made explicit or not, the pipeline has to be presented in every
-graphics program. The paper also argues that breaking down graphic
-rendering into steps is beneficial for understanding the implementation
-and comparing between different graphic systems. The discussion on
-pipeline construction is well documented in early interactive graphics
-software: Buja et al. (1988), Sutherland et al. (2000), and Xie,
-Hofmann, and Cheng (2014) and their pipeline steps include non-linear
-transformation, variable standardization, randomization and dimension
-reduction.
-
-\textbf{What is pipeline, its underlying software design philosophy, and
-how these are reflected in R}
-
-One of the most commonly known pipeline examples is perhaps the Unix
-pipeline where programs can be concatenated with \texttt{\textbar{}} to
-flow the output from the last program into the next program, i.e.~
-
-\begin{verbatim}
-command 1 | command 2 | command 3 | ...
-\end{verbatim}
-
-To solve a complex problem, the Unix system builds simple programs that
-do one thing well and work well together. This design is also reflected
-in the tidyverse ecosystem in R. To solve a complicated data problem
-using tidyverse, analysts typically build the solution using a
-collection of tools from the tidyverse toolbox. The data object can flow
-smoothly from one command to the next, safeguarded by the tidy data
-format (Wickham 2014), which prescribes three rules on how to lay out
-tabular data. The tidyverse tools also embrace a strong human-centered
-design where function names are intuitive and easy to reference through
-autocomplete. With the tidyverse design principle in mind, the tidymodel
-suite enables analysts to build machine learning models through the data
-pipeline. It includes typical tasks required in machine learning like
-data resampling, feature engineering, model fitting, model tuning, and
-model evaluation. An advantage of tidymodel pipeline over separate
-software for individual models is that analysts no longer need to write
-model-specific syntax to work with each model, but pipeline-specific
-syntax that is applicable to all the models implemented in tidymodel.
-This allows users to easily experiment with a collection of machine
-learning models.
+Early discussion on data pipeline in R can be found in the interactive
+graphics literature (Buja et al. 1988; Sutherland et al. 2000; Xie,
+Hofmann, and Cheng 2014). Specifically, Wickham et al. (2009)
+differentiates two different approaches used for structuring for
+(graphic) software: pipes and pipelines. The pipe approach offers
+functions, or components, and analysts concatenate functions together to
+form a pipeline to solve the specific problem at hands. This approach is
+used by the tidyverse suite, specifically in the dplyr package, where
+analysts apply functions in a sequence to address a wide array of data
+wrangling tasks. On the other hand, the pipeline approach addresses the
+data analysis tasks in a more structured manner, with a few centred
+steps used in almost all the workflow. For example, a supervised machine
+learning workflow typically involves steps like data splitting, model
+training and model evaluation, among others, regardless of the specific
+model used. A pipeline approach, like the tidymodel suite, modularizes
+these components and provides an unified syntax to specify different
+models.
 
 \textbf{Constructing indexes would also benefit from pipeline and
 embracing the aforementioned design philosophy.}
@@ -1104,11 +1086,6 @@ Julie Dickerson, Zach Cox, and Dianne Cook. 2000. {``Orca: {A}
 {Visualization} {Toolkit} for {High}-{Dimensional} {Data}.''}
 \emph{Journal of Computational and Graphical Statistics} 9 (3): 509--29.
 \url{https://www.jstor.org/stable/1390943}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-wickham_tidy_2014}{}}%
-Wickham, Hadley. 2014. {``Tidy {Data}.''} \emph{Journal of Statistical
-Software} 59 (September): 1--23.
-\url{https://doi.org/10.18637/jss.v059.i10}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-wickham_plumbing_2009}{}}%
 Wickham, Hadley, Michael Lawrence, Dianne Cook, Andreas Buja, Heike
