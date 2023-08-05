@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, sharp corners, breakable, interior hidden, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, interior hidden, sharp corners, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -377,6 +377,18 @@ their origins.
 \hypertarget{sec-index-pipeline}{%
 \section{A pipeline for building statistical
 indexes}\label{sec-index-pipeline}}
+
+In constructing various indexes, the primary aim is to transform the
+data, often multivariate, into a univariate index. Spatial and temporal
+considerations are also factored into the process when observational
+units and time periods are not independent. However, despite the
+variations in contextual information for indexes in different fields,
+the underlying statistical methodology remains consistent across diverse
+domains. Each index can be represented as a series of modular
+statistical operations on the data. This allows us to decompose the
+index construction process into a unified pipeline workflow with a
+standardized set of data processing steps to be applied across different
+indexes.
 
 \hypertarget{pipeline-steps-for-constructing-indexes}{%
 \subsection{Pipeline steps for constructing
