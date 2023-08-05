@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, boxrule=0pt, enhanced, interior hidden, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, sharp corners, breakable, interior hidden, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -328,17 +328,18 @@ the pipeline built.
 \hypertarget{sec-pipeline}{%
 \section{Data pipeline}\label{sec-pipeline}}
 
-Data pipeline refers to data transforming through a series of functions,
-resembling the concept of function composition in mathematics. To
-accomplish specific tasks, analysts initially write lines of code and
+Data pipeline refers to data transforming through a series of steps,
+similar to the concept composition of function in mathematics. To
+accomplish specific tasks, analysts initially write code snippets and
 later generalise them into functions. This generalization transforms the
-code from a specific use-case to something reuseable and easy to control
-with arguments. A pipeline represents a further generalization of
-functions into a workflow. It chains individual functions together,
-rather than creating a single monolithic pieces, to solve a data
-analysis problem. The resulting pipeline can be reused for other similar
-problems, and ideally, allows for easy switching of functions within the
-pipeline, similar to controlling function parameters through arguments.
+code from a specific use-case to an abstraction that is reuseable and
+easy to control with arguments. A pipeline represents a further
+generalization of functions into a workflow. It chains individual
+functions together, rather than creating a single monolithic pieces, to
+solve a data analysis problem. The resulting pipeline can be reused for
+other similar problems, and ideally, allows for easy switching of
+functions within the pipeline, similar to controlling function
+parameters through arguments.
 
 Early discussion on data pipeline in R can be found in the interactive
 graphics literature (Buja et al. 1988; Sutherland et al. 2000; Xie,
@@ -358,25 +359,20 @@ model used. A pipeline approach, like the tidymodel suite, modularizes
 these components and provides an unified syntax to specify different
 models.
 
-\textbf{Constructing indexes would also benefit from pipeline and
-embracing the aforementioned design philosophy.}
-
-In index construction, data pipeline is often presented in a workflow
-diagram in the research paper to illustrate how the raw data is
-transformed into the final indexes. This agrees with Wickham's argument
-on the presence of the data pipeline, however, more often than not, the
-pipeline is not made explicit in the software. Often the time, all the
-steps are lumped into a single wrapper function, rather than being split
-into smaller, modulated functions. This increases the cost of
-maintaining and understanding the code base, gives analysts little
-freedom to customise the indexes for specific needs, and hinders reusing
-existing code for building new indexes. A pipeline approach unites a
-range of indexes under a single data pipeline and analysts can compose
-indexes from pipeline steps like building Legos from individual bricks.
-In this workflow, analysts are not limited by indexes that have been
-already proposed and can easily combine pipeline steps to compose novel
-indexes. Analysis of the indexes (i.e.~calculation of uncertainty) is
-also feasible by adding external code into the pipeline.
+For constructing indexes, many indexes have provided available publicly
+scripts for computation, i.e.~Human Development Index (HDI) (United
+Nations Development Programme 2022). Some have made the first level of
+generalisation from scripts to functions and creates R packages
+specialised for calculating particular indexes, i.e.~the \texttt{SPEI}
+package (Beguería and Vicente-Serrano 2017) for calculating drought
+indexes SPI and SPEI. Our pipeline workflow takes this generalization a
+step further, enabling easier and reproducible computation of an array
+of indexes in different fields. Instead of providing individual
+functions for each index with common modules shared within the code
+base, our approach provides explicit, user-facing modules for
+constructing pipeline workflow. Analysts can create all the indexes they
+wish by concatenating these modules in the same syntax, regardless of
+their origins.
 
 \hypertarget{sec-index-pipeline}{%
 \section{A pipeline for building statistical
@@ -1069,6 +1065,11 @@ calculate weights - strengthen the spatial processing module
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-SPEI}{}}%
+Beguería, Santiago, and Sergio M. Vicente-Serrano. 2017. \emph{SPEI:
+Calculation of the Standardised Precipitation-Evapotranspiration Index}.
+\url{https://CRAN.R-project.org/package=SPEI}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-buja_elements_1988}{}}%
 Buja, A, D Asimov, C Hurley, and JA McDonald. 1988. {``Elements of a
 Viewing Pipeline for Data Analysis.''} In \emph{Dynamic Graphics for
@@ -1086,6 +1087,11 @@ Julie Dickerson, Zach Cox, and Dianne Cook. 2000. {``Orca: {A}
 {Visualization} {Toolkit} for {High}-{Dimensional} {Data}.''}
 \emph{Journal of Computational and Graphical Statistics} 9 (3): 509--29.
 \url{https://www.jstor.org/stable/1390943}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-hdi}{}}%
+United Nations Development Programme. 2022. {``Human Development Report
+2021-22.''} New York.
+\url{https://hdr.undp.org/data-center/human-development-index\#/indicies/HDI}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-wickham_plumbing_2009}{}}%
 Wickham, Hadley, Michael Lawrence, Dianne Cook, Andreas Buja, Heike
