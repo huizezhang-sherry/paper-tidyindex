@@ -126,7 +126,7 @@ For constructing indexes, many indexes have provided available publicly scripts 
 
 In constructing various indexes, the primary aim is to transform the data, often multivariate, into a univariate index. Spatial and temporal considerations are also factored into the process when observational units and time periods are not independent. However, despite the variations in contextual information for indexes in different fields, the underlying statistical methodology remains consistent across diverse domains. Each index can be represented as a series of modular statistical operations on the data. This allows us to decompose the index construction process into a unified pipeline workflow with a standardized set of data processing steps to be applied across different indexes.
 
-## Pipeline steps for constructing indexes
+## Pipeline steps for constructing indexes {#sec-pipeline-steps}
 
 An overview of the pipeline is given in @fig-pipeline-steps to illustrate the construction from raw data to the final indexes.
 The pipeline includes eight modules for operations in the spatial, temporal, and multivariate aspects of the data as well as modules for comparing and communicating indexes.
@@ -146,32 +146,29 @@ knitr::include_graphics(here::here("figures/pipeline-overall.png"))
 
 ### Temporal processing
 
-**Input: **
+**Input: ** multivariate data with temporal coordinates 
 
-**Output: **
+**Output: ** multivariate data with aggregated temporal axis
 
 **Computation:** The construction of an index sometimes needs to consider information from neighbouring time periods.
 The temporal processing is a general operator on the time dimension of the data in the form of  
 
 \begin{equation}
-f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),
+x(\mathbf{s};\mathbf{t}^\prime)  f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),
 \end{equation}
 
 where $\psi \in \Psi \subseteq \mathbb{R}^{d_{\psi}}$ is the parameters associated with the temporal operation and $d_{\psi}$ is the number of parameter of $\psi$. 
-A typical example of temporal processing is aggregation, which is used in the drought index SPI to measure the lack of precipitation for meteorological drought.
-In SPI, monthly precipitation is aggregated by a time scale parameter $k$: $x(s_i;t_{j^\prime}) = \sum_{j = j^\prime-k+1}^{j^\prime}x(s_i; t_j),$ where $j^\prime$ is the new time index after the aggregation. In this notation, each spatial location is separately aggregated and precipitation is summed from $k$ month back, $j^\prime - k + 1$, to the current period, $j^\prime$, to create the aggregated series, indexed by $j^\prime$. 
+A typical example of temporal processing is aggregation and in the drought community, these indexes are often called multi-scalar indexes.  For example,  Standardized Precipitation Index (SPI) aggregates monthly precipitation using a time scale parameter $k$ in the form of 
 
-*more explicit on k will influence 1) long term vs. short term, 2) uncertainty*
+$$x(s_i;t_{j^\prime}) = \sum_{j = j^\prime}^{j^\prime + k - 1}x(s_i; t_j),$$ 
 
-The choice of time scales parameter $k$ can result in variation in the calculated index values: a small $k$ of 3 or 6 months produces the index more sensitive to individual months, while a large $k$ of 24 or 36, an equivalent to a 2- or 3-year aggregation, gives dryness information relative to the long term condition. As will be shown in section [SECTION EXAMPLE], this variation may even lead to conflicting conclusions on the dry/wet condition of the area, highlighting the importance to account for index uncertainty when interpreting index values for decision-making.
-
-*Effective drought index*
+where $j^\prime$ is the new time index after the aggregation. Multi-scalar drought indexes are widely used to study different types of drought events. A smaller value of the time scales parameter $k$ is used for short term drought events, while a large $k$ of 18 or 24, an equivalent to a 1.5- or 2-year aggregation, is often used for long term assessment. 
 
 ### Spatial processing
 
-**Input: **
+**Input: ** Multivariate data with coordinates
 
-**Output: **
+**Output: ** Multivariate data with a new set of coordinates
 
 **Computation:** Spatial processing may be needed when indexes are not calculated independently on each collected location or when variables collected from multiple sources need to be fused before further processing. The process can be written as a general operation in the form of 
 
@@ -408,6 +405,7 @@ where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are 
 
 # Software design {#sec-dev}
 
+Tidyindex, as suggested by its name, follows the style and design principles of the tidyverse suite. The package is designed to simplify index construction for human analysts, ensure consistency across functions, and enable composability across modules to construct indexes. With the package, analysts can pass a data object through a set of pipeline modules introduced in @sec-pipeline-steps, offering different operations as standalone functions. For example, the dimension reduction module includes linear weighting, geometrical weighting, and manual expressions as possible methods to combine multivariate data. These methods are initially evaluated as a recipe of the operation without the data, and then, at the pipeline level, evaluating with the data using tidy evaluation, with the package `rlang` heavily used throughout the package.
 
 <!-- # 1. unpack or the argumebt s  -->
 <!-- # 2. construct the syntax to evalute: ~rescale_minmax(life_exp, min = xxx, max = xxxx) -->
