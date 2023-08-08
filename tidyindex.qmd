@@ -103,18 +103,16 @@ The rest of the paper is structured as follows: @sec-pipeline reviews the concep
 
 <!-- When indexes have a spatial and/or temporal component, different choices on how space and time is aggregated will introduce uncertainty. A slight change in the variable value can sometimes introduce a big difference for the index.  -->
 
-# Data pipeline {#sec-pipeline}
+# Tidy framework {#sec-pipeline}
 
 <!-- **Why you should care about pipeline** -->
 
-Data pipeline refers to data transforming through a series of steps, similar to the concept composition of function in mathematics. To accomplish specific tasks, analysts initially write code snippets and later generalise them into functions. This generalization transforms the code from a specific use-case to an abstraction that is reuseable and easy to control with arguments. A pipeline represents a further generalization of functions into a workflow. It chains individual functions together, rather than creating a single monolithic pieces, to solve a data analysis problem. The resulting pipeline can be reused for other similar problems, and ideally, allows for easy switching of functions within the pipeline, similar to controlling function parameters through arguments.
+The tidy framework consists of two key components: tidy data and tidy tools. The concept of tidy data [@wickham_tidy_2014] prescribes specific rules for organising data in an analysis, with observations as rows, variables as columns, and types of observational units as tables. Tidy tools, on the other hand, are concatenated to establish a sequential process through which the tidy data object flows, creating a pipeline for data processing. In this workflow, all the functions take inputs and outputs as tidy data, enabling direct concatenation of functions and saving analysts from bridging the outputs to subsequent operations. Additionally, the pipeline workflow breaks down complex problems into smaller, more manageable pieces. In an interactive data analysis, this flexibility to link various operations together as needed makes the pipeline workflow preferable over a monolithic design, where all the steps are predetermined and tightly integrated into a single piece. 
 
-<!-- One of the most commonly known pipeline examples is perhaps the Unix pipeline where programs can be concatenated with `|` to flow the output from the last program into the next program, i.e. ````command 1 | command 2 | command 3 | ...````. To solve a complex problem, the Unix system builds simple programs that do one thing well and work well together. -->
 
 <!-- **What is pipeline, its underlying software design philosophy, and how these are reflected in R** -->
 
-Early discussion on data pipeline in R can be found in the interactive graphics literature [@buja_elements_1988; @sutherland_orca_2000; @xie_reactive_2014]. 
-Specifically, @wickham_plumbing_2009 differentiates two different approaches used for structuring for (graphic) software: pipes and pipelines. The pipe approach offers functions, or components, and analysts concatenate functions together to form a pipeline to solve the specific problem at hands. This approach is used by the tidyverse suite, specifically in the dplyr package, where analysts apply functions in a sequence to address a wide array of data wrangling tasks. On the other hand, the pipeline approach addresses the data analysis tasks in a more structured manner, with a few centred steps used in almost all the workflow. For example, a supervised machine learning workflow typically involves steps like data splitting, model training and model evaluation, among others, regardless of the specific model used. A pipeline approach, like the tidymodel suite, modularizes these components and provides an unified syntax to specify different models.
+Dating back to earlier times, the pipeline approach to structure data analysis draws inspiration from the interactive graphics literature [@buja_elements_1988; @sutherland_orca_2000; @xie_reactive_2014; @wickham_plumbing_2009]. More recently, the tidy framework has provided a conceptual guide for the tidyverse suite [@wickham_welcome_2019] for general-purpose data wrangling, a concept that has gained popularity within the R community. Subsequently, more packages have since been developed to analyze data using the tidy framework for specific domains, for example, `tidytext` for text data [@silge_tidytext_2016], and `naniar` for missing data [@tierney_expanding_2023], and `tidymodels` for building machine learning models [@tidymodels]. To create a tidy workflow tailored to a specific domain, developers first need to identify the fundamental building blocks in the typical workflow. These components are then implemented as modules, which can be combined to form the pipeline. For example, in supervised machine learning models, steps such as data splitting, model training and model evaluation are commonly used in most workflow. In the `tidymodels`, these steps are correspondingly implemented as package `rsample`, `parsnip`, and `yardstick`, agnostic to the specific model chosen. 
 
 <!-- **Constructing indexes would also benefit from pipeline and embracing the aforementioned design philosophy.** -->
 
@@ -122,11 +120,9 @@ For constructing indexes, many indexes have provided available publicly scripts 
 
 <!-- This approach allows for quick experimentation with alternatives and facilitates building new indexes. Consequently, maintenance is streamlined in the long term, as all the indexes are developed in-house using a unified syntax. -->
 
-# A pipeline for building statistical indexes {#sec-index-pipeline}
+# Details of the index pipline {#sec-index-pipeline}
 
 In constructing various indexes, the primary aim is to transform the data, often multivariate, into a univariate index. Spatial and temporal considerations are also factored into the process when observational units and time periods are not independent. However, despite the variations in contextual information for indexes in different fields, the underlying statistical methodology remains consistent across diverse domains. Each index can be represented as a series of modular statistical operations on the data. This allows us to decompose the index construction process into a unified pipeline workflow with a standardized set of data processing steps to be applied across different indexes.
-
-## Pipeline steps for constructing indexes {#sec-pipeline-steps}
 
 An overview of the pipeline is given in @fig-pipeline-steps to illustrate the construction from raw data to the final indexes.
 The pipeline includes eight modules for operations in the spatial, temporal, and multivariate aspects of the data as well as modules for comparing and communicating indexes.
@@ -404,8 +400,6 @@ C_z & c_z \leq x(s_i; t_j)
 where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are the thresholds for each category. In SPI, droughts are sorted into four categories: mild drought: $[-0.99, 0]$; moderate drought: $[-1.49, -1]$; severe drought: $[-1.99, -1.5]$, and extreme drought: $[-\infty, -2]$. In this case, $C_0, C_1, C_2, C_3$ are the drought categories: mild, moderate, severe, and extreme drought ($z = 3$) and $c_0 =0, c_1 = -1, c_2 = -1.5, c_3 = -2$ are the cutoff value for each class.
 
 # Software design {#sec-dev}
-
-Tidyindex, as suggested by its name, follows the style and design principles of the tidyverse suite. The package is designed to simplify index construction for human analysts, ensure consistency across functions, and enable composability across modules to construct indexes. With the package, analysts can pass a data object through a set of pipeline modules introduced in @sec-pipeline-steps, offering different operations as standalone functions. For example, the dimension reduction module includes linear weighting, geometrical weighting, and manual expressions as possible methods to combine multivariate data. These methods are initially evaluated as a recipe of the operation without the data, and then, at the pipeline level, evaluating with the data using tidy evaluation, with the package `rlang` heavily used throughout the package.
 
 <!-- # 1. unpack or the argumebt s  -->
 <!-- # 2. construct the syntax to evalute: ~rescale_minmax(life_exp, min = xxx, max = xxxx) -->
