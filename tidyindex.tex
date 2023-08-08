@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, enhanced, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt, enhanced, breakable, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -432,11 +432,13 @@ distribution fitting step.}
 \end{figure}
 
 \hypertarget{temporal-processing}{%
-\subsubsection{Temporal processing}\label{temporal-processing}}
+\subsection{Temporal processing}\label{temporal-processing}}
 
-\textbf{Input: } multivariate data with temporal coordinates
+\textbf{Input: } \(x(\mathbf{s};\mathbf{t})\): multivariate data with
+temporal coordinates
 
-\textbf{Output: } multivariate data with aggregated temporal axis
+\textbf{Output: } \(x(\mathbf{s};\mathbf{t}^\prime)\): multivariate data
+with aggregated temporal axis
 
 \textbf{Computation:} The construction of an index sometimes needs to
 consider information from neighbouring time periods. The temporal
@@ -444,7 +446,7 @@ processing is a general operator on the time dimension of the data in
 the form of
 
 \begin{equation}
-x(\mathbf{s};\mathbf{t}^\prime)  f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),
+x(\mathbf{s};\mathbf{t}^\prime) = f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),
 \end{equation}
 
 where \(\psi \in \Psi \subseteq \mathbb{R}^{d_{\psi}}\) is the
@@ -465,7 +467,7 @@ equivalent to a 1.5- or 2-year aggregation, is often used for long term
 assessment.
 
 \hypertarget{spatial-processing}{%
-\subsubsection{Spatial processing}\label{spatial-processing}}
+\subsection{Spatial processing}\label{spatial-processing}}
 
 \textbf{Input: } Multivariate data with coordinates
 
@@ -502,7 +504,7 @@ locations to interpolate unobserved locations and 2) fusing variables
 from ground measures with satellite imageries.
 
 \hypertarget{variable-transformation}{%
-\subsubsection{Variable transformation}\label{variable-transformation}}
+\subsection{Variable transformation}\label{variable-transformation}}
 
 \textbf{Input: }
 
@@ -526,7 +528,7 @@ and some common transformations include log, quadratic, and square root
 transformation.
 
 \hypertarget{scaling}{%
-\subsubsection{Scaling}\label{scaling}}
+\subsection{Scaling}\label{scaling}}
 
 \textbf{Input: }
 
@@ -569,7 +571,7 @@ transformation.}
 \end{figure}
 
 \hypertarget{dimension-reduction}{%
-\subsubsection{Dimension reduction}\label{dimension-reduction}}
+\subsection{Dimension reduction}\label{dimension-reduction}}
 
 \textbf{Input: }
 
@@ -610,7 +612,7 @@ by generating an animation of the projections among different sets of
 weights.
 
 \hypertarget{distribution-fit}{%
-\subsubsection{Distribution fit}\label{distribution-fit}}
+\subsection{Distribution fit}\label{distribution-fit}}
 
 \emph{model fit? }
 
@@ -639,7 +641,7 @@ tests, and whether these variations are negligible in a given
 application.
 
 \hypertarget{normalising}{%
-\subsubsection{Normalising}\label{normalising}}
+\subsection{Normalising}\label{normalising}}
 
 \textbf{Input: }
 
@@ -681,7 +683,7 @@ magnitudes of difference in its probability of occurrence.}
 \end{figure}
 
 \hypertarget{benchmarking}{%
-\subsubsection{Benchmarking}\label{benchmarking}}
+\subsection{Benchmarking}\label{benchmarking}}
 
 \textbf{Input: }
 
@@ -694,7 +696,7 @@ constructed. A benchmark value could be a constant or a function of the
 data, i.e.~mean.
 
 \hypertarget{simplification}{%
-\subsubsection{Simplification}\label{simplification}}
+\subsection{Simplification}\label{simplification}}
 
 \textbf{Input: }
 

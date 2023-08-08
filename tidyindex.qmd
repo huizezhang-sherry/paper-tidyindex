@@ -140,17 +140,17 @@ The notation used for introducing the pipeline modules is as follows. Let $\math
 knitr::include_graphics(here::here("figures/pipeline-overall.png"))
 ```
 
-### Temporal processing
+## Temporal processing
 
-**Input: ** multivariate data with temporal coordinates 
+**Input: ** $x(\mathbf{s};\mathbf{t})$: multivariate data with temporal coordinates 
 
-**Output: ** multivariate data with aggregated temporal axis
+**Output: ** $x(\mathbf{s};\mathbf{t}^\prime)$: multivariate data with aggregated temporal axis 
 
 **Computation:** The construction of an index sometimes needs to consider information from neighbouring time periods.
 The temporal processing is a general operator on the time dimension of the data in the form of  
 
 \begin{equation}
-x(\mathbf{s};\mathbf{t}^\prime)  f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),
+x(\mathbf{s};\mathbf{t}^\prime) = f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),
 \end{equation}
 
 where $\psi \in \Psi \subseteq \mathbb{R}^{d_{\psi}}$ is the parameters associated with the temporal operation and $d_{\psi}$ is the number of parameter of $\psi$. 
@@ -160,7 +160,7 @@ $$x(s_i;t_{j^\prime}) = \sum_{j = j^\prime}^{j^\prime + k - 1}x(s_i; t_j),$$
 
 where $j^\prime$ is the new time index after the aggregation. Multi-scalar drought indexes are widely used to study different types of drought events. A smaller value of the time scales parameter $k$ is used for short term drought events, while a large $k$ of 18 or 24, an equivalent to a 1.5- or 2-year aggregation, is often used for long term assessment. 
 
-### Spatial processing
+## Spatial processing
 
 **Input: ** Multivariate data with coordinates
 
@@ -182,7 +182,7 @@ g(x) = \frac{\sum_{i \in i^\prime}x}{n_{i^\prime}},
 
 where $i \in i^\prime$ includes all the cells from the finer resolution in the coarser grid and $n_{i^\prime}$ is the number of observations falls into the  coarser grid. Other examples of spatial processing include 1) borrowing information from neighbouring spatial locations to interpolate unobserved locations and 2) fusing variables from ground measures with satellite imageries.
 
-### Variable transformation 
+## Variable transformation 
 
 **Input: **
 
@@ -198,7 +198,7 @@ where $\tau \in T \subseteq \mathbb{R}^{d_{\tau}}$ is the parameter in the trans
 
 <!-- A common assumption is normality in drought index.  -->
 
-### Scaling
+## Scaling
 
 **Input: **
 
@@ -281,7 +281,7 @@ trans_df %>%
   theme(legend.position = "bottom")
 ```
 
-### Dimension reduction
+## Dimension reduction
 
 **Input: **
 
@@ -312,7 +312,7 @@ where $\lambda_p$ denotes the weight assigned to variable $x_p$. Most indexes us
 
 
 
-### Distribution fit
+## Distribution fit
 
 *model fit? *
 
@@ -330,7 +330,7 @@ where $\eta \in H \subseteq \mathbb{R}^{d_{\eta}}$ is the distribution parameter
 Analysts may start from a pool of candidate distributions with a chosen fitting method and goodness of fit measure. 
 While it is useful to find the ultimate best distribution to fits the data, from a probabilistic perspective, the fitting procedure itself has an uncertainty associated with the data fed and the parameter chosen. A reasonable alternative is to understand how much the index values can vary given different distributions, fitting methods, and goodness of fit tests, and whether these variations are negligible in a given application.
 
-### Normalising
+## Normalising
 
 **Input: **
 
@@ -369,7 +369,7 @@ dt %>%
   theme(panel.grid.minor = element_blank())
 ```
 
-### Benchmarking
+## Benchmarking
 
 **Input: **
 
@@ -378,7 +378,7 @@ dt %>%
 **Computation:** Benchmarking sets a constant value to allow the constructed index to be compared across time.
 Here we denote it with $u[x(s_i, t_j)]$ where $u$ is a scalar of interest in the index constructed. A benchmark value could be a constant or a function of the data, i.e. mean.
 
-### Simplification
+## Simplification
 
 **Input: **
 
