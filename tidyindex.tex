@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable, frame hidden, boxrule=0pt, interior hidden, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, enhanced, interior hidden, breakable, sharp corners, frame hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -333,36 +333,32 @@ tools. The concept of tidy data (Wickham 2014) prescribes specific rules
 for organising data in an analysis, with observations as rows, variables
 as columns, and types of observational units as tables. Tidy tools, on
 the other hand, are concatenated in a sequence through which the tidy
-data flows, creating a pipeline for data processing and modelling. These pipelines
-are data centric, meaning all the tidy tools or functions take a tidy data object as
-input and return a processed tidy data object, directly ready for the
-next operations to be applied. Also, the pipeline approach corresponds
-to the modular programming practice, which breaks down complex problems
-into smaller and more manageable pieces.
-% , as oppose to a monolithic
-% design, where all the steps are predetermined and integrated into a
-% single piece. 
-The flexibility provided by the modularity makes it easier
-to modify any step in the pipeline and to maintain and extend the
-code base.
+data flows, creating a pipeline for data processing and modelling. These
+pipelines are data centric, meaning all the tidy tools or functions take
+a tidy data object as inputs and return a processed tidy data object,
+directly ready for the next operations to be applied. Also, the pipeline
+approach corresponds to the modular programming practice, which breaks
+down complex problems into smaller and more manageable pieces, as oppose
+to a monolithic design, where all the steps are predetermined and
+integrated into a single piece. The flexibility provided by the
+modularity makes it easier to modify certain steps in the pipeline and
+to maintain and extend the code base.
 
-Examples of using a pipeline approach for data analysis 
-can be traced back to the interactive graphics literature including 
-Buja et al. 1988; Sutherland et al. 2000; Xie, Hofmann, and Cheng
-2014; Wickham et al. 2009). Wickham et al. (2009) argues that whether
-made explicit or not, a pipeline has to be presented in every graphics
+Examples of using a pipeline approach for data analysis can be traced
+back to the interactive graphics literature, including Buja et al.
+(1988); Sutherland et al. (2000); Xie, Hofmann, and Cheng (2014);
+Wickham et al. (2009){]}. Wickham et al. (2009) argues that whether made
+explicit or not, a pipeline has to be presented in every graphics
 program and making them explicit is beneficial for understanding the
 implementation and comparing between different graphic systems. While
-this comment is made in the context of graphics program (WHAT DO YOU MEAN by graphics program?), it is also
-applicable generally to any data analysis workflow. More recently, the
-tidyverse suite (Wickham et al. 2019) takes the pipeline approach for
-general-purpose data wrangling and has gained popularity within the R
-community. The pipeline-style code can be directly read as a series of
-operations applied successively on a tidy data object, offering a
-method to create a reproducible data wrangling process that is also easy to document.
-% Unlike textual documentation, which may omit seemingly
-% obvious or less significant information, the pipeline approach captures
-% all the computational details while retaining conciseness.
+this comment is made in the context of interactive graphics program, it
+is also applicable generally to any data analysis workflow. More
+recently, the tidyverse suite (Wickham et al. 2019) takes the pipeline
+approach for general-purpose data wrangling and has gained popularity
+within the R community. The pipeline-style code can be directly read as
+a series of operations applied successively on tidy data object,
+offering a method to document the data wrangling process with all the
+computational details for reproducibility.
 
 Since the success of tidyverse, more packages have been developed to
 analyze data using the tidy framework for domains specific applications,
@@ -383,19 +379,15 @@ models simultaneously.
 
 For constructing indexes, rather than implementing each index
 separately, as it has been done for some indexes, the pipeline approach
-introduces explicit, user-facing (??), and standalone modules for analysts to
-assemble indexes. Analysts can then rearrange the pipeline or
-insert new steps to create indexes and/or to experiment with possible index definition while also testing
-the index behaviour. 
-% 
-% In addition, the readability of the pipeline code
-% can complement conventional diagrams and textual information to
-% understand the how indexes are constructed.
-
-(I don't think this is needed -->)The uniform interface of a
-pipeline allows analysts to assemble a diverse array of indexes with a
-shared set of components, reducing the learning curve for adopting new
-implementation for different indexes.
+introduces explicit and standalone modules for analysts to assemble
+indexes. Analysts can then rearrange the order of modules in the
+pipeline or insert new modules to experiment with possible new index
+definition or to understand index behaviour. Also, the readability of
+the pipeline code can complement conventional diagrams and textual
+information to understand the how indexes are constructed. The uniform
+interface of pipeline allows analysts to assemble a diverse array of
+indexes with a shared set of components, reducing the learning curve for
+adopting new implementation for different indexes.
 
 \hypertarget{sec-index-pipeline}{%
 \section{Details of the index pipline}\label{sec-index-pipeline}}
