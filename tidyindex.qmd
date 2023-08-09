@@ -111,7 +111,7 @@ The tidy framework consists of two key components: tidy data and tidy tools. The
 
 <!-- **What is pipeline, its underlying software design philosophy, and how these are reflected in R** -->
 
-Examples of using a pipeline approach for data analysis can be traced back to the interactive graphics literature, including @buja_elements_1988; @sutherland_orca_2000; @xie_reactive_2014; @wickham_plumbing_2009]. @wickham_plumbing_2009 argues that whether made explicit or not, a pipeline has to be presented in every graphics program and making them explicit is beneficial for understanding the implementation and comparing between different graphic systems. While this comment is made in the context of interactive graphics program, it is also applicable generally to any data analysis workflow. More recently, the tidyverse suite [@wickham_welcome_2019] takes the pipeline approach for general-purpose data wrangling and has gained popularity within the R community. The pipeline-style code can be directly read as a series of operations applied successively on tidy data object, offering a method to document the data wrangling process with all the computational details for reproducibility. 
+Examples of using a pipeline approach for data analysis can be traced back to the interactive graphics literature, including @buja_elements_1988; @sutherland_orca_2000; @xie_reactive_2014; @wickham_plumbing_2009. @wickham_plumbing_2009 argues that whether made explicit or not, a pipeline has to be presented in every graphics program and making them explicit is beneficial for understanding the implementation and comparing between different graphic systems. While this comment is made in the context of interactive graphics program, it is also applicable generally to any data analysis workflow. More recently, the tidyverse suite [@wickham_welcome_2019] takes the pipeline approach for general-purpose data wrangling and has gained popularity within the R community. The pipeline-style code can be directly read as a series of operations applied successively on tidy data object, offering a method to document the data wrangling process with all the computational details for reproducibility. 
 
 Since the success of tidyverse, more packages have been developed to analyze data using the tidy framework for domains specific applications, a noticeable example of which is `tidymodels` for building machine learning models [@tidymodels]. To create a tidy workflow tailored to a specific domain, developers first need to identify the fundamental building blocks to create a workflow. These components are then implemented as modules, which can be combined to form the pipeline. For example, in supervised machine learning models, steps such as data splitting, model training and model evaluation are commonly used in most workflow. In the `tidymodels`, these steps are correspondingly implemented as package `rsample`, `parsnip`, and `yardstick`, agnostic to the specific model chosen. The uniform interface in tidymodels frees analysts from recalling model-specific syntax for performing the same operation across different models, increasing the efficiency to work with different models simultaneously. 
 
@@ -457,18 +457,6 @@ idx <- queensland %>%
 ```
 
 The output from `compute_indexes()` contains index values and associated parameter in a long tibble. It includes the original variables (`id`, `ym`, `prcp`, `tmax`, `tmin`, `tavg`, `long`, `lat`, and `name`), index parameters (`.idx`, `.scale`, `.method`, and `.dist`), intermediate variables (`pet`, `.agg`, and `.fitted`), and the final index (`.index`). This data can be visualised across space or time, or simultaneously, to explore the wet/dry condition in Queensland. @fig-compute-spatial visualises the spatial distribution of SPI at two periods (2010 October - 2011 March and 2019 October - 2020 March) with significant natural disaster events: 2010/11 Queensland flood and 2019 Australia drought, which contributes to the notorious 2019/20 bushfire. @fig-compute-temporal displays the sensitivity of the SPEI series for one particular station, Texas post office, at different time scales and fitted distributions. These two plots demonstrate some possibilities to explore the indexes after they are computed from `compute_indexes()`. 
-
-
-```{r}
-library(sf)
-# options(timeout = 1000)
-# remotes::install_github("wfmackey/absmapsdata")
-qld_lga <- absmapsdata::lga2018 %>%
-  filter(state_name_2016 == "Queensland") %>%
-  rmapshaper::ms_simplify(keep = 0.3) %>%
-  mutate(lga_name_2018 = str_replace(lga_name_2018, " \\([S|R|C|]\\)", ""),
-         lga_name_2018 = str_replace(lga_name_2018, " \\(Qld\\)", ""))
-```
 
 ```{r fig-compute-spatial}
 #| fig-cap: "Spatial distribution of Standardized Precipitation Index (SPI-12) in Queensland, Australia during two major flood and drought events: 2010/11 and 2019/20. The map shows a continous wet period during the 2010/11 flood period and a mitigated drought situation, after its worst in 2019 December and 2020 Janurary, likely due to the increased rainfall in February from the meteorological record."

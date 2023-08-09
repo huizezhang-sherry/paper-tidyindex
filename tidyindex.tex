@@ -7,6 +7,7 @@
 ]{interact}
 
 \usepackage{amsmath,amssymb}
+\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -16,10 +17,6 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-\fi
-\usepackage{lmodern}
-\ifPDFTeX\else  
-    % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -184,12 +181,10 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 \makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
+\@ifpackageloaded{tcolorbox}{}{\usepackage[many]{tcolorbox}}
 \makeatother
 \makeatletter
 \@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
-\makeatother
-\makeatletter
 \makeatother
 \makeatletter
 \makeatother
@@ -266,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, breakable, interior hidden, enhanced, borderline west={3pt}{0pt}{shadecolor}, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, interior hidden, breakable, enhanced, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -352,7 +347,7 @@ to maintain and extend the code base.
 Examples of using a pipeline approach for data analysis can be traced
 back to the interactive graphics literature, including Buja et al.
 (1988); Sutherland et al. (2000); Xie, Hofmann, and Cheng (2014);
-Wickham et al. (2009){]}. Wickham et al. (2009) argues that whether made
+Wickham et al. (2009). Wickham et al. (2009) argues that whether made
 explicit or not, a pipeline has to be presented in every graphics
 program and making them explicit is beneficial for understanding the
 implementation and comparing between different graphic systems. While
@@ -929,7 +924,7 @@ along with the corresponding weights \texttt{gggi\_weights}.
   >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0909}}@{}}
 \caption{\label{tbl-gggi-weights}Weights of the fourteen variables in
 Global Gender Gap Index}\tabularnewline
-\toprule\noalign{}
+\toprule()
 \begin{minipage}[b]{\linewidth}\raggedright
 Variable
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -941,9 +936,9 @@ D-weight
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 Weight
 \end{minipage} \\
-\midrule\noalign{}
+\midrule()
 \endfirsthead
-\toprule\noalign{}
+\toprule()
 \begin{minipage}[b]{\linewidth}\raggedright
 Variable
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -955,10 +950,8 @@ D-weight
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 Weight
 \end{minipage} \\
-\midrule\noalign{}
+\midrule()
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
 Labour force participation & Economy & 0.199 & 0.25 & 0.050 \\
 Wage equality for similar work & Economy & 0.310 & 0.25 & 0.078 \\
 Estimated earned income & Economy & 0.221 & 0.25 & 0.055 \\
@@ -974,6 +967,7 @@ Healthy life expectancy & Health & 0.307 & 0.25 & 0.077 \\
 Women in parliament & Politics & 0.310 & 0.25 & 0.078 \\
 Women in ministerial positions & Politics & 0.247 & 0.25 & 0.062 \\
 Years with female head of state & Politics & 0.443 & 0.25 & 0.111 \\
+\bottomrule()
 \end{longtable}
 
 A natural thing to do when provided with the index data is to reproduce
