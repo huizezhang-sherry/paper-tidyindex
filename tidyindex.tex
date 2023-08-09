@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, breakable, interior hidden, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable, frame hidden, boxrule=0pt, interior hidden, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -336,11 +336,13 @@ the other hand, are concatenated in a sequence through which the tidy
 object flows, creating a pipeline for data processing. These pipelines
 are data centric, meaning all the functions take a tidy data object as
 inputs and return a processed tidy data object, directly ready for the
-next operations without further reshaping needed. Also, the pipeline
-approach corresponds to the modular programming practice, which break
-down complex problems into smaller and more manageable pieces, as oppose
-to a monolithic design, where all the steps are predetermined and
-integrated into a single piece.
+next operations to be applied. Also, the pipeline approach corresponds
+to the modular programming practice, which breaks down complex problems
+into smaller and more manageable pieces, as oppose to a monolithic
+design, where all the steps are predetermined and integrated into a
+single piece. The flexibility provided by the modularity makes it easier
+to modify certain steps in the pipeline and to maintain and extend the
+code base.
 
 Examples of using a pipeline approach to structure data analysis in R
 can be traced back to the interactive graphics literature in the earlier
@@ -350,16 +352,15 @@ made explicit or not, pipeline has to be presented in every graphics
 program and making them explicit is beneficial for understanding the
 implementation and comparing between different graphic systems. While
 this comment is made in the context of graphics program, it is also
-applicable to other general or domain specific data analysis workflow.
-More recently, the tidyverse suite (Wickham et al. 2019) takes the
-pipeline approach for general-purpose data wrangling and has gained
-popularity within the R community. The pipeline-style code can be
-directly read as a series of operations applied successively on the tidy
-data object, offering a method to document the data wrangling process.
-Unlike textual documentation, which may omit seemingly obvious or less
-significant information, the pipeline approach captures all the
-computational details while retaining the conciseness of a coding
-language, making it easy for human analysts to comprehend.
+applicable generally to data analysis workflow. More recently, the
+tidyverse suite (Wickham et al. 2019) takes the pipeline approach for
+general-purpose data wrangling and has gained popularity within the R
+community. The pipeline-style code can be directly read as a series of
+operations applied successively on the tidy data object, offering a
+method to document the data wrangling process for analysts to
+comprehend. Unlike textual documentation, which may omit seemingly
+obvious or less significant information, the pipeline approach captures
+all the computational details while retaining conciseness.
 
 Since the success of tidyverse, more packages have been developed to
 analyze data using the tidy framework for domains specific applications,
@@ -373,23 +374,22 @@ steps such as data splitting, model training and model evaluation are
 commonly used in most workflow. In the \texttt{tidymodels}, these steps
 are correspondingly implemented as package \texttt{rsample},
 \texttt{parsnip}, and \texttt{yardstick}, agnostic to the specific model
-chosen.
+chosen. The uniform interface in tidymodels frees analysts from
+recalling model-specific syntax for performing the same operation across
+different models, increasing the efficiency to work with different
+models simultaneously.
 
 For constructing indexes, rather than implementing each index
 separately, as has been done for some indexes, the pipeline approach
-introduces explicit, user-facing modules that analysts can compose into
-indexes. This approach provides several advantages to analysts and
-researchers working on indexes. The index construction process can be
-complicated to describe and readable pipeline code complements
-conventional diagrams and textual description for understand the
-computational details. The uniform interface allows analysts to assemble
-a diverse array of indexes with a shared set of components, reducing the
-learning curve for adopting new implementation for different indexes.
-Importantly, each pipeline module and its corresponding steps are
-implemented as standalone functions, providing great flexibility for
-anlaysis the index. Analysts can rearrange the order in the pipeline or
-insert new step to experiment with possible new definition for the index
-or to understand index behaviour.
+introduces explicit, user-facing, and standalone modules for analysts to
+assemble indexes. Analysts can rearrange the order in the pipeline or
+insert new step to experiment with possible new index definition or to
+understand index behaviour. Also, the readability of the pipeline code
+can complement conventional diagrams and textual information to
+understand the how indexes are constructed. The uniform interface of
+pipeline allows analysts to assemble a diverse array of indexes with a
+shared set of components, reducing the learning curve for adopting new
+implementation for different indexes.
 
 \hypertarget{sec-index-pipeline}{%
 \section{Details of the index pipline}\label{sec-index-pipeline}}
