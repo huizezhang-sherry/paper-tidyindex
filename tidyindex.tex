@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, interior hidden, breakable, enhanced, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, sharp corners, interior hidden, frame hidden, enhanced, breakable, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -434,16 +434,29 @@ spatial resolution and temporal frequency of data collected from
 different satellite products, or merging in-situ stations with the
 satellite data.
 
-The notation used for introducing the pipeline modules is as follows.
-Let \(\mathbf{x}(\mathbf{s};\mathbf{t})\) denote the raw data with
-spatial, temporal, and multivariate aspects: the spatial dimension
-\(\mathbf{s} = (s_1, s_2, \cdots, s_n)^\prime\) is defined in the 2D
-space: \(\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2\), the
-temporal dimension \(\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime\) is
-defined in the 1D space:
-\(\mathbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}\). When more than
-one variable is involved, the multivariate data can also be written as:
-\(\mathbf{x}(\mathbf{s}; \mathbf{t}) = (x_1(\mathbf{s}; \mathbf{t}), x_2(\mathbf{s}; \mathbf{t}), \cdots, x_P(\mathbf{s}; \mathbf{t}))^\prime\).
+Now, we introduce the notation used for describing pipeline modules.
+Consider multivariate spatio-temporal data,
+
+\begin{equation}
+\begin{aligned}
+x^l(s;t) = [x^1(s;t), x^2(s;t), & \cdots, x^L(s;t)] \\
+& l = 1, 2, \cdots L, s \in D_s \subseteq \mathbb{R}^d, t \in D_t \subseteq \mathbb{R}^m 
+\end{aligned}
+\end{equation}
+
+where \(x^l\) is the \(l\)th variable, \(s\) is the spatial location,
+and \(t\) is the temporal order. The spatial space,
+\(D_s \subseteq \mathbb{R}^d\), is generic to include different spatial
+representations, including a 1D set of \(n\) locations
+\(\{D_s: s_1, s_2, \cdots, s_n\}\), a 2D set of longitude and latitude
+pairs, and \(d\)-D coordinate set. The higher dimension in the temporal
+space, \(D_t \subseteq \mathbb{R}^m\), can be used to represent for a
+\(m\)-D deconstruction of time. For example, a year-month combination,
+\((Y, M)^\prime\), can be used to record monthly precipitation series
+from January 1990 to December 2020, where \(Y = 1990, \cdots, 2020\) and
+\(M = 1, \cdots, 12\). In the case when the spatial dimension is fixed,
+multivariate temporal data can be simplified as \(x^l_s(t)\), and
+similarly, multivariate spatial data can be simplified as \(x^l_t(s)\).
 
 \begin{figure}
 
@@ -460,13 +473,12 @@ distribution fitting step.}
 \hypertarget{temporal-processing}{%
 \subsection{Temporal processing}\label{temporal-processing}}
 
-\textbf{Input: } \(x(\mathbf{s};\mathbf{t})\): multivariate data with
-temporal coordinates
+\texttt{Input}: \(x^l_s(t)\),
 
-\textbf{Output: } \(x(\mathbf{s};\mathbf{t}^\prime)\): multivariate data
-with aggregated temporal axis
+\texttt{Output}: \(x^l_s(t^{\prime})\), where
+\(t^\prime \in D_{t^{\prime}}\).
 
-\textbf{Computation:} The construction of an index sometimes needs to
+\texttt{Computation}: The construction of an index sometimes needs to
 consider information from neighbouring time periods. The temporal
 processing is a general operator on the time dimension of the data in
 the form of
@@ -495,11 +507,12 @@ assessment.
 \hypertarget{spatial-processing}{%
 \subsection{Spatial processing}\label{spatial-processing}}
 
-\textbf{Input: } Multivariate data with coordinates
+\texttt{Input}: \(x^l_t(s)\)
 
-\textbf{Output: } Multivariate data with a new set of coordinates
+\texttt{Output}: \(x^l_t(s^\prime)\) where
+\(s^\prime \in D_{s^{\prime}}\)
 
-\textbf{Computation:} Spatial processing may be needed when indexes are
+\texttt{Computation}: Spatial processing may be needed when indexes are
 not calculated independently on each collected location or when
 variables collected from multiple sources need to be fused before
 further processing. The process can be written as a general operation in
@@ -532,11 +545,11 @@ from ground measures with satellite imageries.
 \hypertarget{variable-transformation}{%
 \subsection{Variable transformation}\label{variable-transformation}}
 
-\textbf{Input: }
+\texttt{Input}: \(x^l(s; t)\)
 
-\textbf{Output: }
+\texttt{Output}: \(y^l(s; t)\)
 
-\textbf{Computation:} The purpose of variable transformation is to
+\texttt{Computation}: The purpose of variable transformation is to
 create variables that fits assumptions for further computing. These
 assumptions include a stable variance, normal distribution, or a certain
 scale required by some algorithms down the pipeline. Variable
@@ -556,11 +569,11 @@ transformation.
 \hypertarget{scaling}{%
 \subsection{Scaling}\label{scaling}}
 
-\textbf{Input: }
+\texttt{Input}: \(x^l(s; t)\)
 
-\textbf{Output: }
+\texttt{Output}: \(x^l(s; t)\)
 
-\textbf{Computation:} While scaling can be seen as a specific type of
+\texttt{Computation}: While scaling can be seen as a specific type of
 variable transformation, it is separated into its own step to make the
 step explicit in the pipeline. The key difference between the two steps
 is that variable transformation typically changes the shape of the data
@@ -599,11 +612,12 @@ transformation.}
 \hypertarget{dimension-reduction}{%
 \subsection{Dimension reduction}\label{dimension-reduction}}
 
-\textbf{Input: }
+\texttt{Input}: \(x^l(s; t)\)
 
-\textbf{Output: }
+\texttt{Output}: \(x^{l^\prime}(s; t)\), where
+\(l^{\prime} = 1, 2, \cdots, L^{\prime}\)
 
-\textbf{Computation:} Dimension reduction summarises the multivariate
+\texttt{Computation}: Dimension reduction summarises the multivariate
 information into univariate, which can be denoted as:
 
 \begin{equation}
@@ -640,13 +654,11 @@ weights.
 \hypertarget{distribution-fit}{%
 \subsection{Distribution fit}\label{distribution-fit}}
 
-\emph{model fit? }
+\texttt{Input}: \(x^l(s; t)\)
 
-\textbf{Input: }
+\texttt{Output}:
 
-\textbf{Output: }
-
-\textbf{Computation:} Distribution fit can be seen as the model fitting
+\texttt{Computation}: Distribution fit can be seen as the model fitting
 in its simplest term. It can be represented by
 
 \begin{equation}
@@ -669,11 +681,11 @@ application.
 \hypertarget{normalising}{%
 \subsection{Normalising}\label{normalising}}
 
-\textbf{Input: }
+\texttt{Input}: \(x^l(s; t)\)
 
-\textbf{Output: }
+\texttt{Output}:
 
-\textbf{Computation:} This step maps the univariate series into a
+\texttt{Computation}: This step maps the univariate series into a
 different scale, typically for ease of comparison across regions. For
 example, a normal scale, {[}0, 1{]}, or {[}0, 100{]} may be favored for
 reporting certain indexes. In drought indexes, i.e.~SPI or SPEI, the
@@ -711,11 +723,13 @@ magnitudes of difference in its probability of occurrence.}
 \hypertarget{benchmarking}{%
 \subsection{Benchmarking}\label{benchmarking}}
 
-\textbf{Input: }
+\texttt{Input}: \(x^l(s; t)\)
 
-\textbf{Output: }
+\texttt{Output}:
 
-\textbf{Computation:} Benchmarking sets a constant value to allow the
+\(D(x^l(s,t), a)\) where \(D(., .)\) is a distance function between
+
+\texttt{Computation}: Benchmarking sets a constant value to allow the
 constructed index to be compared across time. Here we denote it with
 \(u[x(s_i, t_j)]\) where \(u\) is a scalar of interest in the index
 constructed. A benchmark value could be a constant or a function of the
@@ -724,11 +738,12 @@ data, i.e.~mean.
 \hypertarget{simplification}{%
 \subsection{Simplification}\label{simplification}}
 
-\textbf{Input: }
+\texttt{Input}: \(x^l(s; t)\)
 
-\textbf{Output: }
+\texttt{Output}: \(C^l(s;t)\) where \(\{C: c_0, c_1, \cdots, c_z\}\) is
+a discrete set
 
-\textbf{Computation:} In public communication, the index values are
+\texttt{Computation}: In public communication, the index values are
 usually accompanied by a categorical grade. The categorised grades are
 an ordered set of descriptive words or colors to communicate the
 severity or guide the comprehension of the indexes. The mapping from
@@ -737,11 +752,11 @@ in the pipeline and it can be written as a piece-wise function:
 
 \begin{equation}
 \begin{cases}
-C_0 & c_1 \leq (s_i; t_j) < c_0 \\
-C_1 & c_2 \leq x(s_i; t_j) < c_1 \\
-C_2 & c_3 \leq x(s_i; t_j) < c_2 \\
+c_0 & C_1 \leq x^l(s; t) < C_0 \\
+c_1 & C_2 \leq x^l(s; t) < C_1 \\
+c_2 & C_3 \leq x^l(s; t) < C_2 \\
 \cdots \\
-C_z & c_z \leq x(s_i; t_j)
+c_z & C_z \leq x^l(s; t)
 \end{cases}
 \end{equation}
 

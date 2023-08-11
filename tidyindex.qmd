@@ -143,7 +143,16 @@ Analysts can choose a subset of modules and reorder them as needed to construct 
 
 Data pre-processing may happen before the start of the index pipeline to prepare multivariate data from different locations/ countries ready for constructing an index. For remote sensing data, it includes aligning the spatial resolution and temporal frequency of data collected from different satellite products, or merging in-situ stations with the satellite data. 
 
-The notation used for introducing the pipeline modules is as follows. Let $\mathbf{x}(\mathbf{s};\mathbf{t})$ denote the raw data with spatial, temporal, and multivariate aspects: the spatial dimension $\mathbf{s} =  (s_1, s_2, \cdots, s_n)^\prime$ is defined in the 2D space: $\mathbf{s} \in \mathcal{D}_s \subseteq \mathbb{R}^2$, the temporal dimension $\mathbf{t} = (t_1, t_2, \cdots, t_J)^\prime$ is defined in the 1D space: $\mathbf{t} \in \mathcal{D}_t \subseteq \mathbb{R}$. When more than one variable is involved, the multivariate data can also be written as: $\mathbf{x}(\mathbf{s}; \mathbf{t}) = (x_1(\mathbf{s}; \mathbf{t}), x_2(\mathbf{s}; \mathbf{t}), \cdots, x_P(\mathbf{s}; \mathbf{t}))^\prime$.
+Now, we introduce the notation used for describing pipeline modules. Consider multivariate spatio-temporal data, 
+
+\begin{equation}
+\begin{aligned}
+x^l(s;t) = [x^1(s;t), x^2(s;t), & \cdots, x^L(s;t)] \\
+& l = 1, 2, \cdots L, s \in D_s \subseteq \mathbb{R}^d, t \in D_t \subseteq \mathbb{R}^m 
+\end{aligned}
+\end{equation}
+
+where $x^l$ is the $l$th variable, $s$ is the spatial location, and $t$ is the temporal order. <!-- We assume the spatial and temporal indexes do not depend on the variable, that is, all the variables share the same set of spatial and temporal indexes.--> The spatial space, $D_s \subseteq \mathbb{R}^d$, is generic to include different spatial representations, including a 1D set of $n$ locations $\{D_s: s_1, s_2, \cdots, s_n\}$, a 2D set of longitude and latitude pairs, and $d$-D coordinate set. The higher dimension in the temporal space, $D_t \subseteq \mathbb{R}^m$, can be used to represent for a $m$-D deconstruction of time. For example, a year-month combination, $(Y, M)^\prime$, can be used to record monthly precipitation series from January 1990 to December 2020, where $Y = 1990, \cdots, 2020$ and $M = 1, \cdots, 12$. In the case when the spatial dimension is fixed, multivariate temporal data can be simplified as $x^l_s(t)$, and similarly,  multivariate spatial data can be simplified as $x^l_t(s)$.
 
 ```{r fig-pipeline-steps}
 #| fig-align: center
@@ -155,11 +164,11 @@ knitr::include_graphics(here::here("figures/pipeline-overall.png"))
 
 ## Temporal processing
 
-**Input: ** $x(\mathbf{s};\mathbf{t})$: multivariate data with temporal coordinates 
+`Input`: $x^l_s(t)$, 
 
-**Output: ** $x(\mathbf{s};\mathbf{t}^\prime)$: multivariate data with aggregated temporal axis 
+`Output`:  $x^l_s(t^{\prime})$, where $t^\prime \in D_{t^{\prime}}$. 
 
-**Computation:** The construction of an index sometimes needs to consider information from neighbouring time periods.
+`Computation`: The construction of an index sometimes needs to consider information from neighbouring time periods.
 The temporal processing is a general operator on the time dimension of the data in the form of  
 
 \begin{equation}
@@ -175,11 +184,11 @@ where $j^\prime$ is the new time index after the aggregation. Multi-scalar droug
 
 ## Spatial processing
 
-**Input: ** Multivariate data with coordinates
+`Input`:  $x^l_t(s)$
 
-**Output: ** Multivariate data with a new set of coordinates
+`Output`: $x^l_t(s^\prime)$ where $s^\prime \in D_{s^{\prime}}$
 
-**Computation:** Spatial processing may be needed when indexes are not calculated independently on each collected location or when variables collected from multiple sources need to be fused before further processing. The process can be written as a general operation in the form of 
+`Computation`: Spatial processing may be needed when indexes are not calculated independently on each collected location or when variables collected from multiple sources need to be fused before further processing. The process can be written as a general operation in the form of 
 
 \begin{equation}
 x(\mathbf{s}^\prime;\mathbf{t}) = g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})),
@@ -197,11 +206,11 @@ where $i \in i^\prime$ includes all the cells from the finer resolution in the c
 
 ## Variable transformation 
 
-**Input: **
+`Input`: $x^l(s; t)$
 
-**Output: **
+`Output`: $y^l(s; t)$
 
-**Computation:** The purpose of variable transformation is to create variables that fits assumptions for further computing. These assumptions include a stable variance, normal distribution, or a certain scale required by some algorithms down the pipeline. Variable transformation is a general notion of a functional transformation on the variable: 
+`Computation`: The purpose of variable transformation is to create variables that fits assumptions for further computing. These assumptions include a stable variance, normal distribution, or a certain scale required by some algorithms down the pipeline. Variable transformation is a general notion of a functional transformation on the variable: 
 
 \begin{equation}
 h_{\tau}(x(\mathbf{s};\mathbf{t})),
@@ -213,11 +222,11 @@ where $\tau \in T \subseteq \mathbb{R}^{d_{\tau}}$ is the parameter in the trans
 
 ## Scaling
 
-**Input: **
+`Input`: $x^l(s; t)$
 
-**Output: **
+`Output`: $x^l(s; t)$
 
-**Computation:** While scaling can be seen as a specific type of variable transformation, it is separated into its own step to make the step explicit in the pipeline.
+`Computation`: While scaling can be seen as a specific type of variable transformation, it is separated into its own step to make the step explicit in the pipeline.
 The key difference between the two steps is that variable transformation typically changes the shape of the data while scaling only changes the data scale and can usually be written in the form of 
 
 \begin{equation}
@@ -296,11 +305,11 @@ trans_df %>%
 
 ## Dimension reduction
 
-**Input: **
+`Input`: $x^l(s; t)$
 
-**Output: **
+`Output`: $x^{l^\prime}(s; t)$, where $l^{\prime} = 1, 2, \cdots, L^{\prime}$
 
-**Computation:** Dimension reduction summarises the multivariate information into univariate, which can be denoted as: 
+`Computation`: Dimension reduction summarises the multivariate information into univariate, which can be denoted as: 
 
 \begin{equation}
 x_p(\mathbf{s}; \mathbf{t}) \rightarrow x(\mathbf{s}; \mathbf{t}),
@@ -327,13 +336,13 @@ where $\lambda_p$ denotes the weight assigned to variable $x_p$. Most indexes us
 
 ## Distribution fit
 
-*model fit? *
+<!-- *model fit? * -->
 
-**Input: **
+`Input`:  $x^l(s; t)$
 
-**Output: **
+`Output`:
 
-**Computation:** Distribution fit can be seen as the model fitting in its simplest term. It can be represented by 
+`Computation`: Distribution fit can be seen as the model fitting in its simplest term. It can be represented by 
 
 \begin{equation}
 F_{\eta}(x(\mathbf{s}; \mathbf{t})), 
@@ -345,11 +354,11 @@ While it is useful to find the ultimate best distribution to fits the data, from
 
 ## Normalising
 
-**Input: **
+`Input`:  $x^l(s; t)$
 
-**Output: **
+`Output`:   
 
-**Computation:** This step maps the univariate series into a different scale, typically for ease of comparison across regions. 
+`Computation`: This step maps the univariate series into a different scale, typically for ease of comparison across regions. 
 For example, a normal scale, [0, 1], or [0, 100] may be favored for reporting certain indexes. 
 In drought indexes, i.e. SPI or SPEI, the quantiles from the fitted distribution are converted into the normal scale via the normal reverse CDF function: $\Phi^{-1}(.)$. 
 Normalising is usually used at the end of the pipeline and its main difference from the scaling step is that here the change of scale also changes the distribution of the variable. 
@@ -384,29 +393,31 @@ dt %>%
 
 ## Benchmarking
 
-**Input: **
+`Input`:  $x^l(s; t)$
 
-**Output: **
+`Output`: 
 
-**Computation:** Benchmarking sets a constant value to allow the constructed index to be compared across time.
+$D(x^l(s,t), a)$ where $D(., .)$ is a distance function between 
+
+`Computation`: Benchmarking sets a constant value to allow the constructed index to be compared across time.
 Here we denote it with $u[x(s_i, t_j)]$ where $u$ is a scalar of interest in the index constructed. A benchmark value could be a constant or a function of the data, i.e. mean.
 
 ## Simplification
 
-**Input: **
+`Input`:  $x^l(s; t)$
 
-**Output: **
+`Output`: $C^l(s;t)$ where $\{C: c_0, c_1, \cdots, c_z\}$ is a discrete set 
 
-**Computation:** In public communication, the index values are usually accompanied by a categorical grade. The categorised grades are an ordered set of descriptive words or colors to communicate the severity or guide the comprehension of the indexes. 
+`Computation`: In public communication, the index values are usually accompanied by a categorical grade. The categorised grades are an ordered set of descriptive words or colors to communicate the severity or guide the comprehension of the indexes. 
 The mapping from continuous index values to the discrete grades is called simplification in the pipeline and it can be written as a piece-wise function: 
 
 \begin{equation}
 \begin{cases}
-C_0 & c_1 \leq (s_i; t_j) < c_0 \\
-C_1 & c_2 \leq x(s_i; t_j) < c_1 \\
-C_2 & c_3 \leq x(s_i; t_j) < c_2 \\
+c_0 & C_1 \leq x^l(s; t) < C_0 \\
+c_1 & C_2 \leq x^l(s; t) < C_1 \\
+c_2 & C_3 \leq x^l(s; t) < C_2 \\
 \cdots \\
-C_z & c_z \leq x(s_i; t_j)
+c_z & C_z \leq x^l(s; t)
 \end{cases}
 \end{equation}
 
