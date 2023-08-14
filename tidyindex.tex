@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, sharp corners, breakable, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt, frame hidden, breakable, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -1053,39 +1053,16 @@ Figure~\ref{fig-idx-tour} helps to understand the how different
 dimension reduction alternatives affect the whole index distribution and
 individual countries.
 
-When economy and education are given a greater weight, the variation in
-index values and ranking highlights countries that performs relatively
-better (moving right) or worse (moving left) in these two single
-dimensions. For example, the index moves to the left for Ethiopia and
-Senegal when economy is given a higher weight. This reveals the economy
-as a weakness for these two countries compared to their similarly-ranked
-peers.
-
-When health receives a higher weight, the impact on the index value is
-minimal.
-
-Notably, increasing the weight in politics leads to a pronounced
-decrease of index value for almost all the countries. Given the index
-value has a direct interpretation on how much of the gender gap has been
-closed, such a weight variation can cast a negative light on the
-progression to gender parity. Analysts need to further investigate the
-construction of the politics dimension and consider whether this is
-desirable for the index.
-
 \begin{itemize}
 \tightlist
 \item
-  Bangladesh uses politics to compensate economy
+  Bangladesh
 \item
-  increase economy -\textgreater{}
+  when decreasing the weight on politics, difference between countries
+  narrower.
 \item
-  increase education -\textgreater{}
-\item
-  increase health -\textgreater{} shrink the range of index (bring top
-  and bottom country closer)
-\item
-  increase politics -\textgreater{} all the country has index value
-  smaller
+  increase politics -\textgreater{} all the country has lower index
+  value
 \end{itemize}
 
 \begin{figure}

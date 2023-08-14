@@ -634,13 +634,11 @@ To understand the uncertainty of this dimension reduction step from combining fo
 
 @fig-idx-tour helps to understand the how different dimension reduction alternatives affect the whole index distribution and individual countries.
 
+* Bangladesh 
+* when decreasing the weight on politics, difference between countries narrower. 
+* increase politics -> all the country has lower index value 
 
-
-When economy and education are given a greater weight, the variation in index values and ranking highlights countries that performs relatively better (moving right) or worse (moving left) in these two single dimensions. For example, the index moves to the left for Ethiopia and Senegal when economy is given a higher weight. This reveals the economy as a weakness for these two countries compared to their similarly-ranked peers. 
-
-When health receives a higher weight, the impact on the index value is minimal. 
-
-Notably, increasing the weight in politics leads to a pronounced decrease of index value for almost all the countries. Given the index value has a direct interpretation on how much of the gender gap has been closed, such a weight variation can cast a negative light on the progression to gender parity. Analysts need to further investigate the construction of the politics dimension and consider whether this is desirable for the index.
+<!-- Notably, increasing the weight in politics leads to a pronounced decrease of index value for almost all the countries. Given the index value has a direct interpretation on how much of the gender gap has been closed, such a weight variation can cast a negative light on the progression to gender parity. Analysts need to further investigate the construction of the politics dimension and consider whether this is desirable for the index. -->
  
 ```{r eval = FALSE}
 dt <- tidyindex::gggi %>% 
@@ -682,12 +680,6 @@ gifski::gifski(
 
 ```
 
-* Bangladesh uses politics to compensate economy
-* increase economy -> 
-* increase education -> 
-* increase health -> shrink the range of index (bring top and bottom country closer)
-* increase politics -> all the country has index value smaller
-
 
 ```{r fig-idx-tour, fig.align='center', fig.height=5} 
 #| fig-cap: "Five frames selected from varying the linear weights of four dimensions in Global Gender Gap Index. The weights vary slightly from the official simple average weights (0.25, 0.25, 0.25, 0.25) to observe how the index and ranking reponse. Full animation is available at https://vimeo.com/847874016?share=copy."  
@@ -698,6 +690,8 @@ rl <- lapply(ani, png::readPNG)
 gl <-  lapply(rl, grid::rasterGrob)
 wrap_plots(gl, ncol = 3)  
 ```
+
+<!-- When economy and education are given a greater weight, the variation in index values and ranking highlights countries that performs relatively better (moving right) or worse (moving left) in these two single dimensions. For example, the index moves to the left for Ethiopia and Senegal when economy is given a higher weight. This reveals the economy as a weakness for these two countries compared to their similarly-ranked peers.  -->
 
 <!-- These can be helpful in understanding the sensitivity of the index value and country ranking to each variable and identifying the strengths and weaknesses of each country relative to others.  -->
 
