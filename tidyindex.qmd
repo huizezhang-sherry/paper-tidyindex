@@ -630,55 +630,76 @@ idx_long2 %>%
   xlab("Index")
 ```
 
-To understand the uncertainty of this dimension reduction step while avoiding the missingness issue on the variable level, we can run a local tour to slightly vary the weight of each dimension to see how index value and country ranking changes. We select countries in the South Asia and Sub-Saharan Africa region and gradually increase the weight of one variable and reduce back to equal weight all four dimensions, one at a time, to produce an animation of how GGGI changes in each country. Five frames (equal weights and one for each dimension with a relatively higher weight) selected from the tour animation are shown in @fig-idx-tour and you can find the link to the full animation in figure caption. 
+To understand the uncertainty of this dimension reduction step from combining four dimensions (Economy, Education, Health, and Politics), we run a local tour [TODO: reference to local tour] that varies the weight of each dimension slightly to observe how index value and country ranking changes. The local tour produces an animation that gradually increases the weight of one variable and reduces it back to equal weight, one at a time. A set of countries are selected for this exercise, which includes 1) the top four with GGGI > 0.85, 2) a set of countries with GGGI between 0.72 and 0.73 (Brazil, Panama, Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia), and 3) the bottom five countries with GGGI < 0.6. Five frames (equal weights and one for each dimension with a relatively higher weight) are selected from the local tour animation to show in @fig-idx-tour and the full animation is available at  https://vimeo.com/847874016?share=copy.
 
-Many insights can be derived from the animation and these selected frames. These can be helpful in understanding the sensitivity of the index value and country ranking to each variable and identifying the strengths and weaknesses of each country relative to others. When economy and education are given a greater weight, the variation in index values and ranking highlights countries that performs relatively better (moving right) or worse (moving left) in these two single dimensions. For example, the index moves to the left for Ethiopia and Senegal when economy is given a higher weight. This reveals the economy as a weakness for these two countries compared to their similarly-ranked peers. When health receives a higher weight, the impact on the index value is minimal. Notably, increasing the weight in politics leads to a pronounced decrease of index value for almost all the countries. Given the index value has a direct interpretation on how much of the gender gap has been closed, such a weight variation can cast a negative light on the progression to gender parity. Analysts need to further investigate the construction of the politics dimension and consider whether this is desirable for the index.
+@fig-idx-tour helps to understand the how different dimension reduction alternatives affect the whole index distribution and individual countries.
+
+
+
+When economy and education are given a greater weight, the variation in index values and ranking highlights countries that performs relatively better (moving right) or worse (moving left) in these two single dimensions. For example, the index moves to the left for Ethiopia and Senegal when economy is given a higher weight. This reveals the economy as a weakness for these two countries compared to their similarly-ranked peers. 
+
+When health receives a higher weight, the impact on the index value is minimal. 
+
+Notably, increasing the weight in politics leads to a pronounced decrease of index value for almost all the countries. Given the index value has a direct interpretation on how much of the gender gap has been closed, such a weight variation can cast a negative light on the progression to gender parity. Analysts need to further investigate the construction of the politics dimension and consider whether this is desirable for the index.
  
 ```{r eval = FALSE}
 dt <- tidyindex::gggi %>% 
   dplyr::select(country: political_empowerment) %>%
-  filter(country %in% c("Namibia", "South Africa", "Bangladesh", "Botswana",
-                        "Ethiopia", "Kenya", "Senegal", "Afghanistan")) %>%
+  filter(between(index, 0.72, 0.729)  | index < 0.6 | index >= 0.85) %>%
   arrange(index) 
 colnames(dt) <- c(colnames(dt)[1:4], "economy", "education", "health", "politics")
 
 w_proj2idx <- function(w){w/sum(w)}
 w_idx2proj <- function(w){w/(sqrt(sum(w^2))) %>% matrix(nrow = length(w))}
-find_next <- function(matrix){
+find_next <- function(matrix, angle = 0.4){
   start <- matrix(c(0.25, 0.25, 0.25, 0.25), ncol = 1)
-  tourr:::step_angle(tourr:::geodesic_info(start, matrix), 0.4)
+  tourr:::step_angle(tourr:::geodesic_info(start, matrix), angle = angle)
 }
-b <- array(dim = c(4, 1, 9))
-b[,,c(1,3,5,7,9)] <- matrix(c(0.25, 0.25, 0.25, 0.25), ncol = 1) %>% w_idx2proj()
-b[,,2] <- matrix(c(0.7, 0.1, 0.1, 0.1), ncol = 1) %>% find_next()
-b[,,4] <- matrix(c(0.1, 0.7, 0.1, 0.1), ncol= 1) %>% find_next()
-b[,,6] <- matrix(c(0.1, 0.1, 0.5, 0.1), ncol= 1) %>% find_next()
-b[,,8] <- matrix(c(0.1, 0.1, 0.1, 0.5), ncol = 1) %>% find_next()
+b <- array(dim = c(4, 1, 3))
+b[,,1] <- matrix(c(0.3, 0.3, 0.3, 0.1), ncol = 1) %>% find_next()
+b[,,2] <- matrix(c(0.25, 0.25, 0.25, 0.25), ncol = 1) %>% w_idx2proj()
+b[,,3] <- matrix(c(0.1, 0.1, 0.1, 0.7), ncol= 1) %>% find_next(angle = 0.6)
 
 render(
   dt[,5:8], planned2_tour(b), dev = "png",
-  display_idx(cex = 4, label_cex = 3.5, panel_height_ratio = c(3,1), 
-              axis_cex = 2.5, weight_cex = 3, label_col = "grey70", 
+  display_idx(half_range = 2,cex = 4, label_cex = 3.5, col = "black",
+              panel_height_ratio = c(4,1),
+              axis_bar_lwd = c(rep(3, 3), 7),
+              axis_bar_col = c(rep("#000000", 3), "red"),
+              axis_bar_label_cex = c(rep(2.5, 3), 3),
+              axis_bar_label_col = c(rep("#000000", 3), "red"), 
+              axis_label_cex = 3, frame_x_pos = 0.16, 
+              axis_var_cex = 2.5,
               label = dt$country, abb_vars = FALSE),
-  width = 900, height = 900, apf = 1/20, frames = 100,
+  width = 900, height = 1400, apf = 1/20, frames = 120,
   here::here("figures/idx-tour/idx-tour-%03d.png")
 )
 
 gifski::gifski(
   list.files(here::here("figures/idx-tour"), full.names = TRUE),
   gif_file = here::here("figures/idx-tour.gif"),
-  delay = 0.15, width = 900, height = 900)
+  delay = 0.15, width = 900, height = 1400)
 
 ```
 
-```{r fig-idx-tour, fig.align='center', fig.height=8} 
-#| fig-cap: "Five frames selected from varying the linear weights of four dimensions in Global Gender Gap Index. The weights vary slightly from the official simple average weights (0.25, 0.25, 0.25, 0.25) to observe how the index and ranking reponse. Full animation is available at https://vimeo.com/847874016?share=copy."
-frames <- c("001", "013", "037", "061", "085")
+* Bangladesh uses politics to compensate economy
+* increase economy -> 
+* increase education -> 
+* increase health -> shrink the range of index (bring top and bottom country closer)
+* increase politics -> all the country has index value smaller
+
+
+```{r fig-idx-tour, fig.align='center', fig.height=5} 
+#| fig-cap: "Five frames selected from varying the linear weights of four dimensions in Global Gender Gap Index. The weights vary slightly from the official simple average weights (0.25, 0.25, 0.25, 0.25) to observe how the index and ranking reponse. Full animation is available at https://vimeo.com/847874016?share=copy."  
+#frames <- c("001", "013", "037", "061", "085", "109")
+frames <- c("001", "006", "012", "018", "024", "029")
 ani <- paste0(here::here("figures/"), "idx-tour/", "idx-tour-", frames, ".png")
 rl <- lapply(ani, png::readPNG)
 gl <-  lapply(rl, grid::rasterGrob)
-wrap_plots(gl, ncol = 2)  
+wrap_plots(gl, ncol = 3)  
 ```
+
+<!-- These can be helpful in understanding the sensitivity of the index value and country ranking to each variable and identifying the strengths and weaknesses of each country relative to others.  -->
 
 # Conclusion
 
