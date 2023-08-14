@@ -147,12 +147,12 @@ Now, we introduce the notation used for describing pipeline modules. Consider mu
 
 \begin{equation}
 \begin{aligned}
-x^l(s;t) = [x^1(s;t), x^2(s;t), & \cdots, x^L(s;t)] \\
-& l = 1, 2, \cdots L, s \in D_s \subseteq \mathbb{R}^d, t \in D_t \subseteq \mathbb{R}^m 
+\mathbf{x}(s;t) = [x^1(s;t), x^2(s;t), & \cdots, x^P(s;t)] \\
+& p = 1, 2, \cdots P, s \in D_s \subseteq \mathbb{R}^d, t \in D_t \subseteq \mathbb{R}^m 
 \end{aligned}
 \end{equation}
 
-where $x^l$ is the $l$th variable, $s$ is the spatial location, and $t$ is the temporal order. <!-- We assume the spatial and temporal indexes do not depend on the variable, that is, all the variables share the same set of spatial and temporal indexes.--> The spatial space, $D_s \subseteq \mathbb{R}^d$, is generic to include different spatial representations, including a 1D set of $n$ locations $\{D_s: s_1, s_2, \cdots, s_n\}$, a 2D set of longitude and latitude pairs, and $d$-D coordinate set. The higher dimension in the temporal space, $D_t \subseteq \mathbb{R}^m$, can be used to represent for a $m$-D deconstruction of time. For example, a year-month combination, $(Y, M)^\prime$, can be used to record monthly precipitation series from January 1990 to December 2020, where $Y = 1990, \cdots, 2020$ and $M = 1, \cdots, 12$. In the case when the spatial dimension is fixed, multivariate temporal data can be simplified as $x^l_s(t)$, and similarly,  multivariate spatial data can be simplified as $x^l_t(s)$.
+where $x^l$ is the $p$th variable, $s$ is the spatial location, and $t$ is the temporal order. <!-- We assume the spatial and temporal indexes do not depend on the variable, that is, all the variables share the same set of spatial and temporal indexes.--> The spatial space, $D_s \subseteq \mathbb{R}^d$, is generic to include different spatial representations, including a 1D set of $n$ locations $\{D_s: s_1, s_2, \cdots, s_n\}$, a 2D set of longitude and latitude pairs, and $d$-D coordinate set. The higher dimension in the temporal space, $D_t \subseteq \mathbb{R}^m$, can be used to represent for a $m$-D deconstruction of time. For example, a year-month combination, $(Y, M)^\prime$, can be used to record monthly precipitation series from January 1990 to December 2020, where $Y = 1990, \cdots, 2020$ and $M = 1, \cdots, 12$.  To simplify the notation, a subscript letter $s$ or $t$ is used to denote the data have a fixed spatial locations or temporal order. When the spatial locations are fixed, the data become multivariate time series, denoted as $x^l_s(t)$. Similarly,  $x^l_t(s)$ represents multivariate spatial data when the temporal dimension is fixed.
 
 ```{r fig-pipeline-steps}
 #| fig-align: center
@@ -164,7 +164,7 @@ knitr::include_graphics(here::here("figures/pipeline-overall.png"))
 
 ## Temporal processing
 
-`Input`: $x^l_s(t)$, 
+`Input`: $x_s(t)$, 
 
 `Output`:  $x^l_s(t^{\prime})$, where $t^\prime \in D_{t^{\prime}}$. 
 
@@ -455,24 +455,28 @@ knitr::include_graphics(here::here("figures/pipeline-spei.png"))
 
 The function `compute_indexes()` can be used to collectively compute multiple indexes. The tidyindex offers wrapper functions, with the prefix idx_, that simplify the calculation of commonly used indexes by combining a set of pipeline steps into a single function. For example, the function `idx_spei()` includes the five steps previously described in @sec-toy-example (variable transformation, dimension reduction, temporal aggregation, distribution fit, and normalise). Each `idx_xxx()` function specifies the relevant parameters relevant to the index: the thornthwaite method is used to calculate PET in SPEI, with the average temperature (`tavg`) and latitude (`lat`) used as inputs. The SPEI is computed at four time scales (6, 12, 24, and 36 months) and fitted with two distributions (Log-logistic and General Extreme Value (GEV)). The SPI is also computed at the same four time scales and uses the default gamma distribution to fit the aggregated series. 
 
-```{r cache=TRUE, echo = TRUE, message=FALSE}
+```{r cache=TRUE, echo = TRUE, message=FALSE, eval=FALSE}
 .scale <- c(6, 12, 24, 36)
 idx <- queensland %>%
   init(id = id, time = ym) %>%
   compute_indexes(
     spei = idx_spei(
-      .pet_method = "thornthwaite", .tavg = tavg, .lat = lat,
+      .pet_method = "thornthwaite", .tavg = tavg, .lat = lat, 
       .scale = .scale, .dist = c(gev(), loglogistic())),
     spi = idx_spi(.scale = .scale)
   )
+```
+
+```{r eval = FALSE}
+save(idx, file = here::here("data/idx.rda"))
 ```
 
 The output from `compute_indexes()` contains index values and associated parameter in a long tibble. It includes the original variables (`id`, `ym`, `prcp`, `tmax`, `tmin`, `tavg`, `long`, `lat`, and `name`), index parameters (`.idx`, `.scale`, `.method`, and `.dist`), intermediate variables (`pet`, `.agg`, and `.fitted`), and the final index (`.index`). This data can be visualised across space or time, or simultaneously, to explore the wet/dry condition in Queensland. @fig-compute-spatial visualises the spatial distribution of SPI at two periods (2010 October - 2011 March and 2019 October - 2020 March) with significant natural disaster events: 2010/11 Queensland flood and 2019 Australia drought, which contributes to the notorious 2019/20 bushfire. @fig-compute-temporal displays the sensitivity of the SPEI series for one particular station, Texas post office, at different time scales and fitted distributions. These two plots demonstrate some possibilities to explore the indexes after they are computed from `compute_indexes()`. 
 
 ```{r fig-compute-spatial}
 #| fig-cap: "Spatial distribution of Standardized Precipitation Index (SPI-12) in Queensland, Australia during two major flood and drought events: 2010/11 and 2019/20. The map shows a continous wet period during the 2010/11 flood period and a mitigated drought situation, after its worst in 2019 December and 2020 Janurary, likely due to the increased rainfall in February from the meteorological record."
-#| fig-width: 12
-#| fig-height: 5
+#| fig-width: 6
+load(here::here("data/idx.rda"))
 queensland_map <- ozmaps::abs_ste %>% filter(NAME == "Queensland") %>% 
   rmapshaper::ms_simplify(keep = 0.02)
 queensland_map %>%
@@ -491,8 +495,8 @@ queensland_map %>%
 
 ```{r fig-compute-temporal}
 #| fig-cap: 'Time series plot of Standardized Precipitation-Evapotranspiration Index (SPEI) at the Texas post office station (highlighted by a diamond shape in panel a). The SPEI is calculated at four time scales (6, 12, 24, and 36 months) and fitted with two distributions (Log Logistic and GEV). The dashed line at -2 represents the class "extreme drought" by the SPEI. A larger time scale gives a smoother index series, while also takes longer to recover from an extreme situation as seen in the  2019/20 drought period. The SPEI values from two distribution fits mostly agree, while GEV can results in more extreme values, i.e. in 1998 and 2020.'
-#| fig-width: 12
-#| fig-height: 6
+#| fig-width: 8
+#| fig-height: 5
 texas <- idx %>%
     filter(name == "TEXAS POST OFFICE", .idx == "spei") %>% distinct(long, lat)
 p1 <- queensland_map %>%
@@ -521,10 +525,11 @@ p2 <- idx %>%
 
 (p1 | p2)  + 
   patchwork::plot_annotation(tag_levels = "a") + 
-  patchwork::plot_layout(guides = "collect")  &
+  patchwork::plot_layout(guides = "collect", widths = c(1, 4))  &
   theme(legend.position = "bottom") 
   
 ```
+
 
 ## Does a minor change in variable weights cause a tornado? 
 
@@ -566,7 +571,7 @@ gggi %>%
       weight = weight)) 
 ````
 
-The result can be compared with the GGGI values available in the report as shown in @fig-compare-gggi, validating the reproducibility of the index for country with no missing variables.
+The result can be compared with the GGGI values available in the report, validating the reproducibility of the index for country with no missing variables.
 
 ```{r eval = FALSE}
 a <- dim_weights %>% select(-variable) %>% t() %>% as_tibble(rownames = "id")
@@ -597,16 +602,6 @@ dt2 <- gggi %>%
     index_new = aggregate_linear(
       ~labour_force_participation:years_with_female_head_of_state,
       weight = weight)) 
-  
-dt2$data %>%
-  filter(!is.na(index_new)) %>% 
-  ggplot(aes(x = index, y = index_new)) +
-  geom_abline(slope = 1, intercept = 0, color = "grey") + 
-  geom_point() +
-  theme_bw() + 
-  theme(aspect.ratio = 1, panel.grid.minor = element_blank()) + 
-  xlab("Benchmark") + 
-  ylab("Index calculated")
 ```
 
 ```{r eval = FALSE, gggi-weights, fig.height=20, fig.align='center', fig.width=10}
@@ -630,7 +625,7 @@ idx_long2 %>%
   xlab("Index")
 ```
 
-To understand the uncertainty of this dimension reduction step from combining four dimensions (Economy, Education, Health, and Politics), we run a local tour [TODO: reference to local tour] that varies the weight of each dimension slightly to observe how index value and country ranking changes. The local tour produces an animation that gradually increases the weight of one variable and reduces it back to equal weight, one at a time. A set of countries are selected for this exercise, which includes 1) the top four with GGGI > 0.85, 2) a set of countries with GGGI between 0.72 and 0.73 (Brazil, Panama, Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia), and 3) the bottom five countries with GGGI < 0.6. Five frames (equal weights and one for each dimension with a relatively higher weight) are selected from the local tour animation to show in @fig-idx-tour and the full animation is available at  https://vimeo.com/847874016?share=copy.
+To understand the uncertainty of this dimension reduction step from combining four dimensions (Economy, Education, Health, and Politics), we run a local tour [TODO: reference to local tour] that varies the weight of each dimension slightly to observe how index value and country ranking changes. The local tour produces an animation that gradually increases the weight of one variable and reduces it back to equal weight, one at a time. A set of countries are selected for this exercise, which includes 1) the top four with GGGI > 0.85, 2) a set of countries with GGGI between 0.72 and 0.73 (Brazil, Panama, Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia), and 3) the bottom five countries with GGGI < 0.6. Five frames (equal weights and one for each dimension with a relatively higher weight) are selected from the local tour animation to show in @fig-idx-tour and the full animation is available at  https://vimeo.com/847874016.
 
 @fig-idx-tour helps to understand the how different dimension reduction alternatives affect the whole index distribution and individual countries.
 
@@ -682,7 +677,7 @@ gifski::gifski(
 
 
 ```{r fig-idx-tour, fig.align='center', fig.height=5} 
-#| fig-cap: "Five frames selected from varying the linear weights of four dimensions in Global Gender Gap Index. The weights vary slightly from the official simple average weights (0.25, 0.25, 0.25, 0.25) to observe how the index and ranking reponse. Full animation is available at https://vimeo.com/847874016?share=copy."  
+#| fig-cap: "Five frames selected from varying the linear weights of four dimensions in Global Gender Gap Index. The weights vary slightly from the official simple average weights (0.25, 0.25, 0.25, 0.25) to observe how the index and ranking reponse. Full animation is available at https://vimeo.com/847874016."  
 #frames <- c("001", "013", "037", "061", "085", "109")
 frames <- c("001", "006", "012", "018", "024", "029")
 ani <- paste0(here::here("figures/"), "idx-tour/", "idx-tour-", frames, ".png")

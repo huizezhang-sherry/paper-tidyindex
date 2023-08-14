@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt, frame hidden, breakable, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, frame hidden, interior hidden, enhanced, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -439,12 +439,12 @@ Consider multivariate spatio-temporal data,
 
 \begin{equation}
 \begin{aligned}
-x^l(s;t) = [x^1(s;t), x^2(s;t), & \cdots, x^L(s;t)] \\
-& l = 1, 2, \cdots L, s \in D_s \subseteq \mathbb{R}^d, t \in D_t \subseteq \mathbb{R}^m 
+\mathbf{x}(s;t) = [x^1(s;t), x^2(s;t), & \cdots, x^P(s;t)] \\
+& p = 1, 2, \cdots P, s \in D_s \subseteq \mathbb{R}^d, t \in D_t \subseteq \mathbb{R}^m 
 \end{aligned}
 \end{equation}
 
-where \(x^l\) is the \(l\)th variable, \(s\) is the spatial location,
+where \(x^l\) is the \(p\)th variable, \(s\) is the spatial location,
 and \(t\) is the temporal order. The spatial space,
 \(D_s \subseteq \mathbb{R}^d\), is generic to include different spatial
 representations, including a 1D set of \(n\) locations
@@ -454,9 +454,12 @@ space, \(D_t \subseteq \mathbb{R}^m\), can be used to represent for a
 \(m\)-D deconstruction of time. For example, a year-month combination,
 \((Y, M)^\prime\), can be used to record monthly precipitation series
 from January 1990 to December 2020, where \(Y = 1990, \cdots, 2020\) and
-\(M = 1, \cdots, 12\). In the case when the spatial dimension is fixed,
-multivariate temporal data can be simplified as \(x^l_s(t)\), and
-similarly, multivariate spatial data can be simplified as \(x^l_t(s)\).
+\(M = 1, \cdots, 12\). To simplify the notation, a subscript letter
+\(s\) or \(t\) is used to denote the data have a fixed spatial locations
+or temporal order. When the spatial locations are fixed, the data become
+multivariate time series, denoted as \(x^l_s(t)\). Similarly,
+\(x^l_t(s)\) represents multivariate spatial data when the temporal
+dimension is fixed.
 
 \begin{figure}
 
@@ -473,7 +476,7 @@ distribution fitting step.}
 \hypertarget{temporal-processing}{%
 \subsection{Temporal processing}\label{temporal-processing}}
 
-\texttt{Input}: \(x^l_s(t)\),
+\texttt{Input}: \(x_s(t)\),
 
 \texttt{Output}: \(x^l_s(t^{\prime})\), where
 \(t^\prime \in D_{t^{\prime}}\).
@@ -843,16 +846,12 @@ gamma distribution to fit the aggregated series.
   \FunctionTok{init}\NormalTok{(}\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{time =}\NormalTok{ ym) }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{compute\_indexes}\NormalTok{(}
     \AttributeTok{spei =} \FunctionTok{idx\_spei}\NormalTok{(}
-      \AttributeTok{.pet\_method =} \StringTok{"thornthwaite"}\NormalTok{, }\AttributeTok{.tavg =}\NormalTok{ tavg, }\AttributeTok{.lat =}\NormalTok{ lat,}
+      \AttributeTok{.pet\_method =} \StringTok{"thornthwaite"}\NormalTok{, }\AttributeTok{.tavg =}\NormalTok{ tavg, }\AttributeTok{.lat =}\NormalTok{ lat, }
       \AttributeTok{.scale =}\NormalTok{ .scale, }\AttributeTok{.dist =} \FunctionTok{c}\NormalTok{(}\FunctionTok{gev}\NormalTok{(), }\FunctionTok{loglogistic}\NormalTok{())),}
     \AttributeTok{spi =} \FunctionTok{idx\_spi}\NormalTok{(}\AttributeTok{.scale =}\NormalTok{ .scale)}
 \NormalTok{  )}
 \end{Highlighting}
 \end{Shaded}
-
-\begin{verbatim}
-[1] "Checking for missing values (`NA`): all the data must be complete. Input type is vector. Assuming the data are monthly time series starting in January, all regular (non-leap) years."
-\end{verbatim}
 
 The output from \texttt{compute\_indexes()} contains index values and
 associated parameter in a long tibble. It includes the original
@@ -1015,23 +1014,9 @@ gggi %>%
       weight = weight)) 
 \end{verbatim}
 
-The result can be compared with the GGGI values available in the report
-as shown in Figure~\ref{fig-compare-gggi}, validating the
-reproducibility of the index for country with no missing variables.
-
-\begin{figure}
-
-{\centering \includegraphics{tidyindex_files/figure-pdf/fig-compare-gggi-1.pdf}
-
-}
-
-\caption{\label{fig-compare-gggi}Verifying the calculation of the Global
-Gender Gap Index (GGGI). The index can be reproduced from the
-methodology described in the Global Gender Gap Report 2023 after
-removing the countries with missing variables, the treatment of which is
-unclear.}
-
-\end{figure}
+The result can be compared with the GGGI values available in the report,
+validating the reproducibility of the index for country with no missing
+variables.
 
 To understand the uncertainty of this dimension reduction step from
 combining four dimensions (Economy, Education, Health, and Politics), we
@@ -1047,7 +1032,7 @@ bottom five countries with GGGI \textless{} 0.6. Five frames (equal
 weights and one for each dimension with a relatively higher weight) are
 selected from the local tour animation to show in
 Figure~\ref{fig-idx-tour} and the full animation is available at
-https://vimeo.com/847874016?share=copy.
+https://vimeo.com/847874016.
 
 Figure~\ref{fig-idx-tour} helps to understand the how different
 dimension reduction alternatives affect the whole index distribution and
@@ -1075,7 +1060,7 @@ individual countries.
 linear weights of four dimensions in Global Gender Gap Index. The
 weights vary slightly from the official simple average weights (0.25,
 0.25, 0.25, 0.25) to observe how the index and ranking reponse. Full
-animation is available at https://vimeo.com/847874016?share=copy.}
+animation is available at https://vimeo.com/847874016.}
 
 \end{figure}
 
