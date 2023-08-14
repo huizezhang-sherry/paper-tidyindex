@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, frame hidden, interior hidden, enhanced, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, frame hidden, breakable, boxrule=0pt, enhanced, sharp corners, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -435,31 +435,98 @@ different satellite products, or merging in-situ stations with the
 satellite data.
 
 Now, we introduce the notation used for describing pipeline modules.
-Consider multivariate spatio-temporal data,
+Consider multivariate spatio-temporal process,
 
 \begin{equation}
-\begin{aligned}
-\mathbf{x}(s;t) = [x^1(s;t), x^2(s;t), & \cdots, x^P(s;t)] \\
-& p = 1, 2, \cdots P, s \in D_s \subseteq \mathbb{R}^d, t \in D_t \subseteq \mathbb{R}^m 
-\end{aligned}
+\mathbf{x}(s;t) = \{x^1(s;t), x^2(s;t), \cdots, x^p(s;t)\} \qquad s \in D_s \subseteq \mathbb{R}^d, t \in D_t \subseteq \mathbb{R}^m 
 \end{equation}
 
-where \(x^l\) is the \(p\)th variable, \(s\) is the spatial location,
-and \(t\) is the temporal order. The spatial space,
-\(D_s \subseteq \mathbb{R}^d\), is generic to include different spatial
-representations, including a 1D set of \(n\) locations
-\(\{D_s: s_1, s_2, \cdots, s_n\}\), a 2D set of longitude and latitude
-pairs, and \(d\)-D coordinate set. The higher dimension in the temporal
-space, \(D_t \subseteq \mathbb{R}^m\), can be used to represent for a
-\(m\)-D deconstruction of time. For example, a year-month combination,
-\((Y, M)^\prime\), can be used to record monthly precipitation series
-from January 1990 to December 2020, where \(Y = 1990, \cdots, 2020\) and
-\(M = 1, \cdots, 12\). To simplify the notation, a subscript letter
-\(s\) or \(t\) is used to denote the data have a fixed spatial locations
-or temporal order. When the spatial locations are fixed, the data become
-multivariate time series, denoted as \(x^l_s(t)\). Similarly,
-\(x^l_t(s)\) represents multivariate spatial data when the temporal
-dimension is fixed.
+where:
+
+\begin{itemize}
+\item
+  \(x\) is the variable in \(\mathbb{R}^p\),
+\item
+  \(s\) represents the geographic locations in the space
+  \(D_s \subseteq \mathbb{R}^d\). This includes a collection of
+  countries of interest and paired longitude and latitude coordinates of
+  locations, and
+\item
+  \(t\) denotes the temporal order in \(D_t \subseteq \mathbb{R}^m\).
+  Sometimes, it can be time decomposed into several components, such as
+  year, month, quarter, and season.
+\end{itemize}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0685}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2329}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1370}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2740}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2877}}@{}}
+\caption{An notation overview of the input, operation, and output of
+each pipeline module.}\tabularnewline
+\toprule()
+\begin{minipage}[b]{\linewidth}\raggedright
+No.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Module
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Input
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Operation
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Output
+\end{minipage} \\
+\midrule()
+\endfirsthead
+\toprule()
+\begin{minipage}[b]{\linewidth}\raggedright
+No.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Module
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Input
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Operation
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Output
+\end{minipage} \\
+\midrule()
+\endhead
+1 & Temporal processing & \(x(s;t)\) & aaaaa & \(x(s; t^\prime)\) \\
+2 & Spatial processing & \(x(s;t)\) & aaaaa & \(x(s^\prime; t)\) \\
+3 & Variable transformation & \(x(s; t)\) & \(T(x(s;t))\) & \(u(s;t)\)
+???? \\
+4 & Scaling & \(x(s; t)\) & \([x(s;t) - \alpha]/\gamma\) & \(v(s;t)\)
+where bbbbb \\
+5 & Dimension reduction & \(\mathbf{x}(s;t)\) & aaaaa &
+\(\mathbf{y}(s;t)\) where \(y \in \mathbb{R}^d\) and \(d < p\) \\
+6 & Distribution fit & \(x(s; t)\) & \(F_\mathbf{\theta}(x(s,t))\) where
+\(F_{\mathbf{\theta}}(.)\) is the cumulated distribution function with
+distribution parameter(s) \(\mathbf{\theta}\) & \(p(s,t)\) where
+\(p(.)\) denotes the probability value between 0 and 1 \\
+7 & Normalising & \(x(s; t)\) & \(\Phi^{-1}[x(s, t)]\) & \(z(s; t)\)
+where \(z \sim N(.,.)\) \\
+8 & Benchmarking & \(x(s; t)\) & & \(b(s;t)\) \\
+9 & Simplification & \(x(s; t)\) & ccccc &
+\(A(s;t) \in \{a_1, a_2, \cdots, a_j\}\) \\
+\bottomrule()
+\end{longtable}
+
+Some notes:
+
+\begin{itemize}
+\tightlist
+\item
+  still \(x(s,t)\) notation because for all the other modules, \(s\) and
+  \(t\) are all fixed, then \(x(s, t)\) becomes \(x\)????
+\item
+  aaaaa: just a general function over the input????
+\item
+  bbbbb: input and output has the same distributional shape
+\item
+  ccccc: latex issue
+\end{itemize}
 
 \begin{figure}
 
@@ -476,9 +543,10 @@ distribution fitting step.}
 \hypertarget{temporal-processing}{%
 \subsection{Temporal processing}\label{temporal-processing}}
 
-\texttt{Input}: \(x_s(t)\),
+\texttt{Input}: \(x(t)\), time series of a single variable with fixed
+locations
 
-\texttt{Output}: \(x^l_s(t^{\prime})\), where
+\texttt{Output}: \(x(t^{\prime})\), where
 \(t^\prime \in D_{t^{\prime}}\).
 
 \texttt{Computation}: The construction of an index sometimes needs to
@@ -755,11 +823,11 @@ in the pipeline and it can be written as a piece-wise function:
 
 \begin{equation}
 \begin{cases}
-c_0 & C_1 \leq x^l(s; t) < C_0 \\
-c_1 & C_2 \leq x^l(s; t) < C_1 \\
-c_2 & C_3 \leq x^l(s; t) < C_2 \\
+a_0 & C_1 \leq x(s; t) < C_0 \\
+a_1 & C_2 \leq x(s; t) < C_1 \\
+a_2 & C_3 \leq x(s; t) < C_2 \\
 \cdots \\
-c_z & C_z \leq x^l(s; t)
+a_z & C_z \leq x(s; t)
 \end{cases}
 \end{equation}
 
