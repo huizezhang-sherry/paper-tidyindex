@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, enhanced, boxrule=0pt, interior hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, interior hidden, sharp corners, breakable, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -514,9 +514,9 @@ Output
 \(\mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p\) &
 \(h[\mathbf{x}(s;t)]\) & \(\mathbf{y}(s;t)\), where
 \(\mathbf{y} \subseteq \mathbb{R}^d\) and \(d < q\) \\
-6 & Distribution fit & \(x^i(s; t)\) & \(F[x^i(s;t)]\), where
-\(F_{\mathbf{\theta}}(.)\) is the CDF function & \(p^i(s;t)\), where
-\(p(.) \in [0, 1]\) is a probability value \\
+6 & Distribution fit & \(x^i(s; t)\) & \(F[x^i(s;t)]\), where \(F\) is
+the CDF function & \(p^i(s;t)\), where \(p(.) \in [0, 1]\) is a
+probability value \\
 7 & Normalising & \(x^i(s; t)\) & \(\Phi^{-1}[x^i(s; t)]\) &
 \(z^i(s; t)\), where \(z\) has a normal distribution \\
 8 & Benchmarking & \(x^i(s; t)\) & \(u[x^i(s;t)]\) & \(b^i(s;t)\) \\
@@ -558,69 +558,36 @@ agricultural, and hydrological).
 \subsection{Spatial processing}\label{spatial-processing}}
 
 The spatial processing module takes a single variable with a fixed
-temporal dimension, \(x(s)\), as input. This step transforms the
+temporal dimension, \(x_t(s)\), as input. This step transforms the
 variable from the original spatial dimension \(s\) into the new
 dimension \(s^\prime \in D_{s^\prime}\) through
-\(x^\#(.) = g_{\Theta}(x(.))\), where \(\Theta\) is a vector of
-hyper-parameters associated with the transformation. The change of
-spatial dimension allows for the alignment of variables collected from
-different measurements, such as in-situ stations and satellite imagery,
-or originating from different resolutions. This also includes the
-aggregation of variables into different levels, such as city, state, and
-countries scales.
+\(x^\#(s;t) = g[x(s;t)]\). The change of spatial dimension allows for
+the alignment of variables collected from different measurements, such
+as in-situ stations and satellite imagery, or originating from different
+resolutions. This also includes the aggregation of variables into
+different levels, such as city, state, and countries scales.
 
 \hypertarget{variable-transformation}{%
 \subsection{Variable transformation}\label{variable-transformation}}
 
-\texttt{Input}: \(x^l(s; t)\)
-
-\texttt{Output}: \(y^l(s; t)\)
-
-\texttt{Computation}: The purpose of variable transformation is to
-create variables that fits assumptions for further computing. These
-assumptions include a stable variance, normal distribution, or a certain
-scale required by some algorithms down the pipeline. Variable
-transformation is a general notion of a functional transformation on the
-variable:
-
-\begin{equation}
-h_{\tau}(x(\mathbf{s};\mathbf{t})),
-\end{equation}
-
-where \(\tau \in T \subseteq \mathbb{R}^{d_{\tau}}\) is the parameter in
-the transformation if any, and \(d_{\tau}\) is the number of parameter
-of \(\tau\). Transformation is needed for data that are highly skewed
-and some common transformations include log, quadratic, and square root
-transformation.
+Variable transformation takes input of a single variable \(x^i(s;t)\)
+and reshapes its distribution using the function \(T[.]\) to produce
+\(x^i(s;t)\). When a variable has a skewed distribution, transformations
+such as log, square root, or cubic root can adjust the distribution
+towards normality. For example, in Human Development Index (HDI), a
+logarithmic transformation is applied to the variable Gross National
+Income per capita (GNI), to reduce its impact on HDI, particularly for
+countries with high GNI values.
 
 \hypertarget{scaling}{%
 \subsection{Scaling}\label{scaling}}
 
-\texttt{Input}: \(x^l(s; t)\)
-
-\texttt{Output}: \(x^l(s; t)\)
-
-\texttt{Computation}: While scaling can be seen as a specific type of
-variable transformation, it is separated into its own step to make the
-step explicit in the pipeline. The key difference between the two steps
-is that variable transformation typically changes the shape of the data
-while scaling only changes the data scale and can usually be written in
-the form of
-
-\begin{equation}
-[x(s_i;t_j) - \alpha]/\gamma.
-\end{equation}
-
-For example, a z-score standardisation can be written in the above form
-with \(\alpha = \bar{x}(s; t)\) and \(\gamma = \sigma(s; t)\), a min-max
-standardisation uses \(\alpha = \min[x(s_i, t_j)]\) and
-\(\gamma = \max[x(s_i, t_j)] - \min[x(s_i, t_j)]\).
-Figure~\ref{fig-scale-var-trans-compare} shows a collection of variable
-pre-processing operations and uses color to differentiate whether the
-operation is a variable transformation or a scaling step. While both
-variable transformation and scaling are pre-processing steps, the
-scaling operations in green show the same distribution as the original
-data.
+Unlike variable transformation, scaling maintains the distributional
+shape of the variable. It includes techniques such as centering, z-score
+standardisation, and min-max standardisation and can be expressed as
+\([x^i(s;t) - \alpha]/\gamma\). In Human Development Index (HDI), the
+three dimensions (health, education, and economy) are converted into the
+same scale (0-1) using min-max standardisation.
 
 \begin{figure}
 
@@ -628,11 +595,10 @@ data.
 
 }
 
-\caption{\label{fig-scale-var-trans-compare}Comparison of operations in
-scaling (green) and variable transformation (orange) steps in free
-scale. Variables after the scaling operations have the same distribution
-as the origin, while the distribution changes after variable
-transformation.}
+\caption{\label{fig-scale-var-trans-compare}Comparison of the module
+scaling (green) and variable transformation (orange). While both modules
+change the variable range, scaling maintains the same distributional
+shape, which is not the case with variable transformation.}
 
 \end{figure}
 
