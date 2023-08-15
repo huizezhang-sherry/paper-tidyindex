@@ -166,17 +166,17 @@ where:
 
 <!-- To simplify the notation, a subscript letter $s$ or $t$ is used to denote the data have a fixed spatial locations or temporal order. When the spatial locations are fixed, the data become multivariate time series, denoted as $x^l_s(t)$. Similarly,  $x^l_t(s)$ represents multivariate spatial data when the temporal dimension is fixed. -->
 
-| No. | Module                  | Input             | Operation                                                                                                                                          | Output                                                              |
-|-------------|-------------|-------------|-----------------|-----------------|
-| 1   | Temporal processing     | $x(t)$            | $f[x(.)]$                                                                                                                                          | $x^*(t^\prime)$ where $t\prime \in D_{t^\prime}$                    |
-| 2   | Spatial processing      | $x(s)$            | aaaaa                                                                                                                                              | $x^\#(s^\prime)$                                                    |
-| 3   | Variable transformation | $x(s; t)$         | $T(x(s;t))$                                                                                                                                        | $u(s;t)$ ????                                                       |
-| 4   | Scaling                 | $x(s; t)$         | $[x(s;t) - \alpha]/\gamma$                                                                                                                         | $v(s;t)$ where bbbbb                                                |
-| 5   | Dimension reduction     | $\mathbf{x}(s;t)$ | aaaaa                                                                                                                                              | $\mathbf{y}(s;t)$ where $y \in \mathbb{R}^d$ and $d < p$            |
-| 6   | Distribution fit        | $x(s; t)$         | $F_\mathbf{\theta}(x(s,t))$ where $F_{\mathbf{\theta}}(.)$ is the cumulated distribution function with distribution parameter(s) $\mathbf{\theta}$ | $p(s,t)$ where $p(.)$ denotes the probability value between 0 and 1 |
-| 7   | Normalising             | $x(s; t)$         | $\Phi^{-1}[x(s, t)]$                                                                                                                               | $z(s; t)$ where $z \sim N(.,.)$                                     |
-| 8   | Benchmarking            | $x(s; t)$         |                                                                                                                                                    | $b(s;t)$                                                            |
-| 9   | Simplification          | $x(s; t)$         | ccccc                                                                                                                                              | $A(s;t) \in \{a_1, a_2, \cdots, a_j\}$                              |
+| No. | Module                  | Input                                                       | Operation                                                                                                                                          | Output                                                                  |
+|---------------|---------------|---------------|---------------|---------------|
+| 1   | Temporal processing     | $x(t)$                                                      | $f_{\Psi}[x(.)]$                                                                                                                                   | $x^*(t^\prime)$ where $t\prime \in D_{t^\prime}$                        |
+| 2   | Spatial processing      | $x(s)$                                                      | $g_{\Theta}[x(.)]$                                                                                                                                 | $x^\#(s^\prime)$ where $s^\prime \in D_{s^\prime}$                      |
+| 3   | Variable transformation | $x(s; t)$                                                   | $T(x(s;t))$                                                                                                                                        | $u(s;t)$ ????                                                           |
+| 4   | Scaling                 | $x(s; t)$                                                   | $[x(s;t) - \alpha]/\gamma$                                                                                                                         | $v(s;t)$ where bbbbb                                                    |
+| 5   | Dimension reduction     | $\mathbf{x}(s;t)$ where $\mathbf{x} \subseteq \mathbb{R}^p$ | aaaaa                                                                                                                                              | $\mathbf{y}(s;t)$ where $\mathbf{y} \subseteq \mathbb{R}^d$ and $d < p$ |
+| 6   | Distribution fit        | $x(s; t)$                                                   | $F_\mathbf{\theta}(x(s,t))$ where $F_{\mathbf{\theta}}(.)$ is the cumulated distribution function with distribution parameter(s) $\mathbf{\theta}$ | $p(s,t)$ where $p(.)$ denotes the probability value between 0 and 1     |
+| 7   | Normalising             | $x(s; t)$                                                   | $\Phi^{-1}[x(s, t)]$                                                                                                                               | $z(s; t)$ where $z \sim N(.,.)$                                         |
+| 8   | Benchmarking            | $x(s; t)$                                                   |                                                                                                                                                    | $b(s;t)$                                                                |
+| 9   | Simplification          | $x(s; t)$                                                   | ccccc                                                                                                                                              | $A(s;t) \in \{a_1, a_2, \cdots, a_j\}$                                  |
 
 : An notation overview of the input, operation, and output of each pipeline module.
 
@@ -201,9 +201,9 @@ knitr::include_graphics(here::here("figures/pipeline-overall.png"))
 
 `Output`: $x^*(t^{\prime})$, where $t^\prime \in D_{t^{\prime}}$.
 
-`Computation`: The temporal processing module takes a single variable in a set of fixed locations, $x(t)$, as the input. This step *transforms* the original series into a new series to incorporate the temporal neighbouring effect: $x^*(.) = f[x(.)]$. In temporal processing, the temporal dimension $t$ may also transition to $t^\prime \subseteq D_{t^\prime}$, allowing for the decomposition of time into its constituent temporal components. For example, this can be used to break down daily data into monthly. This gives the output of the temporal processing module as $x^*(t^\prime)$.
+`Computation`: The temporal processing module takes a single variable in a set of fixed locations, $x(t)$, as input. This step transforms the original series into a new series to incorporate the temporal neighbouring effect: $x^*(.) = f_{\Psi}[x(.)]$, where $\Psi$ is a vector of hyper-parameters associated with the transformation. In temporal processing, the transition of temporal dimension from $t$ to $t^\prime \subseteq D_{t^\prime}$ allows for the decomposition of time into its constituent temporal components. For example, to break down daily data into monthly.
 
-An example of temporal processing is in Standardized Precipitation Index (SPI), where monthly precipitation is summed over a rolling window of size $k$, also known as the time scale. Assuming an original time series indexed by $t= 1, 2, \cdots, T$, the aggregated series, indexed by $t^\prime = 1, 2, \cdots, T-k+1$, can be written as $x(t^\prime) = \sum_{t = t^\prime}^{t^\prime + k -1}x(t)$. For SPI, the choice of the time scale $k$, is used to control the accumulation period for the water deficit, enabling the assessment of drought severity across various types (meteorological, agricultural, and hydrological).
+In the Standardized Precipitation Index (SPI), temporal processing is used to sum the monthly precipitation over a rolling window of size $k$, also known as the time scale, prior to the distribution fitting and normalising module. Assuming an original time series indexed by $t= 1, 2, \cdots, T$, the aggregated precipitation series, indexed by $t^\prime = 1, 2, \cdots, T-k+1$, can be expressed as $x(t^\prime) = \sum_{t = t^\prime}^{t^\prime + k -1}x(t)$. For SPI, the choice of the time scale $k$ is used to control the accumulation period for the water deficit, enabling the assessment of drought severity across various types (meteorological, agricultural, and hydrological).
 
 <!-- The construction of an index sometimes needs to consider information from neighbouring time periods. The temporal processing is a general operator on the time dimension of the data in the form of -->
 
@@ -221,25 +221,37 @@ An example of temporal processing is in Standardized Precipitation Index (SPI), 
 
 ## Spatial processing
 
-`Input`: $x^l_t(s)$
+`Input`: $x(s)$
 
-`Output`: $x^l_t(s^\prime)$ where $s^\prime \in D_{s^{\prime}}$
+`Output`: $x^\#(s^\prime)$ where $s^\prime \in D_{s^{\prime}}$
 
-`Computation`: Spatial processing may be needed when indexes are not calculated independently on each collected location or when variables collected from multiple sources need to be fused before further processing. The process can be written as a general operation in the form of
+`Computation`: The spatial processing module takes a single variable with a fixed temporal dimension, $x(s)$, as input. This step transforms the variable from the original spatial dimension $s$ into the new dimension $s^\prime \in D_{s^\prime}$ through $x^\#(.) = g_{\Theta}(x(.))$, where $\Theta$ is a vector of hyper-parameters associated with the transformation. The change of spatial dimension allows for the alignment of variables collected from different measurements, such as in-situ stations and satellite imagery, or originating from different resolutions. This also includes the aggregation of variables into different levels, such as city, state, and countries scales.
 
-```{=tex}
-\begin{equation}
-x(\mathbf{s}^\prime;\mathbf{t}) = g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})),
-\end{equation}
-```
-where $\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}$ is the associated parameters in the process and $d_{\theta}$ is the number of parameter of $\theta$. An example of spatial processing is to align variables collected in different resolutions. When variables are collected at different resolutions, analysts may choose to down-sample those in a finer resolution, $i$, to match those in a coarser resolution, $i^\prime$. This is a spatial aggregation and if aggregate using the mean, it can be written as
+<!-- may be needed when indexes are not calculated independently on each collected location or when variables collected from multiple sources need to be fused before further processing. The process can be written as a general operation in the form of -->
 
-```{=tex}
-\begin{equation}
-g(x) = \frac{\sum_{i \in i^\prime}x}{n_{i^\prime}},
-\end{equation}
-```
-where $i \in i^\prime$ includes all the cells from the finer resolution in the coarser grid and $n_{i^\prime}$ is the number of observations falls into the coarser grid. Other examples of spatial processing include 1) borrowing information from neighbouring spatial locations to interpolate unobserved locations and 2) fusing variables from ground measures with satellite imageries.
+<!-- ```{=tex} -->
+
+<!-- \begin{equation} -->
+
+<!-- x(\mathbf{s}^\prime;\mathbf{t}) = g_{\mathcal{\theta}}(x(\mathbf{s};\mathbf{t})), -->
+
+<!-- \end{equation} -->
+
+<!-- ``` -->
+
+<!-- where $\theta \in \Theta \subseteq \mathbb{R}^{d_{\theta}}$ is the associated parameters in the process and $d_{\theta}$ is the number of parameter of $\theta$. An example of spatial processing is to align variables collected in different resolutions. When variables are collected at different resolutions, analysts may choose to down-sample those in a finer resolution, $i$, to match those in a coarser resolution, $i^\prime$. This is a spatial aggregation and if aggregate using the mean, it can be written as -->
+
+<!-- ```{=tex} -->
+
+<!-- \begin{equation} -->
+
+<!-- g(x) = \frac{\sum_{i \in i^\prime}x}{n_{i^\prime}}, -->
+
+<!-- \end{equation} -->
+
+<!-- ``` -->
+
+<!-- where $i \in i^\prime$ includes all the cells from the finer resolution in the coarser grid and $n_{i^\prime}$ is the number of observations falls into the coarser grid. Other examples of spatial processing include 1) borrowing information from neighbouring spatial locations to interpolate unobserved locations and 2) fusing variables from ground measures with satellite imageries. -->
 
 ## Variable transformation
 
@@ -342,22 +354,15 @@ trans_df %>%
 
 ## Dimension reduction
 
-`Input`: $x^l(s; t)$
+`Input`: $\mathbf{x}(s;t)$ where $\mathbf{x} \subseteq \mathbb{R}^p$
 
-`Output`: $x^{l^\prime}(s; t)$, where $l^{\prime} = 1, 2, \cdots, L^{\prime}$
+`Output`: $\mathbf{y}(s;t)$ where $\mathbf{y} \subseteq \mathbb{R}^d$ and $d < p$
 
-`Computation`: Dimension reduction summarises the multivariate information into univariate, which can be denoted as:
+`Computation`: Dimension reduction takes the multivariate information $\mathbf{x}(s;t)$, where $\mathbf{x} \subseteq \mathbb{R}^p$ , as the input. It summarises the high-dimensional information into a lower dimension representation $\mathbf{y}(s;t)$, where $y \subseteq \mathbb{R}^d$ and $d < p$, as the output.
 
-```{=tex}
-\begin{equation}
-x_p(\mathbf{s}; \mathbf{t}) \rightarrow x(\mathbf{s}; \mathbf{t}),
-\end{equation}
-```
-where $p = 1, 2, \cdots, P$. The combination can be based on domain-specific knowledge, originated from theories describing the underlying physical process. For example, the SPEI uses a water balance model ($D = P - \text{PET}$) to calculate the difference series ($D$) from precipitation ($P$) and potential evapotranspiration ($\text{PET}$).
+The transformation can be based on domain-specific knowledge, originating from theories describing the underlying physical processes, or guided in statistical methods. The Standardized Precipitation-Evapotranspiration Index (SPEI) calculates the difference series ($D$) from precipitation ($P$) and potential evapotranspiration ($\text{PET}$), using a water balance model ($D = P - \text{PET}$). This is the only step that differentiates it from the Standardized Precipitation Index (SPI).
 
-Another widely used approach is linear combination, which aggregates a collection of variables in a linear additive structure, expressed as: $$x(\mathbf{s}; \mathbf{t}) = \sum_{p = 1}^{P}\lambda_{p}x_p(\mathbf{s};\mathbf{t}),$$
-
-where $\lambda_p$ denotes the weight assigned to variable $x_p$. Most indexes uses an equal weight that sum to 1, which allows each variable to contribute equally to the index. A linear combination can also be viewed as a linear projection of multivariate information by the weight vector. Projecting data from higher to lower dimension inevitably leads to information loss. For example, two countries can receive similar index, but their components could significantly differ -- one with average scores across all components and another with extreme scores the opposite ends. The selected set of weights need to be examined to understand its effect on the index and its implications for decision-making. To do this, analysts can vary the coefficients in the linear projection to observe how the index value and countries' ranking change. These changes can also be visualized using a method called tour by generating an animation of the projections among different sets of weights.
+When a physical process is absent to describe the phenomenon, multivariate data are often combined using statistical methods, which can be further classified into linear and non-linear techniques. Many social indexes use a linear combination in an additive structure, $y(s; t) = \sum_{i = 1}^{p}\lambda_{i}x_i(s;t),$ where $\lambda_i$ is the weight assigned to each individual variable $x_i$. A linear combination can also be preceived as a linear projection of multivariate information through the weight vector. Projecting data from higher to lower dimension unavoidably leads to information loss and the used weights need careful examination to understand their effects on the index and implications for interpretation and decision-making. One can visualise the data projection across different sets of weights through animation using a method called tour.
 
 <!-- Other weight constraint used includes $\sum_{p=1}^P\lambda_p^2 = 1$, is used by principal component analysis.  -->
 
