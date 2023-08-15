@@ -154,11 +154,11 @@ Now, we introduce the notation used for describing pipeline modules. Consider mu
 ```
 where:
 
--   $x$ is the variable in $\mathbb{R}^p$,
+-   $x^i(s, t)$ represents a variable of interest for example precipitation,$j = 1, \cdots, p$ and
 
--   $s$ represents the geographic locations in the space $D_s \subseteq \mathbb{R}^m$. This includes a collection of countries of interest and paired longitude and latitude coordinates of locations, and
+-   $s$ represents the geographic locations in the space $D_s \subseteq \mathbb{R}^m$. Examples of geographic locations include a collection of countries, longitude and latitude coordinates or regions of interest and, 
 
--   $t$ denotes the temporal order in $D_t \subseteq \mathbb{R}^n$. Sometimes, it can be time breaks into other temporal components, such as year, month, quarter, and season.
+-   $t$ denotes the temporal order in $D_t \subseteq \mathbb{R}^n$. For instance, time measurements could be recorded hourly, yearly, monthly, quaterly or by season..
 
 <!-- We assume the spatial and temporal indexes do not depend on the variable, that is, all the variables share the same set of spatial and temporal indexes.-->
 
@@ -167,7 +167,7 @@ where:
 <!-- To simplify the notation, a subscript letter $s$ or $t$ is used to denote the data have a fixed spatial locations or temporal order. When the spatial locations are fixed, the data become multivariate time series, denoted as $x^l_s(t)$. Similarly,  $x^l_t(s)$ represents multivariate spatial data when the temporal dimension is fixed. -->
 
 | No. | Module                  | Input                                                       | Operation                                                                                                                                          | Output                                                                  |
-|---------------|---------------|---------------|---------------|---------------|
+|------------|------------|------------|--------------------------|------------|
 | 1   | Temporal processing     | $x(t)$                                                      | $f_{\Psi}[x(.)]$                                                                                                                                   | $x^*(t^\prime)$ where $t\prime \in D_{t^\prime}$                        |
 | 2   | Spatial processing      | $x(s)$                                                      | $g_{\Theta}[x(.)]$                                                                                                                                 | $x^\#(s^\prime)$ where $s^\prime \in D_{s^\prime}$                      |
 | 3   | Variable transformation | $x(s; t)$                                                   | $T(x(s;t))$                                                                                                                                        | $u(s;t)$ ????                                                           |
