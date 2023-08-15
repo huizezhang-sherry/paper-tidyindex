@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, frame hidden, breakable, boxrule=0pt, enhanced, sharp corners, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, enhanced, interior hidden, breakable, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -438,7 +438,7 @@ Now, we introduce the notation used for describing pipeline modules.
 Consider multivariate spatio-temporal process,
 
 \begin{equation}
-\mathbf{x}(s;t) = \{x^1(s;t), x^2(s;t), \cdots, x^p(s;t)\} \qquad s \in D_s \subseteq \mathbb{R}^d, t \in D_t \subseteq \mathbb{R}^m 
+\mathbf{x}(s;t) = \{x^1(s;t), x^2(s;t), \cdots, x^p(s;t)\} \qquad s \in D_s \subseteq \mathbb{R}^m, t \in D_t \subseteq \mathbb{R}^n 
 \end{equation}
 
 where:
@@ -448,21 +448,21 @@ where:
   \(x\) is the variable in \(\mathbb{R}^p\),
 \item
   \(s\) represents the geographic locations in the space
-  \(D_s \subseteq \mathbb{R}^d\). This includes a collection of
+  \(D_s \subseteq \mathbb{R}^m\). This includes a collection of
   countries of interest and paired longitude and latitude coordinates of
   locations, and
 \item
-  \(t\) denotes the temporal order in \(D_t \subseteq \mathbb{R}^m\).
-  Sometimes, it can be time decomposed into several components, such as
-  year, month, quarter, and season.
+  \(t\) denotes the temporal order in \(D_t \subseteq \mathbb{R}^n\).
+  Sometimes, it can be time breaks into other temporal components, such
+  as year, month, quarter, and season.
 \end{itemize}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0685}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1781}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1781}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1781}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2329}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1370}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2740}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2877}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2329}}@{}}
 \caption{An notation overview of the input, operation, and output of
 each pipeline module.}\tabularnewline
 \toprule()
@@ -493,8 +493,9 @@ Output
 \end{minipage} \\
 \midrule()
 \endhead
-1 & Temporal processing & \(x(s;t)\) & aaaaa & \(x(s; t^\prime)\) \\
-2 & Spatial processing & \(x(s;t)\) & aaaaa & \(x(s^\prime; t)\) \\
+1 & Temporal processing & \(x(t)\) & \(f[x(.)]\) & \(x^*(t^\prime)\)
+where \(t\prime \in D_{t^\prime}\) \\
+2 & Spatial processing & \(x(s)\) & aaaaa & \(x^\#(s^\prime)\) \\
 3 & Variable transformation & \(x(s; t)\) & \(T(x(s;t))\) & \(u(s;t)\)
 ???? \\
 4 & Scaling & \(x(s; t)\) & \([x(s;t) - \alpha]/\gamma\) & \(v(s;t)\)
@@ -546,34 +547,29 @@ distribution fitting step.}
 \texttt{Input}: \(x(t)\), time series of a single variable with fixed
 locations
 
-\texttt{Output}: \(x(t^{\prime})\), where
+\texttt{Output}: \(x^*(t^{\prime})\), where
 \(t^\prime \in D_{t^{\prime}}\).
 
-\texttt{Computation}: The construction of an index sometimes needs to
-consider information from neighbouring time periods. The temporal
-processing is a general operator on the time dimension of the data in
-the form of
+\texttt{Computation}: The temporal processing module takes a single
+variable in a set of fixed locations, \(x(t)\), as the input. This step
+\emph{transforms} the original series into a new series to incorporate
+the temporal neighbouring effect: \(x^*(.) = f[x(.)]\). In temporal
+processing, the temporal dimension \(t\) may also transition to
+\(t^\prime \subseteq D_{t^\prime}\), allowing for the decomposition of
+time into its constituent temporal components. For example, this can be
+used to break down daily data into monthly. This gives the output of the
+temporal processing module as \(x^*(t^\prime)\).
 
-\begin{equation}
-x(\mathbf{s};\mathbf{t}^\prime) = f_{\mathcal{\psi}}(x(\mathbf{s};\mathbf{t})),
-\end{equation}
-
-where \(\psi \in \Psi \subseteq \mathbb{R}^{d_{\psi}}\) is the
-parameters associated with the temporal operation and \(d_{\psi}\) is
-the number of parameter of \(\psi\). A typical example of temporal
-processing is aggregation and in the drought community, these indexes
-are often called multi-scalar indexes. For example, Standardized
-Precipitation Index (SPI) aggregates monthly precipitation using a time
-scale parameter \(k\) in the form of
-
-\[x(s_i;t_{j^\prime}) = \sum_{j = j^\prime}^{j^\prime + k - 1}x(s_i; t_j),\]
-
-where \(j^\prime\) is the new time index after the aggregation.
-Multi-scalar drought indexes are widely used to study different types of
-drought events. A smaller value of the time scales parameter \(k\) is
-used for short term drought events, while a large \(k\) of 18 or 24, an
-equivalent to a 1.5- or 2-year aggregation, is often used for long term
-assessment.
+An example of temporal processing is in Standardized Precipitation Index
+(SPI), where monthly precipitation is summed over a rolling window of
+size \(k\), also known as the time scale. Assuming an original time
+series indexed by \(t= 1, 2, \cdots, T\), the aggregated series, indexed
+by \(t^\prime = 1, 2, \cdots, T-k+1\), can be written as
+\(x(t^\prime) = \sum_{t = t^\prime}^{t^\prime + k -1}x(t)\). For SPI,
+the choice of the time scale \(k\), is used to control the accumulation
+period for the water deficit, enabling the assessment of drought
+severity across various types (meteorological, agricultural, and
+hydrological).
 
 \hypertarget{spatial-processing}{%
 \subsection{Spatial processing}\label{spatial-processing}}
