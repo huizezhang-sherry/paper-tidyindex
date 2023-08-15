@@ -156,9 +156,11 @@ where:
 
 -   $x^i(s, t)$ represents a variable of interest for example precipitation,$j = 1, \cdots, p$ and
 
--   $s$ represents the geographic locations in the space $D_s \subseteq \mathbb{R}^m$. Examples of geographic locations include a collection of countries, longitude and latitude coordinates or regions of interest and, 
+-   $s$ represents the geographic locations in the space $D_s \subseteq \mathbb{R}^m$. Examples of geographic locations include a collection of countries, longitude and latitude coordinates or regions of interest and,
 
--   $t$ denotes the temporal order in $D_t \subseteq \mathbb{R}^n$. For instance, time measurements could be recorded hourly, yearly, monthly, quaterly or by season..
+-   $t$ denotes the temporal order in $D_t \subseteq \mathbb{R}^n$. For instance, time measurements could be recorded hourly, yearly, monthly, quaterly or by season.
+
+In what follows when geographical or temporal components of the $x(s,t)$ process are fixed we will be using suffix notation. For example, $x_{s}(t)$ represents the data for a fixed location $s$ as a function of time $t$. While $x_{t}(s)$ denotes the spatial varying procces for a fixed $t$.
 
 <!-- We assume the spatial and temporal indexes do not depend on the variable, that is, all the variables share the same set of spatial and temporal indexes.-->
 
@@ -166,17 +168,17 @@ where:
 
 <!-- To simplify the notation, a subscript letter $s$ or $t$ is used to denote the data have a fixed spatial locations or temporal order. When the spatial locations are fixed, the data become multivariate time series, denoted as $x^l_s(t)$. Similarly,  $x^l_t(s)$ represents multivariate spatial data when the temporal dimension is fixed. -->
 
-| No. | Module                  | Input                                                       | Operation                                                                                                                                          | Output                                                                  |
-|------------|------------|------------|--------------------------|------------|
-| 1   | Temporal processing     | $x(t)$                                                      | $f_{\Psi}[x(.)]$                                                                                                                                   | $x^*(t^\prime)$ where $t\prime \in D_{t^\prime}$                        |
-| 2   | Spatial processing      | $x(s)$                                                      | $g_{\Theta}[x(.)]$                                                                                                                                 | $x^\#(s^\prime)$ where $s^\prime \in D_{s^\prime}$                      |
-| 3   | Variable transformation | $x(s; t)$                                                   | $T(x(s;t))$                                                                                                                                        | $u(s;t)$ ????                                                           |
-| 4   | Scaling                 | $x(s; t)$                                                   | $[x(s;t) - \alpha]/\gamma$                                                                                                                         | $v(s;t)$ where bbbbb                                                    |
-| 5   | Dimension reduction     | $\mathbf{x}(s;t)$ where $\mathbf{x} \subseteq \mathbb{R}^p$ | aaaaa                                                                                                                                              | $\mathbf{y}(s;t)$ where $\mathbf{y} \subseteq \mathbb{R}^d$ and $d < p$ |
-| 6   | Distribution fit        | $x(s; t)$                                                   | $F_\mathbf{\theta}(x(s,t))$ where $F_{\mathbf{\theta}}(.)$ is the cumulated distribution function with distribution parameter(s) $\mathbf{\theta}$ | $p(s,t)$ where $p(.)$ denotes the probability value between 0 and 1     |
-| 7   | Normalising             | $x(s; t)$                                                   | $\Phi^{-1}[x(s, t)]$                                                                                                                               | $z(s; t)$ where $z \sim N(.,.)$                                         |
-| 8   | Benchmarking            | $x(s; t)$                                                   |                                                                                                                                                    | $b(s;t)$                                                                |
-| 9   | Simplification          | $x(s; t)$                                                   | ccccc                                                                                                                                              | $A(s;t) \in \{a_1, a_2, \cdots, a_j\}$                                  |
+| No. | Module                  | Input                                                                  | Operation                                                                                                                                          | Output                                                                 |
+|-------------|-------------|-------------|--------------------|-------------|
+| 1   | Temporal processing     | $x_{s}(t)$                                                             | $f_{\Psi}[x(.)]$                                                                                                                                   | $\tilde{x}^i(t^\prime)$ where $t\prime \in D_{t^\prime}$                       |
+| 2   | Spatial processing      | $x_t(s)$                                                               | $g[x(.)]$                                                                                                                                 | $x^i(s^\prime)$ where $s^\prime \in D_{s^\prime}$                     |
+| 3   | Variable transformation | $x(s; t)$                                                              | $T(x(s;t))$                                                                                                                                        | $Tx^i_t(s)$ ????                                                          |
+| 4   | Scaling                 | $x(s; t)$                                                              | $[x(s;t) - \alpha]/\gamma$                                                                                                                         | $Sx^i(s;t)$ where bbbbb                                                   |
+| 5   | Dimension reduction     | $\mathbf{x}(s;t)$ where $\mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p$ | aaaaa                                                                                                                                              | $\mathbf{y}(s;t)$ where $\mathbf{y} \subseteq \mathbb{R}^d$ and$d < q$ |
+| 6   | Distribution fit        | $x(s; t)$                                                              | $F_\mathbf{\theta}(x(s,t))$ where $F_{\mathbf{\theta}}(.)$ is the cumulated distribution function with distribution parameter(s) $\mathbf{\theta}$ | $p(s,t)$ where $p(.)$ denotes the probability value between 0 and 1    |
+| 7   | Normalising             | $x(s; t)$                                                              | $\Phi^{-1}[x(s, t)]$                                                                                                                               | $z(s; t)$ where $z \sim N(.,.)$                                        |
+| 8   | Benchmarking            | $x(s; t)$                                                              |                                                                                                                                                    | $b(s;t)$                                                               |
+| 9   | Simplification          | $x(s; t)$                                                              | ccccc                                                                                                                                              | $A(s;t) \in \{a_1, a_2, \cdots, a_j\}$                                 |
 
 : An notation overview of the input, operation, and output of each pipeline module.
 
@@ -201,9 +203,11 @@ knitr::include_graphics(here::here("figures/pipeline-overall.png"))
 
 `Output`: $x^*(t^{\prime})$, where $t^\prime \in D_{t^{\prime}}$.
 
-`Computation`: The temporal processing module takes a single variable in a set of fixed locations, $x(t)$, as input. This step transforms the original series into a new series to incorporate the temporal neighbouring effect: $x^*(.) = f_{\Psi}[x(.)]$, where $\Psi$ is a vector of hyper-parameters associated with the transformation. In temporal processing, the transition of temporal dimension from $t$ to $t^\prime \subseteq D_{t^\prime}$ allows for the decomposition of time into its constituent temporal components. For example, to break down daily data into monthly.
+`Computation`: The temporal processing module takes as input argument a single variable $x_s^i(t)$ at location $s$  as a function of time. In this step the original time series can be transformed or summarized into a new one via time aggregation, the transformation is represented by the function $f$,  $\tilde{x}_s^i(t^') = f[[x_s(t)]$ where $t^'$ refers to the new temporal resolution after aggregation. An example of a temporal processing done in the computation of the Standardized Precipitation Index (SPI), consists of summing the monthly precipitation series over a rolling time window of size $k$. That is also known as the time scale. 
+<!-- Assuming an original time series indexed by $t= 1, 2, \cdots, T$, the aggregated precipitation series, indexed by $t^\prime = 1, 2, \cdots, T-k+1$, can be expressed as $x(t^\prime) = \sum_{t = t^\prime}^{t^\prime + k -1}x(t)$.  -->
+For SPI, the choice of the time scale $k$ is used to control the accumulation period for the water deficit, enabling the assessment of drought severity across various types (meteorological, agricultural, and hydrological).
 
-In the Standardized Precipitation Index (SPI), temporal processing is used to sum the monthly precipitation over a rolling window of size $k$, also known as the time scale, prior to the distribution fitting and normalising module. Assuming an original time series indexed by $t= 1, 2, \cdots, T$, the aggregated precipitation series, indexed by $t^\prime = 1, 2, \cdots, T-k+1$, can be expressed as $x(t^\prime) = \sum_{t = t^\prime}^{t^\prime + k -1}x(t)$. For SPI, the choice of the time scale $k$ is used to control the accumulation period for the water deficit, enabling the assessment of drought severity across various types (meteorological, agricultural, and hydrological).
+<!-- to incorporate the temporal neighbouring effect: $x^*(.) = f_{\Psi}[x(.)]$, where $\Psi$ is a vector of hyper-parameters associated with the transformation. In temporal processing, the transition of temporal dimension from $t$ to $t^\prime \subseteq D_{t^\prime}$ allows for the decomposition of time into its constituent temporal components. For example,  -->
 
 <!-- The construction of an index sometimes needs to consider information from neighbouring time periods. The temporal processing is a general operator on the time dimension of the data in the form of -->
 
@@ -360,8 +364,9 @@ trans_df %>%
 
 `Computation`: Dimension reduction takes the multivariate information $\mathbf{x}(s;t)$, where $\mathbf{x} \subseteq \mathbb{R}^p$ , as the input. It summarises the high-dimensional information into a lower dimension representation $\mathbf{y}(s;t)$, where $y \subseteq \mathbb{R}^d$ and $d < p$, as the output.
 
-The transformation can be based on domain-specific knowledge, originating from theories describing the underlying physical processes, or guided in statistical methods. The Standardized Precipitation-Evapotranspiration Index (SPEI) calculates the difference series ($D$) from precipitation ($P$) and potential evapotranspiration ($\text{PET}$), using a water balance model ($D = P - \text{PET}$). This is the only step that differentiates it from the Standardized Precipitation Index (SPI).
+The transformation can be based on domain-specific knowledge, originating from theories describing the underlying physical processes, or guided in statistical methods. For example, the Standardized Precipitation-Evapotranspiration Index (SPEI) calculates the difference $D$ between precipitation ($P$) and potential evapotranspiration ($\text{PET}$), using a water balance model ($D = P - \text{PET}$). This is the only step that differs from the Standardized Precipitation Index (SPI).
 
+(Move this to the example and remove notation)
 When a physical process is absent to describe the phenomenon, multivariate data are often combined using statistical methods, which can be further classified into linear and non-linear techniques. Many social indexes use a linear combination in an additive structure, $y(s; t) = \sum_{i = 1}^{p}\lambda_{i}x_i(s;t),$ where $\lambda_i$ is the weight assigned to each individual variable $x_i$. A linear combination can also be preceived as a linear projection of multivariate information through the weight vector. Projecting data from higher to lower dimension unavoidably leads to information loss and the used weights need careful examination to understand their effects on the index and implications for interpretation and decision-making. One can visualise the data projection across different sets of weights through animation using a method called tour.
 
 <!-- Other weight constraint used includes $\sum_{p=1}^P\lambda_p^2 = 1$, is used by principal component analysis.  -->
@@ -593,13 +598,15 @@ A natural thing to do when provided with the index data is to reproduce the inde
 knitr::include_graphics(here::here("figures/pipeline-gggi.png"))
 ```
 
-    gggi %>% 
-      init(id = country) %>%
-      add_meta(gggi_weights, var_col = variable) %>% 
-      dimension_reduction(
-        index_new = aggregate_linear(
-          ~labour_force_participation:years_with_female_head_of_state,
-          weight = weight)) 
+```         
+gggi %>% 
+  init(id = country) %>%
+  add_meta(gggi_weights, var_col = variable) %>% 
+  dimension_reduction(
+    index_new = aggregate_linear(
+      ~labour_force_participation:years_with_female_head_of_state,
+      weight = weight)) 
+```
 
 The result can be compared with the GGGI values available in the report, validating the reproducibility of the index for country with no missing variables.
 
