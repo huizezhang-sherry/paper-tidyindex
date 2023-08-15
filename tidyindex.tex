@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, frame hidden, interior hidden, breakable, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, boxrule=0pt, breakable, interior hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -420,19 +420,13 @@ index construction process into a unified pipeline workflow with a
 standardized set of data processing steps to be applied across different
 indexes.
 
-An overview of the pipeline is given in Figure~\ref{fig-pipeline-steps}
-to illustrate the construction from raw data to the final indexes. The
-pipeline includes eight modules for operations in the spatial, temporal,
-and multivariate aspects of the data as well as modules for comparing
-and communicating indexes. Analysts can choose a subset of modules and
-reorder them as needed to construct an index.
-
-Data pre-processing may happen before the start of the index pipeline to
-prepare multivariate data from different locations/ countries ready for
-constructing an index. For remote sensing data, it includes aligning the
-spatial resolution and temporal frequency of data collected from
-different satellite products, or merging in-situ stations with the
-satellite data.
+An overview of the pipeline is presented in
+Figure~\ref{fig-pipeline-steps}, illustrating the nine available modules
+designed to obtain the index from the data. These modules include
+operations for temporal and spatial aggregation, variable transformation
+and combination, distribution fitting, benchmark setting, and index
+communication. Analysts have the flexibility to construct indexes by
+connecting modules according to their preferences.
 
 Now, we introduce the notation used for describing pipeline modules.
 Consider multivariate spatio-temporal process,
@@ -469,8 +463,8 @@ input, operation, and output is present in Table~\ref{tbl-notation}.
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0128}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2436}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1795}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2821}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2179}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2436}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2821}}@{}}
 \caption{\label{tbl-notation}An notation overview of the input,
 operation, and output of each pipeline module.}\tabularnewline

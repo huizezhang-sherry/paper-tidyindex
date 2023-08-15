@@ -141,9 +141,7 @@ Adoption of this pipeline approach would provide uniformity to the field of inde
 
 In constructing various indexes, the primary aim is to transform the data, often multivariate, into a univariate index. Spatial and temporal considerations are also factored into the process when observational units and time periods are not independent. However, despite the variations in contextual information for indexes in different fields, the underlying statistical methodology remains consistent across diverse domains. Each index can be represented as a series of modular statistical operations on the data. This allows us to decompose the index construction process into a unified pipeline workflow with a standardized set of data processing steps to be applied across different indexes.
 
-An overview of the pipeline is given in @fig-pipeline-steps to illustrate the construction from raw data to the final indexes. The pipeline includes eight modules for operations in the spatial, temporal, and multivariate aspects of the data as well as modules for comparing and communicating indexes. Analysts can choose a subset of modules and reorder them as needed to construct an index.
-
-Data pre-processing may happen before the start of the index pipeline to prepare multivariate data from different locations/ countries ready for constructing an index. For remote sensing data, it includes aligning the spatial resolution and temporal frequency of data collected from different satellite products, or merging in-situ stations with the satellite data.
+An overview of the pipeline is presented in @fig-pipeline-steps, illustrating the nine available modules designed to obtain the index from the data. These modules include operations for temporal and spatial aggregation, variable transformation and combination, distribution fitting, benchmark setting, and index communication. Analysts have the flexibility to construct indexes by connecting modules according to their preferences.
 
 Now, we introduce the notation used for describing pipeline modules. Consider multivariate spatio-temporal process,
 
@@ -162,9 +160,8 @@ where:
 
 In what follows when geographic or temporal components of the $x(s,t)$ process are fixed we will be using suffix notation. For example, $x_{s}(t)$ represents the data for a fixed location $s$ as a function of time $t$. While $x_{t}(s)$ denotes the spatial varying proccess for a fixed $t$. An overview of the notation for pipeline input, operation, and output is present in @tbl-notation.
 
-
 | No. | Module                  | Input                                                                  | Operation                                                                         | Output                                                                 |
-|-|-------------------|--------------|----------------------|----------------------|
+|-|-------------------|-----------------|-------------------|----------------------|
 | 1   | Temporal processing     | $x^i_{s}(t)$                                                           | $f[x^i_s(t)]$                                                                         | $\tilde{x}^i_s(t^\prime)$, where $t^\prime \in D_{t^\prime}$            |
 | 2   | Spatial processing      | $x^i_t(s)$                                                             | $g[x^i_t(s)]$                                                                         | $x^i_t(s^\prime)$, where $s^\prime \in D_{s^\prime}$ ????                   |
 | 3   | Variable transformation | $x^i(s; t)$                                                            | $T[x^i(s;t)]$                                                                       | $Tx^i(s;t)$ ????                                                       |
