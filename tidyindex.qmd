@@ -170,7 +170,7 @@ In what follows when geographic or temporal components of the $x(s,t)$ process a
 | 3   | Variable transformation | $x^i(s; t)$                                                            | $T[x^i(s;t)]$                                                                       | $Tx^i(s;t)$ ????                                                       |
 | 4   | Scaling                 | $x^i(s; t)$                                                            | $[x^i(s;t) - \alpha]/\gamma$                                                        | $Sx^i(s;t)$ ????                                                       |
 | 5   | Dimension reduction     | $\mathbf{x}(s;t)$, where $\mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p$ | $h[\mathbf{x}(s;t)]$                                                              | $\mathbf{y}(s;t)$, where $\mathbf{y} \subseteq \mathbb{R}^d$ and $d < q$ |
-| 6   | Distribution fit        | $x^i(s; t)$                                                            | $F[x^i(s;t)]$, where $F$ is the CDF function | $p^i(s;t)$, where $p(.) \in [0, 1]$ is a probability value                |
+| 6   | Distribution fit        | $x^i(s; t)$                                                            | $F[x^i(s;t)]$, where $F$ is the CDF | $p^i(s;t)$, where $p(.) \in [0, 1]$ is a probability value                |
 | 7   | Normalising             | $x^i(s; t)$                                                            | $\Phi^{-1}[x^i(s; t)]$                                                              | $z^i(s; t)$, where $z$ has a normal distribution                          |
 | 8   | Benchmarking            | $x^i(s; t)$                                                            | $u[x^i(s;t)]$                                                                       | $b^i(s;t)$                                                               |
 | 9   | Simplification          | $x^i(s; t)$                                                            | $v[x^i(s;t)]$                                                                            | $A^i(s;t) \in \{a_1, a_2, \cdots, a_j\}$                                 |
@@ -262,98 +262,37 @@ trans_df %>%
 
 Dimension reduction takes the multivariate information $\mathbf{x}(s;t)$, where $\mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p$, as the input. It summarises the high-dimensional information into a lower dimension representation $\mathbf{y}(s;t)$, where $y \subseteq \mathbb{R}^d$ and $d < q$, as the output. The transformation can be based on domain-specific knowledge, originating from theories describing the underlying physical processes, or guided in statistical methods. For example, the Standardized Precipitation-Evapotranspiration Index (SPEI) calculates the difference $D$ between precipitation ($P$) and potential evapotranspiration ($\text{PET}$), using a water balance model ($D = P - \text{PET}$). This is the only step that differs from the Standardized Precipitation Index (SPI).
 
-<!-- Other weight constraint used includes $\sum_{p=1}^P\lambda_p^2 = 1$, is used by principal component analysis.  -->
-
-<!-- Spectral satellite imageries often collected at different bands and it is common to combine values from multiple bands to compose new variables relevant to the index. The most common example of this is the Normalized Difference Vegetation Index (NDVI), which uses near-infrared (NIR) ($x_1(s;t)$) and red channel ($x_2(s;t)$): -->
-
-<!-- \begin{equation} -->
-
-<!-- \text{NDVI}(s;t) = \frac{x_1(s;t) - x_2(s;t)}{x_1(s;t) + x_2(s;t)}, -->
-
-<!-- \end{equation} -->
-
-<!-- which is used to evaluate the vegetation from near-infrared (NIR) and red channel. -->
-
 ## Distribution fit
 
-<!-- *model fit? * -->
-
-`Input`: $x^l(s; t)$
-
-`Output`:
-
-`Computation`: Distribution fit can be seen as the model fitting in its simplest term. It can be represented by
-
-```{=tex}
-\begin{equation}
-F_{\eta}(x(\mathbf{s}; \mathbf{t})), 
-\end{equation}
-```
-where $\eta \in H \subseteq \mathbb{R}^{d_{\eta}}$ is the distribution parameter and $d_{\eta}$ is the number of parameter of $\eta$. A distribution fit typically aims at finding the distribution that best fits the data. Analysts may start from a pool of candidate distributions with a chosen fitting method and goodness of fit measure. While it is useful to find the ultimate best distribution to fits the data, from a probabilistic perspective, the fitting procedure itself has an uncertainty associated with the data fed and the parameter chosen. A reasonable alternative is to understand how much the index values can vary given different distributions, fitting methods, and goodness of fit tests, and whether these variations are negligible in a given application.
+Distribution fit applies the cumulative distribution function $F$ of a distribution on the variable $x^i(s; t)$ to obtain the probability values $p^i(s;t) \in [0, 1]$. In SPEI, many distributions, including log-logistic, pearson III, lognormal, and general extreme distribution, are candidates for the aggregated series. Different fitting methods, and different goodness of fit tests may be used to compare the distribution choice on the index value. 
 
 ## Normalising
 
-`Input`: $x^l(s; t)$
-
-`Output`:
-
-`Computation`: This step maps the univariate series into a different scale, typically for ease of comparison across regions. For example, a normal scale, \[0, 1\], or \[0, 100\] may be favored for reporting certain indexes. In drought indexes, i.e. SPI or SPEI, the quantiles from the fitted distribution are converted into the normal scale via the normal reverse CDF function: $\Phi^{-1}(.)$. Normalising is usually used at the end of the pipeline and its main difference from the scaling step is that here the change of scale also changes the distribution of the variable. While being commonly used, this step can get criticism from analysts for forcing the data into the decided scale, which can be either unnecessary or inaccurately exaggerate or downplay the outliers. Also, the use of a normal scale needs to be interpreted with caution. @fig-normalising illustrates the normal density not being directly proportional to its probability of occurrence. This is concerning, especially at the extreme values, since a small difference in the tail density can have magnitudes of difference in its probability of occurrence.
-
-```{r fig-normalising}
-#| fig-cap: "Scatterplot of normal quantiles against their density values. THree tail density values are highlighted with its probability of occurence labelled. Probability is calculated assuming monthly data: with a density of -2, the probability of occurrence is 1/pnorm(-2)/12 = 4 years. The non-linear relationship between the two quantities suggests normalised indexes need to be interpreted with caution since a slight change in the tail distribution can result in magnitudes of difference in its probability of occurrence."
-#| fig-width: 9
-library(tidyverse)
-all <- tibble(x = seq(-3, 3, 0.01), y = pnorm(x)) 
-dt <- tibble(x = c(-3, -2.5, -2), y = pnorm(x)) 
-label <- tibble(x = c(-3, -2.5, -2), y = pnorm(x), 
-                label = c("once in 62 years", "once in 13 years", "once in 4 years"))
-
-dt %>% 
-  ggplot() + 
-  geom_point(aes(x= x, y = y)) + 
-  geom_line(data = all, aes(x = x, y = y)) + 
-  ggrepel::geom_label_repel(
-    data = label, aes(x = x, y = y, label =label),
-    nudge_y = 0.2, nudge_x = 0.1,
-    arrow = arrow(length = unit(0.08, "inches")), min.segment.length = 0) +
-  scale_x_continuous(breaks = seq(-3, 3, 1)) + 
-  xlab("Normalised Score") + 
-  ylab("Probability") + 
-  theme_bw() + 
-  theme(panel.grid.minor = element_blank())
-```
+<!-- This step maps the univariate series into a different scale, typically for ease of comparison across regions. For example, a normal scale, \[0, 1\], or \[0, 100\] may be favored for reporting certain indexes. In drought indexes, i.e. SPI or SPEI, the quantiles from the fitted distribution are converted into the normal scale via the normal reverse CDF function: $\Phi^{-1}(.)$. Normalising is usually used at the end of the pipeline and its main difference from the scaling step is that here the change of scale also changes the distribution of the variable. While being commonly used, this step can get criticism from analysts for forcing the data into the decided scale, which can be either unnecessary or inaccurately exaggerate or downplay the outliers. Also, the use of a normal scale needs to be interpreted with caution. @fig-normalising illustrates the normal density not being directly proportional to its probability of occurrence. This is concerning, especially at the extreme values, since a small difference in the tail density can have magnitudes of difference in its probability of occurrence. -->
 
 ## Benchmarking
 
-`Input`: $x^l(s; t)$
-
-`Output`:
-
-$D(x^l(s,t), a)$ where $D(., .)$ is a distance function between
-
-`Computation`: Benchmarking sets a constant value to allow the constructed index to be compared across time. Here we denote it with $u[x(s_i, t_j)]$ where $u$ is a scalar of interest in the index constructed. A benchmark value could be a constant or a function of the data, i.e. mean.
+Benchmark sets a value $b^i(s,t)$ for comparing against the original variable $x^i(s;t)$. This benchmark can be a fixed value consistently across space and time or determined by the data through the function $u[x^i(s;t)]$. Once a benchmark being set, observations can be highlighted for adjustments in other modules or can serve targets for monitoring and planning. 
 
 ## Simplification
 
-`Input`: $x^l(s; t)$
-
-`Output`: $C^l(s;t)$ where $\{C: c_0, c_1, \cdots, c_z\}$ is a discrete set
-
-`Computation`: In public communication, the index values are usually accompanied by a categorical grade. The categorised grades are an ordered set of descriptive words or colors to communicate the severity or guide the comprehension of the indexes. The mapping from continuous index values to the discrete grades is called simplification in the pipeline and it can be written as a piece-wise function:
+Simplification takes a continuous variable $x^i(s;t)$ and categorises it into a discrete set $A^i(s;t) \in \{a_1, a_2, \cdots, a_j\}$ through a piecewise function, 
 
 ```{=tex}
 \begin{equation}
 v[x_i(s;t)] = 
 \begin{cases}
-a_0 & C_1 \leq x(s; t) < C_0 \\
-a_1 & C_2 \leq x(s; t) < C_1 \\
-a_2 & C_3 \leq x(s; t) < C_2 \\
+a_0 & C_1 \leq x^i(s; t) < C_0 \\
+a_1 & C_2 \leq x^i(s; t) < C_1 \\
+a_2 & C_3 \leq x^i(s; t) < C_2 \\
 \cdots \\
-a_z & C_z \leq x(s; t)
+a_z & C_z \leq x^i(s; t)
 \end{cases}
 \end{equation}
 ```
-where $C_0, C_1,\cdots ,C_z$ are the categories and $c_0, c_1, \cdots, c_z$ are the thresholds for each category. In SPI, droughts are sorted into four categories: mild drought: $[-0.99, 0]$; moderate drought: $[-1.49, -1]$; severe drought: $[-1.99, -1.5]$, and extreme drought: $[-\infty, -2]$. In this case, $C_0, C_1, C_2, C_3$ are the drought categories: mild, moderate, severe, and extreme drought ($z = 3$) and $c_0 =0, c_1 = -1, c_2 = -1.5, c_3 = -2$ are the cutoff value for each class.
+
+This is typically used at the end of the index pipeline to simplify the index to communicate to the public the severity of the concept of interest measured by the index. An example of simplification is to map the calculated SPI to four categories: mild, moderate, severe, and extreme drought. 
+
 
 # Software design {#sec-dev}
 
