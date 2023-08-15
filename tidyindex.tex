@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, boxrule=0pt, sharp corners, breakable, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, breakable, interior hidden, sharp corners, enhanced, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -455,15 +455,21 @@ where:
 \item
   \(t\) denotes the temporal order in \(D_t \subseteq \mathbb{R}^n\).
   For instance, time measurements could be recorded hourly, yearly,
-  monthly, quaterly or by season..
+  monthly, quaterly or by season.
 \end{itemize}
 
+In what follows when geographical or temporal components of the
+\(x(s,t)\) process are fixed we will be using suffix notation. For
+example, \(x_{s}(t)\) represents the data for a fixed location \(s\) as
+a function of time \(t\). While \(x_{t}(s)\) denotes the spatial varying
+procces for a fixed \(t\).
+
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1622}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1622}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1622}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.3514}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1622}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1806}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1806}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1806}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2778}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1806}}@{}}
 \caption{An notation overview of the input, operation, and output of
 each pipeline module.}\tabularnewline
 \toprule()
@@ -494,17 +500,18 @@ Output
 \end{minipage} \\
 \midrule()
 \endhead
-1 & Temporal processing & \(x(t)\) & \(f_{\Psi}[x(.)]\) &
-\(x^*(t^\prime)\) where \(t\prime \in D_{t^\prime}\) \\
-2 & Spatial processing & \(x(s)\) & \(g_{\Theta}[x(.)]\) &
-\(x^\#(s^\prime)\) where \(s^\prime \in D_{s^\prime}\) \\
-3 & Variable transformation & \(x(s; t)\) & \(T(x(s;t))\) & \(u(s;t)\)
-???? \\
-4 & Scaling & \(x(s; t)\) & \([x(s;t) - \alpha]/\gamma\) & \(v(s;t)\)
+1 & Temporal processing & \(x_{s}(t)\) & \(f_{\Psi}[x(.)]\) &
+\(\tilde{x}^i(t^\prime)\) where \(t\prime \in D_{t^\prime}\) \\
+2 & Spatial processing & \(x_t(s)\) & \(g[x(.)]\) & \(x^i(s^\prime)\)
+where \(s^\prime \in D_{s^\prime}\) \\
+3 & Variable transformation & \(x(s; t)\) & \(T(x(s;t))\) &
+\(Tx^i_t(s)\) ???? \\
+4 & Scaling & \(x(s; t)\) & \([x(s;t) - \alpha]/\gamma\) & \(Sx^i(s;t)\)
 where bbbbb \\
 5 & Dimension reduction & \(\mathbf{x}(s;t)\) where
-\(\mathbf{x} \subseteq \mathbb{R}^p\) & aaaaa & \(\mathbf{y}(s;t)\)
-where \(\mathbf{y} \subseteq \mathbb{R}^d\) and \(d < p\) \\
+\(\mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p\) & aaaaa &
+\(\mathbf{y}(s;t)\) where \(\mathbf{y} \subseteq \mathbb{R}^d\)
+and\(d < q\) \\
 6 & Distribution fit & \(x(s; t)\) & \(F_\mathbf{\theta}(x(s,t))\) where
 \(F_{\mathbf{\theta}}(.)\) is the cumulated distribution function with
 distribution parameter(s) \(\mathbf{\theta}\) & \(p(s,t)\) where
@@ -553,26 +560,19 @@ locations
 \texttt{Output}: \(x^*(t^{\prime})\), where
 \(t^\prime \in D_{t^{\prime}}\).
 
-\texttt{Computation}: The temporal processing module takes a single
-variable in a set of fixed locations, \(x(t)\), as input. This step
-transforms the original series into a new series to incorporate the
-temporal neighbouring effect: \(x^*(.) = f_{\Psi}[x(.)]\), where
-\(\Psi\) is a vector of hyper-parameters associated with the
-transformation. In temporal processing, the transition of temporal
-dimension from \(t\) to \(t^\prime \subseteq D_{t^\prime}\) allows for
-the decomposition of time into its constituent temporal components. For
-example, to break down daily data into monthly.
-
-In the Standardized Precipitation Index (SPI), temporal processing is
-used to sum the monthly precipitation over a rolling window of size
-\(k\), also known as the time scale, prior to the distribution fitting
-and normalising module. Assuming an original time series indexed by
-\(t= 1, 2, \cdots, T\), the aggregated precipitation series, indexed by
-\(t^\prime = 1, 2, \cdots, T-k+1\), can be expressed as
-\(x(t^\prime) = \sum_{t = t^\prime}^{t^\prime + k -1}x(t)\). For SPI,
-the choice of the time scale \(k\) is used to control the accumulation
-period for the water deficit, enabling the assessment of drought
-severity across various types (meteorological, agricultural, and
+\texttt{Computation}: The temporal processing module takes as input
+argument a single variable \(x_s^i(t)\) at location \(s\) as a function
+of time. In this step the original time series can be transformed or
+summarized into a new one via time aggregation, the transformation is
+represented by the function \(f\),
+\(\tilde{x}_s^i(t^\prime) = f[[x_s(t)]\) where \(t^\prime\) refers to
+the new temporal resolution after aggregation. An example of a temporal
+processing done in the computation of the Standardized Precipitation
+Index (SPI), consists of summing the monthly precipitation series over a
+rolling time window of size \(k\). That is also known as the time scale.
+For SPI, the choice of the time scale \(k\) is used to control the
+accumulation period for the water deficit, enabling the assessment of
+drought severity across various types (meteorological, agricultural, and
 hydrological).
 
 \hypertarget{spatial-processing}{%
@@ -680,17 +680,18 @@ as the output.
 
 The transformation can be based on domain-specific knowledge,
 originating from theories describing the underlying physical processes,
-or guided in statistical methods. The Standardized
+or guided in statistical methods. For example, the Standardized
 Precipitation-Evapotranspiration Index (SPEI) calculates the difference
-series (\(D\)) from precipitation (\(P\)) and potential
-evapotranspiration (\(\text{PET}\)), using a water balance model
-(\(D = P - \text{PET}\)). This is the only step that differentiates it
-from the Standardized Precipitation Index (SPI).
+\(D\) between precipitation (\(P\)) and potential evapotranspiration
+(\(\text{PET}\)), using a water balance model (\(D = P - \text{PET}\)).
+This is the only step that differs from the Standardized Precipitation
+Index (SPI).
 
-When a physical process is absent to describe the phenomenon,
-multivariate data are often combined using statistical methods, which
-can be further classified into linear and non-linear techniques. Many
-social indexes use a linear combination in an additive structure,
+(Move this to the example and remove notation) When a physical process
+is absent to describe the phenomenon, multivariate data are often
+combined using statistical methods, which can be further classified into
+linear and non-linear techniques. Many social indexes use a linear
+combination in an additive structure,
 \(y(s; t) = \sum_{i = 1}^{p}\lambda_{i}x_i(s;t),\) where \(\lambda_i\)
 is the weight assigned to each individual variable \(x_i\). A linear
 combination can also be preceived as a linear projection of multivariate
