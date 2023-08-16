@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, enhanced, sharp corners, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{shadecolor}, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, frame hidden, enhanced, breakable, boxrule=0pt, sharp corners, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -806,22 +806,19 @@ Opportunity, Educational Attainment, Health and Survival, and Political
 Empowerment (World Economic Forum 2023). The index, compiled from 14
 variables expressed as female-to-male ratios, first aggregates these
 variables into four dimensions through linear combinations. These
-dimensions are then combined though another linear combination.
-Figure~\ref{fig-pp-gggi} illustrates this pipeline construction by
-applying the dimension reduction module twice on the data to generate
-the index. Table~\ref{tbl-gggi-weights} presents the The variable
-weights (\texttt{V-weight}) and dimension weights (\texttt{D-weight})
-used in the two dimension reduction. In the table, the variable weights
-are computed as the inverse of the standard deviation of each variable,
-scaled to sum to 1. This weights ensures that a one percentage point
-change in the standard deviation of each variable to contribute equally
-to the index. Dimension weights are equal across the four dimensions and
-the last column, \texttt{weight}, multiples the variable and dimension
-weights to produce a single set of weight. The 2023 GGGI data is
-available from the Global Gender Gap Report 2023 in the country's
-economy profile and can be accessed in R via the \texttt{tidyindex}
-package as \texttt{gggi} and Table~\ref{tbl-gggi-weights} as
-\texttt{gggi\_weights}.
+dimensions are then combined though another linear combination to form
+the index. Figure~\ref{fig-pp-gggi} illustrates this pipeline
+construction by applying the dimension reduction module twice on the
+data to generate the index. Table~\ref{tbl-gggi-weights} presents the
+variable weights (\texttt{V-weight}) and dimension weights
+(\texttt{D-weight}) used in the two dimension reduction. In the table,
+the variable weights are computed as the inverse of the standard
+deviation of each variable, scaled to sum to 1. These weights ensure
+that a one percentage point change in the standard deviation of each
+variable to contribute equally to the index. Dimension weights are equal
+across the four dimensions and the last column, \texttt{weight},
+multiples the variable and dimension weights to produce a single set of
+weight.
 
 \begin{figure}
 
@@ -890,7 +887,11 @@ Years with female head of state & Politics & 0.443 & 0.25 & 0.111 \\
 \bottomrule()
 \end{longtable}
 
-The index can be reproduce with tidyindex as:
+The 2023 GGGI data is available from the Global Gender Gap Report 2023
+in the country's economy profile and can be accessed in R via the
+\texttt{tidyindex} package as \texttt{gggi} and
+Table~\ref{tbl-gggi-weights} as \texttt{gggi\_weights}. The index can be
+reproduced with the pacakge as:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -920,11 +921,10 @@ A linear combination can also be interpreted as a linear projection of
 multivariate information with a weight vector. Projecting data from
 higher to lower dimension unavoidably leads to information loss and the
 weights used require careful examination to understand their effects on
-the index and implications for interpretation and decision-making. We
-use a visualisation method called ``tour'' to animate the data
-projection across different sets of weights, aiming to understand how
-changes on the politics weight will affect the index value. We select a
-set countries for this exercise, which includes:
+the index and implications for interpretation and decision-making. By
+making slight adjustments to the weight vector, we can observe how index
+values and country rankings change. For illustration, we select a set
+countries including:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi})}
@@ -938,9 +938,13 @@ set countries for this exercise, which includes:
   Low-ranked countries with GGGI \textless{} 0.6.
 \end{enumerate}
 
-We run a local tour {[}TODO: reference to local tour{]} to slightly vary
-the weight of the politics dimension from the original 0.25 while
-keeping the weights constant for the other three dimensions.
+We slightly vary the weight of the politics dimension from the original
+0.25 while keeping the weights constant for the other three dimensions.
+This process creates an animation showing the movement of index values
+in response to changing weights. This visualisation technique, which
+presents a sequence of data projections, is referred to as a ``tour''.
+The specific kind of tour that moves between the original and nearby
+projections is known as a ``local tour''.
 
 In Figure~\ref{fig-idx-tour}, six frames have been chosen from the
 animation available at https://vimeo.com/847874016. When the weight of
@@ -957,10 +961,14 @@ politics dimension is assigned a weight of 0.52 in Frame 29.
 
 In GGGI, the index value has a direct interpretation as the percentage
 of gender gap that has been closed. When countries exhibit closer index
-values, or consistent decreasing index values, it can be directly
-interpreted as country's progress towards gender parity. Analysts must
-carefully consider whether such interpretation is reasonable and review
-the index construction process.
+values or consistent, it can be directly interpreted as a reflection of
+a country's progress toward gender parity. Ideally, an index should be
+robust against minor changes in its construction components. This
+example provides researchers with means to observe changes in the index
+resulting from variations in the weights used in linear combination.
+This approach can be applied broadly to different sets of weights of
+interest, extending beyond the change in a single dimension illustrated
+by the example.
 
 \begin{figure}
 
@@ -968,21 +976,21 @@ the index construction process.
 
 }
 
-\caption{\label{fig-idx-tour}Six frames selected from varying the
-weights of the politics dimension in Global Gender Gap Index (GGGI). The
-top panel shows the GGGI value against the country, ranked by its
-original index value in Frame 12. The bottom panel displays the weight
-used to produce the index value in the top panel, with each frame
-corresponds to a set of weights. Countries selected includes 1)
-top-ranked countries with GGGI \textgreater{} 0.85, 2) countries ranked
-between 57 and 62 with GGGI from 0.72 to 0.73, and 3) low-ranked
-countries with GGGI \textless{} 0.6. Compared to Frame 12 where equal
-weigts are used for the four dimension, a reduced weight in politics
-(Frame 1 and 6) shows narrower gaps between top and mid- or lower-
-ranked countries, while an increase in the politics weight (Frame 18,
-24, and 29) leads to a systematic decrease of GGGI values across all the
-countries, except for Bangladesh. Full animation is available at
-https://vimeo.com/847874016.}
+\caption{\label{fig-idx-tour}Six frames selected to explore how varying
+the weights of the politics dimension changes the index values and
+country ranking in Global Gender Gap Index (GGGI). The top panel shows
+the GGGI value against the country, ranked by its original index value
+in Frame 12. The bottom panel displays the weight used to produce the
+index value in the top panel, with each frame corresponds to a set of
+weights. Countries selected includes 1) top-ranked countries with GGGI
+\textgreater{} 0.85, 2) countries ranked between 57 and 62 with GGGI
+from 0.72 to 0.73, and 3) low-ranked countries with GGGI \textless{}
+0.6. Compared to Frame 12 where equal weigts are used for the four
+dimension, a reduced weight in politics (Frame 1 and 6) shows narrower
+gaps between top and mid- or lower- ranked countries, while an increase
+in the politics weight (Frame 18, 24, and 29) leads to a systematic
+decrease of GGGI values across all the countries, except for Bangladesh.
+Full animation is available at https://vimeo.com/847874016.}
 
 \end{figure}
 
