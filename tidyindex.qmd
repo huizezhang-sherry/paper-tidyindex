@@ -438,19 +438,19 @@ gggi %>%
       weight = weight)) 
 ```
 
-After initialising the `gggi` object and attaching the `gggi_weights` as metadata, a single linear aggregation step within the dimension reduction module is applied to the 14 variables (from column `labour_force_participation` to `years_with_female_head_of_state`), using the weight specified in the `weight` column of the attached metadata. While computing the index from the original 14 variables, it remains unclear how the missing values are handled within the index, which impacts 68 out of the total 146 countries. However, after aggregating variables into the four dimensions, where no missing values exist, the index is reproducible for all the countries. 
+After initialising the `gggi` object and attaching the `gggi_weights` as metadata, a single linear combination step within the dimension reduction module is applied to the 14 variables (from column `labour_force_participation` to `years_with_female_head_of_state`), using the weight specified in the `weight` column of the attached metadata. While computing the index from the original 14 variables, it remains unclear how the missing values are handled within the index, which impacts 68 out of the total 146 countries. However, after aggregating variables into the four dimensions, where no missing values exist, the index is reproducible for all the countries. 
 
-A linear combination can also be perceived as a linear projection of multivariate information through the weight vector. Projecting data from higher to lower dimension unavoidably leads to information loss and the used weights need careful examination to understand their effects on the index and implications for interpretation and decision-making. One can visualise the data projection across different sets of weights through animation using a method called tour.
+A linear combination can also be interpreted as a linear projection of multivariate information with a weight vector. Projecting data from higher to lower dimension unavoidably leads to information loss and the weights used require careful examination to understand their effects on the index and implications for interpretation and decision-making. We use a visualisation method called "tour" to animate the data projection across different sets of weights, aiming to understand how changes on the politics weight will affect the index value. We select a set countries for this exercise, which includes:
+  
+  1) Top-ranked countries with GGGI > 0.85,
+  2) Countries ranked between 57 and 62, with GGGI values from 0.72 to 0.73, and
+  3) Low-ranked countries with GGGI < 0.6. 
+  
+We run a local tour \[TODO: reference to local tour\] to slightly vary the weight of the politics dimension from the original 0.25 while keeping the weights constant for the other three dimensions. 
 
-To understand the uncertainty of this dimension reduction step from combining four dimensions (Economy, Education, Health, and Politics), we run a local tour \[TODO: reference to local tour\] that varies the weight of each dimension slightly to observe how index value and country ranking changes. The local tour produces an animation that gradually increases the weight of one variable and reduces it back to equal weight, one at a time. A set of countries are selected for this exercise, which includes 1) the top four with GGGI \> 0.85, 2) a set of countries with GGGI between 0.72 and 0.73 (Brazil, Panama, Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia), and 3) the bottom five countries with GGGI \< 0.6. Five frames (equal weights and one for each dimension with a relatively higher weight) are selected from the local tour animation to show in @fig-idx-tour and the full animation is available at https://vimeo.com/847874016.
+In @fig-idx-tour, six frames have been chosen from the animation available at https://vimeo.com/847874016. When the weight of politics is reduced (Frame 1 and 6 vs. Frame 12), the difference in GGGI values between the top Nordic countries and mid- or low-ranked countries narrows, suggesting a smaller variation among countries in achieving gender parity. Conversely, when the weight of politics increases (Frame 18, 24, and 29 vs. Frame 12), nearly all the countries in the three categories experience a decrease in GGGI values. A noticeable exception to this trend is Bangladesh, where its index value moves in the same direction as the politics weight. This leads to its index value being almost similar to those of the top-ranked Nordic countries when the politics dimension is assigned a weight of 0.52 in Frame 29. 
 
-@fig-idx-tour helps to understand the how different dimension reduction alternatives affect the whole index distribution and individual countries.
-
--   Bangladesh
--   when decreasing the weight on politics, difference between countries narrower.
--   increase politics -\> all the country has lower index value
-
-<!-- Notably, increasing the weight in politics leads to a pronounced decrease of index value for almost all the countries. Given the index value has a direct interpretation on how much of the gender gap has been closed, such a weight variation can cast a negative light on the progression to gender parity. Analysts need to further investigate the construction of the politics dimension and consider whether this is desirable for the index. -->
+In GGGI, the index value has a direct interpretation as the percentage of gender gap that has been closed. When countries exhibit closer index values, or consistent decreasing index values, it can be directly interpreted as country's progress towards gender parity. Analysts must carefully consider whether such interpretation is reasonable and review the index construction process.
 
 ```{r eval = FALSE}
 dt <- tidyindex::gggi %>% 
@@ -493,7 +493,7 @@ gifski::gifski(
 ```
 
 ```{r fig-idx-tour, fig.align='center', fig.height=5}
-#| fig-cap: "Five frames selected from varying the linear weights of four dimensions in Global Gender Gap Index. The weights vary slightly from the official simple average weights (0.25, 0.25, 0.25, 0.25) to observe how the index and ranking reponse. Full animation is available at https://vimeo.com/847874016."  
+#| fig-cap: "Six frames selected from varying the weights of the politics dimension in Global Gender Gap Index (GGGI). The top panel shows the GGGI value against the country, ranked by its original index value in Frame 12. The bottom panel displays the weight used to produce the index value in the top panel, with each frame corresponds to a set of weights. Countries selected includes 1) top-ranked countries with GGGI > 0.85, 2) countries ranked between 57 and 62 with GGGI from 0.72 to 0.73, and 3) low-ranked countries with GGGI < 0.6. Compared to Frame 12 where equal weigts are used for the four dimension, a reduced weight in politics (Frame 1 and 6) shows narrower gaps between top and mid- or lower- ranked countries, while an increase in the politics weight (Frame 18, 24, and 29) leads to a systematic decrease of GGGI values across all the countries, except for Bangladesh. Full animation is available at https://vimeo.com/847874016."  
 #frames <- c("001", "013", "037", "061", "085", "109")
 frames <- c("001", "006", "012", "018", "024", "029")
 ani <- paste0(here::here("figures/"), "idx-tour/", "idx-tour-", frames, ".png")
