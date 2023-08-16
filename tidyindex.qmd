@@ -400,10 +400,18 @@ p2 <- idx %>%
 
 ## Does a minor change in variable weights cause a tornado?
 
-The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index is composed of 14 variables, expressed as female-to-male ratios, which are first aggregated in a linear combination into the four dimensions using the weight from the `V-weight` column in @tbl-gggi-weights. The weight is calculated as the inverse of the standard deviation of each variable and scaling to sum to 1 within each dimension to allow a one percentage point change in the standard deviation of each variable to contribute equally to the index. The four dimensions are then aggregated in another linear combination with equal weight to obtain the index. The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the country's economy profile and can be accessed in R via the `tidyindex` package as `gggi`, along with the corresponding weights `gggi_weights`.
+The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index, compiled from 14 variables expressed as female-to-male ratios, first aggregates these variables into four dimensions through linear combinations. These dimensions are then combined though another linear combination. @fig-pp-gggi illustrates this pipeline construction by applying the dimension reduction module twice on the data to generate the index. @tbl-gggi-weights presents the The variable weights (`V-weight`) and dimension weights (`D-weight`) used in the two dimension reduction. In the table, the variable weights are computed as the inverse of the standard deviation of each variable, scaled to sum to 1. This weights ensures that a one percentage point change in the standard deviation of each variable to contribute equally to the index. Dimension weights are equal across the four dimensions and the last column, `weight`, multiples the variable and dimension weights to produce a single set of weight. The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the country's economy profile and can be accessed in R via the `tidyindex` package as `gggi` and @tbl-gggi-weights as `gggi_weights`.
+
+```{r fig-pp-gggi}
+#| fig-align: center
+#| fig-cap: "Index pipeline for the Global Gender Gap Index (GGGI). The index is constructed as applying the module dimension reduction twice on the data."
+#| out-height: 90%
+#| out-width: 100%
+knitr::include_graphics(here::here("figures/pipeline-gggi.png"))
+```
 
 ```{r tbl-gggi-weights}
-#| tbl-cap: Weights of the fourteen variables in Global Gender Gap Index
+#| tbl-cap: Weights used to compute the Global Gender Gap Index
 #| tbl-cap-location: bottom
 gggi_weights %>%  
    mutate(variable = str_replace_all(variable, "_", " ") %>%
@@ -418,51 +426,10 @@ gggi_weights %>%
     ) 
 ```
 
-(Moved from the pipeline module to here) When a physical process is absent to describe the phenomenon, multivariate data are often combined using statistical methods, which can be further classified into linear and non-linear techniques. Many social indexes use a linear combination in an additive structure, $y(s; t) = \sum_{i = 1}^{p}\lambda_{i}x_i(s;t),$ where $\lambda_i$ is the weight assigned to each individual variable $x_i$. A linear combination can also be preceived as a linear projection of multivariate information through the weight vector. Projecting data from higher to lower dimension unavoidably leads to information loss and the used weights need careful examination to understand their effects on the index and implications for interpretation and decision-making. One can visualise the data projection across different sets of weights through animation using a method called tour.
+The index can be reproduce with tidyindex as: 
 
-A natural thing to do when provided with the index data is to reproduce the index. This helps index analysts to verify the index calculation and become familiar with the methodology. For GGGI, the construction can be simplified as a single linear aggregation step in the dimension reduction module, with the `Weight` column in @tbl-gggi-weights, which is the product of the variable weight (`V-weight`) and dimension weight (`D-weight`).
-
-```{r fig-pipeline-steps-gggi}
-#| fig-align: center
-#| fig-cap: "Diagram of pipeline steps for index construction. will need to be updated with better design and the distribution fitting step."
-#| out-height: 90%
-#| out-width: 100%
-knitr::include_graphics(here::here("figures/pipeline-gggi.png"))
-```
-
-    gggi %>% 
-      init(id = country) %>%
-      add_meta(gggi_weights, var_col = variable) %>% 
-      dimension_reduction(
-        index_new = aggregate_linear(
-          ~labour_force_participation:years_with_female_head_of_state,
-          weight = weight)) 
-
-The result can be compared with the GGGI values available in the report, validating the reproducibility of the index for country with no missing variables.
-
-```{r eval = FALSE}
-a <- dim_weights %>% select(-variable) %>% t() %>% as_tibble(rownames = "id")
-colnames(a) <- c("id", dim_weights$variable)
-a %>% 
-  pivot_longer(-id, names_to = "vars", values_to = "value") %>% 
-  ggplot(aes(x = value, group = vars)) + 
-  geom_histogram() + 
-  facet_wrap(vars(vars))
-```
-
-```{r fig-compare-gggi}
-#| fig-cap: "Verifying the calculation of the Global Gender Gap Index (GGGI). The index can be reproduced from the methodology described in the Global Gender Gap Report 2023 after removing the countries with missing variables, the treatment of which is unclear."
-set.seed(123)
-n <- 1000
-w_idx <- map(1:n, function(x){
-  w_idx <- stats::runif(4, min = 0.1, max = 1)
-  w_idx <- w_idx/sum(w_idx)
-  w_idx %>% as.matrix(nrow = 4, ncol = 1)
-  })
-rand_w <- reduce(w_idx, cbind) %>% as_tibble()
-colnames(rand_w) <- paste0("V", 1:n)
-
-dt2 <- gggi %>% 
+```{r eval = FALSE, echo = TRUE}
+gggi %>% 
   init(id = country) %>%
   add_meta(gggi_weights, var_col = variable) %>% 
   dimension_reduction(
@@ -471,26 +438,9 @@ dt2 <- gggi %>%
       weight = weight)) 
 ```
 
-```{r eval = FALSE, gggi-weights, fig.height=20, fig.align='center', fig.width=10}
-dt3 <- dt2 %>%
-  swap_values(.id = 1, .param = weight,
-              .value = list(pillar_weight, paste0("V", 2:100)),
-              .raw_data = dt)
+After initialising the `gggi` object and attaching the `gggi_weights` as metadata, a single linear aggregation step within the dimension reduction module is applied to the 14 variables (from column `labour_force_participation` to `years_with_female_head_of_state`), using the weight specified in the `weight` column of the attached metadata. While computing the index from the original 14 variables, it remains unclear how the missing values are handled within the index, which impacts 68 out of the total 146 countries. However, after aggregating variables into the four dimensions, where no missing values exist, the index is reproducible for all the countries. 
 
-idx_wide <- dt3$data %>% select(country, dplyr::contains("index_new"))
-idx_wide2 <- idx_wide %>% mutate(index_avg = rowMeans(idx_wide[,2:(ncol(idx_wide))]))
-idx_long2 <- idx_wide2 %>% pivot_longer(-country, names_to = "index", values_to = "value") %>% 
-  left_join(gggi %>% select(country, rank), by = "country")
-
-idx_long2 %>%
-  ggplot(aes(x = value, y = fct_reorder(country, -rank), group = country)) +
-  geom_boxplot() + 
-  #geom_point(color = "grey80", size = 0.5) +
-  geom_point(data = idx_long2 %>% filter(index == "index_new1"), color = "red") + 
-  theme_bw() + 
-  ylab("Country") + 
-  xlab("Index")
-```
+A linear combination can also be perceived as a linear projection of multivariate information through the weight vector. Projecting data from higher to lower dimension unavoidably leads to information loss and the used weights need careful examination to understand their effects on the index and implications for interpretation and decision-making. One can visualise the data projection across different sets of weights through animation using a method called tour.
 
 To understand the uncertainty of this dimension reduction step from combining four dimensions (Economy, Education, Health, and Politics), we run a local tour \[TODO: reference to local tour\] that varies the weight of each dimension slightly to observe how index value and country ranking changes. The local tour produces an animation that gradually increases the weight of one variable and reduces it back to equal weight, one at a time. A set of countries are selected for this exercise, which includes 1) the top four with GGGI \> 0.85, 2) a set of countries with GGGI between 0.72 and 0.73 (Brazil, Panama, Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia), and 3) the bottom five countries with GGGI \< 0.6. Five frames (equal weights and one for each dimension with a relatively higher weight) are selected from the local tour animation to show in @fig-idx-tour and the full animation is available at https://vimeo.com/847874016.
 

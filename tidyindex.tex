@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, boxrule=0pt, breakable, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, frame hidden, sharp corners, enhanced, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -803,19 +803,37 @@ The Global Gender Gap Index (GGGI), published annually by the World
 Economic Forum, measures gender parity by assessing relative gaps
 between men and women in four key areas: Economic Participation and
 Opportunity, Educational Attainment, Health and Survival, and Political
-Empowerment (World Economic Forum 2023). The index is composed of 14
-variables, expressed as female-to-male ratios, which are first
-aggregated in a linear combination into the four dimensions using the
-weight from the \texttt{V-weight} column in
-Table~\ref{tbl-gggi-weights}. The weight is calculated as the inverse of
-the standard deviation of each variable and scaling to sum to 1 within
-each dimension to allow a one percentage point change in the standard
-deviation of each variable to contribute equally to the index. The four
-dimensions are then aggregated in another linear combination with equal
-weight to obtain the index. The 2023 GGGI data is available from the
-Global Gender Gap Report 2023 in the country's economy profile and can
-be accessed in R via the \texttt{tidyindex} package as \texttt{gggi},
-along with the corresponding weights \texttt{gggi\_weights}.
+Empowerment (World Economic Forum 2023). The index, compiled from 14
+variables expressed as female-to-male ratios, first aggregates these
+variables into four dimensions through linear combinations. These
+dimensions are then combined though another linear combination.
+Figure~\ref{fig-pp-gggi} illustrates this pipeline construction by
+applying the dimension reduction module twice on the data to generate
+the index. Table~\ref{tbl-gggi-weights} presents the The variable
+weights (\texttt{V-weight}) and dimension weights (\texttt{D-weight})
+used in the two dimension reduction. In the table, the variable weights
+are computed as the inverse of the standard deviation of each variable,
+scaled to sum to 1. This weights ensures that a one percentage point
+change in the standard deviation of each variable to contribute equally
+to the index. Dimension weights are equal across the four dimensions and
+the last column, \texttt{weight}, multiples the variable and dimension
+weights to produce a single set of weight. The 2023 GGGI data is
+available from the Global Gender Gap Report 2023 in the country's
+economy profile and can be accessed in R via the \texttt{tidyindex}
+package as \texttt{gggi} and Table~\ref{tbl-gggi-weights} as
+\texttt{gggi\_weights}.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=0.9\textheight]{figures/pipeline-gggi.png}
+
+}
+
+\caption{\label{fig-pp-gggi}Index pipeline for the Global Gender Gap
+Index (GGGI). The index is constructed as applying the module dimension
+reduction twice on the data.}
+
+\end{figure}
 
 \hypertarget{tbl-gggi-weights}{}
 \begin{longtable}[]{@{}
@@ -824,8 +842,8 @@ along with the corresponding weights \texttt{gggi\_weights}.
   >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1169}}
   >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1169}}
   >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0909}}@{}}
-\caption{\label{tbl-gggi-weights}Weights of the fourteen variables in
-Global Gender Gap Index}\tabularnewline
+\caption{\label{tbl-gggi-weights}Weights used to compute the Global
+Gender Gap Index}\tabularnewline
 \toprule()
 \begin{minipage}[b]{\linewidth}\raggedright
 Variable
@@ -872,54 +890,39 @@ Years with female head of state & Politics & 0.443 & 0.25 & 0.111 \\
 \bottomrule()
 \end{longtable}
 
-(Moved from the pipeline module to here) When a physical process is
-absent to describe the phenomenon, multivariate data are often combined
-using statistical methods, which can be further classified into linear
-and non-linear techniques. Many social indexes use a linear combination
-in an additive structure,
-\(y(s; t) = \sum_{i = 1}^{p}\lambda_{i}x_i(s;t),\) where \(\lambda_i\)
-is the weight assigned to each individual variable \(x_i\). A linear
-combination can also be preceived as a linear projection of multivariate
-information through the weight vector. Projecting data from higher to
-lower dimension unavoidably leads to information loss and the used
-weights need careful examination to understand their effects on the
+The index can be reproduce with tidyindex as:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gggi }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{init}\NormalTok{(}\AttributeTok{id =}\NormalTok{ country) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{add\_meta}\NormalTok{(gggi\_weights, }\AttributeTok{var\_col =}\NormalTok{ variable) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{dimension\_reduction}\NormalTok{(}
+    \AttributeTok{index\_new =} \FunctionTok{aggregate\_linear}\NormalTok{(}
+      \SpecialCharTok{\textasciitilde{}}\NormalTok{labour\_force\_participation}\SpecialCharTok{:}\NormalTok{years\_with\_female\_head\_of\_state,}
+      \AttributeTok{weight =}\NormalTok{ weight)) }
+\end{Highlighting}
+\end{Shaded}
+
+After initialising the \texttt{gggi} object and attaching the
+\texttt{gggi\_weights} as metadata, a single linear aggregation step
+within the dimension reduction module is applied to the 14 variables
+(from column \texttt{labour\_force\_participation} to
+\texttt{years\_with\_female\_head\_of\_state}), using the weight
+specified in the \texttt{weight} column of the attached metadata. While
+computing the index from the original 14 variables, it remains unclear
+how the missing values are handled within the index, which impacts 68
+out of the total 146 countries. However, after aggregating variables
+into the four dimensions, when no missing values exist, the index is
+reproducible for all the countries.
+
+A linear combination can also be perceived as a linear projection of
+multivariate information through the weight vector. Projecting data from
+higher to lower dimension unavoidably leads to information loss and the
+used weights need careful examination to understand their effects on the
 index and implications for interpretation and decision-making. One can
 visualise the data projection across different sets of weights through
 animation using a method called tour.
-
-A natural thing to do when provided with the index data is to reproduce
-the index. This helps index analysts to verify the index calculation and
-become familiar with the methodology. For GGGI, the construction can be
-simplified as a single linear aggregation step in the dimension
-reduction module, with the \texttt{Weight} column in
-Table~\ref{tbl-gggi-weights}, which is the product of the variable
-weight (\texttt{V-weight}) and dimension weight (\texttt{D-weight}).
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\textwidth,height=0.9\textheight]{figures/pipeline-gggi.png}
-
-}
-
-\caption{\label{fig-pipeline-steps-gggi}Diagram of pipeline steps for
-index construction. will need to be updated with better design and the
-distribution fitting step.}
-
-\end{figure}
-
-\begin{verbatim}
-gggi %>% 
-  init(id = country) %>%
-  add_meta(gggi_weights, var_col = variable) %>% 
-  dimension_reduction(
-    index_new = aggregate_linear(
-      ~labour_force_participation:years_with_female_head_of_state,
-      weight = weight)) 
-\end{verbatim}
-
-The result can be compared with the GGGI values available in the report,
-validating the reproducibility of the index for country with no missing
-variables.
 
 To understand the uncertainty of this dimension reduction step from
 combining four dimensions (Economy, Education, Health, and Politics), we
