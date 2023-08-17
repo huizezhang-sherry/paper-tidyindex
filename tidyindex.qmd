@@ -47,13 +47,7 @@ author:
         country: Australia
     orcid: 0000-0003-0701-6315
 abstract: |
-  - indexes, useful, quantify severity, early monitoring, 
-  - A huge number of indexes have been proposed by domain experts, however, a large majority of them are not being adopted, reused, and compared in research or in practice. 
-  - One of the reasons for this is the plenty of indexes are quite complex and there is no obvious easy-to-use implementation to apply them to user's data. 
-  - The paper describes a general pipeline framework to construct indexes from spatio-temporal data, 
-  - This allows all the indexes to be constructed through a uniform data pipeline and different indexes to vary on the details of each step in the data pipeline and their orders. 
-  - The pipeline proposed aim to smooth the workflow of index construction through breaking down the complicated steps proposed by various indexes into small building blocks shared by most of the indexes.
-  - The framework will be demonstrated with drought indexes as examples, but appliable in general to environmental indexes constructed from multivariate spatio-temporal data
+  Indexes are useful for summarizing multivariate information into single metrics for monitoring, communicating, and decision-making. While many work has focused on defining new indexes for the application of interest, less attention has been directed towards understanding how the a given index behave under different scenarios. This research introduces a data pipeline comparising 9 modules to assemble indexes from a series of modular building blocks. This modular data pipeline is universally applicable to index computation and allows analysts to incorporate the analysis on index into the construction pipeline. Analysts can compute with different index parameters, adjust steps in the index definition by adding, removing, and swapping them to experiment with various index designs, calculate uncertainty measures, and assess index robustness . The paper presents two examples to illustrate the usage of the pipeline. The first example claculates two drought indexes with different parameters to investigate the spatio-temporal distribution of drought in Queensland, Australia. The second example on the Global Gender Gap Index (GGGI) explores the effects of adjusting linear combination weights on a country's index values and rankings.
 keywords:
   - indexes
   - data pipeline
