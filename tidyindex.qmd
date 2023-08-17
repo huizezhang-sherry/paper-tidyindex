@@ -147,30 +147,30 @@ Now, we introduce the notation used for describing pipeline modules. Consider mu
 
 ```{=tex}
 \begin{equation}
-\mathbf{x}(s;t) = \{x^1(s;t), x^2(s;t), \cdots, x^p(s;t)\} \qquad s \in D_s \subseteq \mathbb{R}^m, t \in D_t \subseteq \mathbb{R}^n 
+\mathbf{x}(s;t) = \{x_1(s;t), x_2(s;t), \cdots, x_p(s;t)\} \qquad s \in D_s \subseteq \mathbb{R}^m, t \in D_t \subseteq \mathbb{R}^n 
 \end{equation}
 ```
 where:
 
--   $x^i(s, t)$ represents a variable of interest for example precipitation, $i = 1, \cdots, p$ and
+-   $x_j(s, t)$ represents a variable of interest for example precipitation, $j = 1, \cdots, p$ and
 
 -   $s$ represents the geographic locations in the space $D_s \subseteq \mathbb{R}^m$. Examples of geographic locations include a collection of countries, longitude and latitude coordinates or regions of interest and,
 
 -   $t$ denotes the temporal order in $D_t \subseteq \mathbb{R}^n$. For instance, time measurements could be recorded hourly, yearly, monthly, quaterly or by season.
 
-In what follows when geographic or temporal components of the $x(s,t)$ process are fixed we will be using suffix notation. For example, $x_{s}(t)$ represents the data for a fixed location $s$ as a function of time $t$. While $x_{t}(s)$ denotes the spatial varying proccess for a fixed $t$. An overview of the notation for pipeline input, operation, and output is present in @tbl-notation.
+In what follows when geographic or temporal components of the $x_j(s,t)$ process are fixed we will be using suffix notation. For example, $x_{sj}(t)$ represents the data for a fixed location $s$ as a function of time $t$. While $x_{tj}(s)$ denotes the spatial varying process for a fixed $t$. An overview of the notation for pipeline input, operation, and output is present in @tbl-notation.
 
-| No. | Module                  | Input                                                                  | Operation                                                                         | Output                                                                 |
-|-|-------------------|-----------------|-------------------|----------------------|
-| 1   | Temporal processing     | $x^i_{s}(t)$                                                           | $f[x^i_s(t)]$                                                                         | $\tilde{x}^i_s(t^\prime)$, where $t^\prime \in D_{t^\prime}$            |
-| 2   | Spatial processing      | $x^i_t(s)$                                                             | $g[x^i_t(s)]$                                                                         | $x^i_t(s^\prime)$, where $s^\prime \in D_{s^\prime}$ ????                   |
-| 3   | Variable transformation | $x^i(s; t)$                                                            | $T[x^i(s;t)]$                                                                       | $Tx^i(s;t)$ ????                                                       |
-| 4   | Scaling                 | $x^i(s; t)$                                                            | $[x^i(s;t) - \alpha]/\gamma$                                                        | $Sx^i(s;t)$ ????                                                       |
-| 5   | Dimension reduction     | $\mathbf{x}(s;t)$, where $\mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p$ | $h[\mathbf{x}(s;t)]$                                                              | $\mathbf{y}(s;t)$, where $\mathbf{y} \subseteq \mathbb{R}^d$ and $d < q$ |
-| 6   | Distribution fit        | $x^i(s; t)$                                                            | $F[x^i(s;t)]$, where $F$ is the CDF | $p^i(s;t)$, where $p(.) \in [0, 1]$ is a probability value                |
-| 7   | Normalising             | $x^i(s; t)$                                                            | $\Phi^{-1}[x^i(s; t)]$                                                              | $z^i(s; t)$, where $z$ has a normal distribution                          |
-| 8   | Benchmarking            | $x^i(s; t)$                                                            | $u[x^i(s;t)]$                                                                       | $b^i(s;t)$                                                               |
-| 9   | Simplification          | $x^i(s; t)$                                                            | $v[x^i(s;t)]$                                                                            | $A^i(s;t) \in \{a_1, a_2, \cdots, a_j\}$                                 |
+| No. | Module                  | Input                                                                   | Operation                           | Output                                                                        |
+|--|---------------|----------|---------------|--------------------------|
+| 1   | Temporal processing     | $x_{sj}(t)$                                                             | $f[x_{sj}(t)]$                      | $x^{\text{Temp}}_{sj}(t^\prime) \quad t^\prime \in D_{t^\prime}$ |
+| 2   | Spatial processing      | $x_{tj}(s)$                                                             | $g[x_{tj}(s)]$                      | $x^{\text{Spat}}_{tj}(s^\prime) \quad s^\prime \in D_{s^\prime}$                 |
+| 3   | Variable transformation | $x_{j}(s; t)$                                                           | $T[x_j(s;t)]$                       | $x^{\text{Trans}}_j(s;t)$                                                     |
+| 4   | Scaling                 | $x_j(s; t)$                                                             | $[x_j(s;t) - \alpha]/\gamma$        | $x^{\text{Scale}}_j(s;t)$                                                     |
+| 5   | Dimension reduction     | $\mathbf{x}(s;t) \quad \mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p$ | $h[\mathbf{x}(s;t)]$                | $\mathbf{y}(s;t) \quad \mathbf{y} \subseteq \mathbb{R}^d, d < q$      |
+| 6   | Distribution fit        | $x_j(s; t)$                                                             | $F[x_j(s;t)]$ | $p_j(s;t) \quad p(.) \in [0, 1]$                   |
+| 7   | Normalising             | $x_j(s; t)$                                                             | $\Phi^{-1}[x_j(s; t)]$              | $z_j(s; t)$                              |
+| 8   | Benchmarking            | $x_j(s; t)$                                                             | $u[x_j(s;t)]$                       | $b_j(s;t)$                                                                    |
+| 9   | Simplification          | $x_j(s; t)$                                                             | $v[x_j(s;t)]$                       | $A_j(s;t) \in \{a_1, a_2, \cdots, a_j\}$                                      |
 
 : An notation overview of the input, operation, and output of each pipeline module. {#tbl-notation}
 
@@ -184,21 +184,19 @@ knitr::include_graphics(here::here("figures/pipeline-overall.png"))
 
 ## Temporal processing
 
-The temporal processing module takes as input argument a single variable $x_s^i(t)$ at location $s$ as a function of time. In this step the original time series can be transformed or summarized into a new one via time aggregation, the transformation is represented by the function $f$, $\tilde{x}_s^i(t^\prime) = f[x^i_s(t)]$ where $t^\prime$ refers to the new temporal resolution after aggregation. An example of a temporal processing done in the computation of the Standardized Precipitation Index (SPI), consists of summing the monthly precipitation series over a rolling time window of size $k$. That is also known as the time scale. For SPI, the choice of the time scale $k$ is used to control the accumulation period for the water deficit, enabling the assessment of drought severity across various types (meteorological, agricultural, and hydrological).
-
-<!-- Assuming an original time series indexed by $t= 1, 2, \cdots, T$, the aggregated precipitation series, indexed by $t^\prime = 1, 2, \cdots, T-k+1$, can be expressed as $x(t^\prime) = \sum_{t = t^\prime}^{t^\prime + k -1}x(t)$.  --> 
+The temporal processing module takes as input argument a single variable $x_{sj}(t)$ at location $s$ as a function of time. In this step the original time series can be transformed or summarized into a new one via time aggregation, the transformation is represented by the function $f$, $x^{\text{Temp}}_{sj}(t^\prime) = f[x_{sj}(t)]$ where $t^\prime$ refers to the new temporal resolution after aggregation. An example of a temporal processing done in the computation of the Standardized Precipitation Index (SPI), consists of summing the monthly precipitation series over a rolling time window of size $k$. That is also known as the time scale. For SPI, the choice of the time scale $k$ is used to control the accumulation period for the water deficit, enabling the assessment of drought severity across various types (meteorological, agricultural, and hydrological).
 
 ## Spatial processing
 
-The spatial processing module takes a single variable with a fixed temporal dimension, $x_t(s)$, as input. This step transforms the variable from the original spatial dimension $s$ into the new dimension $s^\prime \in D_{s^\prime}$ through $x^\#(s;t) = g[x(s;t)]$. The change of spatial dimension allows for the alignment of variables collected from different measurements, such as in-situ stations and satellite imagery, or originating from different resolutions. This also includes the aggregation of variables into different levels, such as city, state, and countries scales.
+The spatial processing module takes a single variable with a fixed temporal dimension, $x_{tj}(s)$, as input. This step transforms the variable from the original spatial dimension $s$ into the new dimension $s^\prime \in D_{s^\prime}$ through $x^{\text{Spat}}_{tj}(s^\prime) = g[x_{tj}(s)]$. The change of spatial dimension allows for the alignment of variables collected from different measurements, such as in-situ stations and satellite imagery, or originating from different resolutions. This also includes the aggregation of variables into different levels, such as city, state, and countries scales.
 
 ## Variable transformation
 
-Variable transformation takes input of a single variable $x^i(s;t)$ and reshapes its distribution using the function $T[.]$ to produce $x^i(s;t)$. When a variable has a skewed distribution, transformations such as log, square root, or cubic root can adjust the distribution towards normality. For example, in Human Development Index (HDI), a logarithmic transformation is applied to the variable Gross National Income per capita (GNI), to reduce its impact on HDI, particularly for countries with high GNI values.
+Variable transformation takes input of a single variable $x_j(s;t)$ and reshapes its distribution using the function $T[.]$ to produce $x^{\text{Trans}}_{j}(s;t)$. When a variable has a skewed distribution, transformations such as log, square root, or cubic root can adjust the distribution towards normality. For example, in Human Development Index (HDI), a logarithmic transformation is applied to the variable Gross National Income per capita (GNI), to reduce its impact on HDI, particularly for countries with high GNI values.
 
 ## Scaling
 
-Unlike variable transformation, scaling maintains the distributional shape of the variable. It includes techniques such as centering, z-score standardisation, and min-max standardisation and can be expressed as $[x^i(s;t) - \alpha]/\gamma$. In Human Development Index (HDI), the three dimensions (health, education, and economy) are converted into the same scale (0-1) using min-max standardisation.
+Unlike variable transformation, scaling maintains the distributional shape of the variable. It includes techniques such as centering, z-score standardisation, and min-max standardisation and can be expressed as $[x_{j}(s;t) - \alpha]/\gamma$. In Human Development Index (HDI), the three dimensions (health, education, and economy) are converted into the same scale (0-1) using min-max standardisation.
 
 ```{r fig-scale-var-trans-compare}
 #| fig-cap: "Comparison of the module scaling (green) and variable transformation (orange). While both modules change the variable range, scaling maintains the same distributional shape, which is not the case with variable transformation. "
@@ -261,19 +259,19 @@ Dimension reduction takes the multivariate information $\mathbf{x}(s;t)$, where 
 
 ## Distribution fit
 
-Distribution fit applies the cumulative distribution function $F$ of a distribution on the variable $x^i(s; t)$ to obtain the probability values $p^i(s;t) \in [0, 1]$. In SPEI, many distributions, including log-logistic, pearson III, lognormal, and general extreme distribution, are candidates for the aggregated series. Different fitting methods, and different goodness of fit tests may be used to compare the distribution choice on the index value. 
+Distribution fit applies the Cumulative Distribution Function (CDF) $F$ of a distribution on the variable $x_j(s; t)$ to obtain the probability values $p_j(s;t) \in [0, 1]$. In SPEI, many distributions, including log-logistic, pearson III, lognormal, and general extreme distribution, are candidates for the aggregated series. Different fitting methods, and different goodness of fit tests may be used to compare the distribution choice on the index value.
 
 ## Normalising
 
-<!-- This step maps the univariate series into a different scale, typically for ease of comparison across regions. For example, a normal scale, \[0, 1\], or \[0, 100\] may be favored for reporting certain indexes. In drought indexes, i.e. SPI or SPEI, the quantiles from the fitted distribution are converted into the normal scale via the normal reverse CDF function: $\Phi^{-1}(.)$. Normalising is usually used at the end of the pipeline and its main difference from the scaling step is that here the change of scale also changes the distribution of the variable. While being commonly used, this step can get criticism from analysts for forcing the data into the decided scale, which can be either unnecessary or inaccurately exaggerate or downplay the outliers. Also, the use of a normal scale needs to be interpreted with caution. @fig-normalising illustrates the normal density not being directly proportional to its probability of occurrence. This is concerning, especially at the extreme values, since a small difference in the tail density can have magnitudes of difference in its probability of occurrence. -->
+Normalising applies the inverse normal CDF $\Phi^{-1}$ on the input data to obtain the normal density $z_{j}(s;t)$. Normalising can sometimes be confused with the scaling or variable transformation module, which do not involve using a normal distribution to transform the variable. It is arguably whether normalising and distribution fit should be combined or separated into two modules. A decision has been made to separate them into two modules given the different types of output each module present (probability values for distribution fit and normal density values for normalising).
 
 ## Benchmarking
 
-Benchmark sets a value $b^i(s,t)$ for comparing against the original variable $x^i(s;t)$. This benchmark can be a fixed value consistently across space and time or determined by the data through the function $u[x^i(s;t)]$. Once a benchmark being set, observations can be highlighted for adjustments in other modules or can serve targets for monitoring and planning. 
+Benchmark sets a value $b_j(s,t)$ for comparing against the original variable $x_j(s;t)$. This benchmark can be a fixed value consistently across space and time or determined by the data through the function $u[x_j(s;t)]$. Once a benchmark being set, observations can be highlighted for adjustments in other modules or can serve targets for monitoring and planning.
 
 ## Simplification
 
-Simplification takes a continuous variable $x^i(s;t)$ and categorises it into a discrete set $A^i(s;t) \in \{a_1, a_2, \cdots, a_j\}$ through a piecewise function, 
+Simplification takes a continuous variable $x_j(s;t)$ and categorises it into a discrete set $A_j(s;t) \in \{a_1, a_2, \cdots, a_j\}$ through a piecewise function,
 
 ```{=tex}
 \begin{equation}
@@ -287,9 +285,7 @@ a_z & C_z \leq x^i(s; t)
 \end{cases}
 \end{equation}
 ```
-
-This is typically used at the end of the index pipeline to simplify the index to communicate to the public the severity of the concept of interest measured by the index. An example of simplification is to map the calculated SPI to four categories: mild, moderate, severe, and extreme drought. 
-
+This is typically used at the end of the index pipeline to simplify the index to communicate to the public the severity of the concept of interest measured by the index. An example of simplification is to map the calculated SPI to four categories: mild, moderate, severe, and extreme drought.
 
 # Software design {#sec-dev}
 
@@ -400,7 +396,7 @@ p2 <- idx %>%
 
 ## Does a minor change in variable weights cause a tornado?
 
-The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index, compiled from 14 variables expressed as female-to-male ratios, first aggregates these variables into four dimensions through linear combinations. These dimensions are then combined though another linear combination to form the index. @fig-pp-gggi illustrates this pipeline construction by applying the dimension reduction module twice on the data to generate the index. @tbl-gggi-weights presents the variable weights (`V-weight`) and dimension weights (`D-weight`) used in the two dimension reduction. In the table, the variable weights are computed as the inverse of the standard deviation of each variable, scaled to sum to 1. These weights ensure that a one percentage point change in the standard deviation of each variable to contribute equally to the index. Dimension weights are equal across the four dimensions and the last column, `weight`, multiples the variable and dimension weights to produce a single set of weight. 
+The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index, compiled from 14 variables expressed as female-to-male ratios, first aggregates these variables into four dimensions through linear combinations. These dimensions are then combined though another linear combination to form the index. @fig-pp-gggi illustrates this pipeline construction by applying the dimension reduction module twice on the data to generate the index. @tbl-gggi-weights presents the variable weights (`V-weight`) and dimension weights (`D-weight`) used in the two dimension reduction. In the table, the variable weights are computed as the inverse of the standard deviation of each variable, scaled to sum to 1. These weights ensure that a one percentage point change in the standard deviation of each variable to contribute equally to the index. Dimension weights are equal across the four dimensions and the last column, `weight`, multiples the variable and dimension weights to produce a single set of weight.
 
 ```{r fig-pp-gggi}
 #| fig-align: center
@@ -426,7 +422,7 @@ gggi_weights %>%
     ) 
 ```
 
-The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the country's economy profile and can be accessed in R via the `tidyindex` package as `gggi` and @tbl-gggi-weights as `gggi_weights`. The index can be reproduced with the pacakge as: 
+The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the country's economy profile and can be accessed in R via the `tidyindex` package as `gggi` and @tbl-gggi-weights as `gggi_weights`. The index can be reproduced with the pacakge as:
 
 ```{r eval = FALSE, echo = TRUE}
 gggi %>% 
@@ -438,19 +434,19 @@ gggi %>%
       weight = weight)) 
 ```
 
-After initialising the `gggi` object and attaching the `gggi_weights` as metadata, a single linear combination step within the dimension reduction module is applied to the 14 variables (from column `labour_force_participation` to `years_with_female_head_of_state`), using the weight specified in the `weight` column of the attached metadata. While computing the index from the original 14 variables, it remains unclear how the missing values are handled within the index, which impacts 68 out of the total 146 countries. However, after aggregating variables into the four dimensions, where no missing values exist, the index is reproducible for all the countries. 
+After initialising the `gggi` object and attaching the `gggi_weights` as metadata, a single linear combination step within the dimension reduction module is applied to the 14 variables (from column `labour_force_participation` to `years_with_female_head_of_state`), using the weight specified in the `weight` column of the attached metadata. While computing the index from the original 14 variables, it remains unclear how the missing values are handled within the index, which impacts 68 out of the total 146 countries. However, after aggregating variables into the four dimensions, where no missing values exist, the index is reproducible for all the countries.
 
 A linear combination can also be interpreted as a linear projection of multivariate information with a weight vector. Projecting data from higher to lower dimension unavoidably leads to information loss and the weights used require careful examination to understand their effects on the index and implications for interpretation and decision-making. By making slight adjustments to the weight vector, we can observe how index values and country rankings change. For illustration, we select a set countries including:
-  
-  1) Top-ranked countries with GGGI > 0.85,
-  2) Countries ranked between 57 and 62, with GGGI values from 0.72 to 0.73, and
-  3) Low-ranked countries with GGGI < 0.6. 
 
-We slightly vary the weight of the politics dimension from the original 0.25 while keeping the weights constant for the other three dimensions. This process creates an animation showing the movement of index values in response to changing weights. This visualisation technique, which presents a sequence of data projections, is referred to as a "tour". The specific kind of tour that moves between the original and nearby projections is known as a "local tour". 
+1)  Top-ranked countries with GGGI \> 0.85,
+2)  Countries ranked between 57 and 62, with GGGI values from 0.72 to 0.73, and
+3)  Low-ranked countries with GGGI \< 0.6.
 
-In @fig-idx-tour, six frames have been chosen from the animation available at https://vimeo.com/847874016. When the weight of politics is reduced (Frame 1 and 6 vs. Frame 12), the difference in GGGI values between the top Nordic countries and mid- or low-ranked countries narrows, suggesting a smaller variation among countries in achieving gender parity. Conversely, when the weight of politics increases (Frame 18, 24, and 29 vs. Frame 12), nearly all the countries in the three categories experience a decrease in GGGI values. A noticeable exception to this trend is Bangladesh, where its index value moves in the same direction as the politics weight. This leads to its index value being almost similar to those of the top-ranked Nordic countries when the politics dimension is assigned a weight of 0.52 in Frame 29. 
+We slightly vary the weight of the politics dimension from the original 0.25 while keeping the weights constant for the other three dimensions. This process creates an animation showing the movement of index values in response to changing weights. This visualisation technique, which presents a sequence of data projections, is referred to as a "tour". The specific kind of tour that moves between the original and nearby projections is known as a "local tour".
 
-In GGGI, the index value has a direct interpretation as the percentage of gender gap that has been closed. When countries exhibit closer index values or consistent, it can be directly interpreted as a reflection of a country's progress toward gender parity. Ideally, an index should be robust against minor changes in its construction components. This example provides researchers with means to observe changes in the index resulting from variations in the weights used in linear combination. This approach can be applied broadly to different sets of weights of interest, extending beyond the change in a single dimension illustrated by the example. 
+In @fig-idx-tour, six frames have been chosen from the animation available at https://vimeo.com/847874016. When the weight of politics is reduced (Frame 1 and 6 vs. Frame 12), the difference in GGGI values between the top Nordic countries and mid- or low-ranked countries narrows, suggesting a smaller variation among countries in achieving gender parity. Conversely, when the weight of politics increases (Frame 18, 24, and 29 vs. Frame 12), nearly all the countries in the three categories experience a decrease in GGGI values. A noticeable exception to this trend is Bangladesh, where its index value moves in the same direction as the politics weight. This leads to its index value being almost similar to those of the top-ranked Nordic countries when the politics dimension is assigned a weight of 0.52 in Frame 29.
+
+In GGGI, the index value has a direct interpretation as the percentage of gender gap that has been closed. When countries exhibit closer index values or consistent, it can be directly interpreted as a reflection of a country's progress toward gender parity. Ideally, an index should be robust against minor changes in its construction components. This example provides researchers with means to observe changes in the index resulting from variations in the weights used in linear combination. This approach can be applied broadly to different sets of weights of interest, extending beyond the change in a single dimension illustrated by the example.
 
 ```{r eval = FALSE}
 dt <- tidyindex::gggi %>% 
