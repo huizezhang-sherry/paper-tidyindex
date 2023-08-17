@@ -251,7 +251,7 @@ country's index values and rankings.
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, sharp corners, interior hidden, enhanced, breakable, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, interior hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -1094,27 +1094,21 @@ Full animation is available at https://vimeo.com/847874016.}
 \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}
 
-The paper presents a data pipeline with nine modules for constructing
-and analysing indexes. The pipeline increases transparency in the
-practice for index analysts to experiment with different index design
-and parameter choices to better design and apply their indexes. The
-significance of this work is its ability to provide a universal
-framework for index construction, which can be applied across different
-domains.
-
-Examples have been given in the drought indexes and human development
-index to demonstrate computing of indexes with different parameters
-combinations and how alternative index design can provide insights to
-understand distinctive country characteristics that could sometimes be
-overlooked. The accompanied package, tidyindex, is not meant to provide
-comprehensive implementation for all indexes across all domains.
-Instead, it demonstrates implementing individual pipeline steps that are
-versatile to multiple indexes and composing new indexes from existing
-steps. Domain experts are welcomed to adopt the pipeline approach to
-develop specialised packages for specific-domains indexes.
-
-Future work: - integrate more complex dimension reduction methods to
-calculate weights - strengthen the spatial processing module
+The paper introduces a data pipeline comprising nine modules designed
+for the construction and analysis of indexes within the tidy framework.
+The pipeline offers a modular workflow to allow compute index with
+different parameterizations, to test minor changes to the original index
+definition, and to quantify uncertainties. The framework proposed in the
+paper is universal to index across diverse domains. Examples are
+provided, including the drought indexes (SPI and SPEI) and Global Gender
+Gap Index (GGGI), to demonstrate the index calculation with different
+time scales and distributions and to illustrate how slight adjustment of
+linear combination weights impact the index. The accompanied package,
+tidyindex, is not intended to offer an exhaustive implementation for all
+indexes across every domains. Instead, it provides a realization of the
+pipeline framework proposed in the paper. When adopting the pipeline
+approach to construct indexes, analysts may consider developing software
+that can be readily deployed in the cloud for production purposes.
 
 \hypertarget{reference}{%
 \section*{Reference}\label{reference}}
