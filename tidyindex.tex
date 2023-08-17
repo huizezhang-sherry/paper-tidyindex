@@ -251,7 +251,7 @@ country's index values and rankings.
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, frame hidden, interior hidden, sharp corners, boxrule=0pt, enhanced, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, borderline west={3pt}{0pt}{shadecolor}, interior hidden, frame hidden, enhanced, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -309,10 +309,10 @@ the index with confidence measures.
 The rest of the paper is structured as follows: Section~\ref{sec-tidy}
 reviews the tidy framework in R and how index construction can benefit
 from such a framework. The details of the pipeline modules are presented
-in Section~\ref{sec-pipeline}. Section~\ref{sec-dev} explains the design
-of the \texttt{tidyindex} pacakge that implements the modules. Examples
-are given in Section~\ref{sec-examples} to illustrate the use cases of
-the pipeline.
+in Section~\ref{sec-pipeline}. Section~\ref{sec-software} explains the
+design of the \texttt{tidyindex} pacakge that implements the modules.
+Examples are given in Section~\ref{sec-examples} to illustrate the use
+cases of the pipeline.
 
 \hypertarget{sec-tidy}{%
 \section{Tidy framework}\label{sec-tidy}}
@@ -661,8 +661,8 @@ interest measured by the index. An example of simplification is to map
 the calculated SPI to four categories: mild, moderate, severe, and
 extreme drought.
 
-\hypertarget{sec-dev}{%
-\section{Software design}\label{sec-dev}}
+\hypertarget{sec-software}{%
+\section{Software design}\label{sec-software}}
 
 The R package \texttt{tidyindex} implements the index pipeline modules
 described in Section~\ref{sec-pipeline}. These modules compute an index
@@ -746,25 +746,29 @@ values and country rankings.
 \subsection{Every distribution, every scale, every index all at
 once}\label{every-distribution-every-scale-every-index-all-at-once}}
 
-A common task for drought researchers is to compute indexes at different
-parameter combinations. This can be used to identify the spatial and
-temporal extent of drought events, recommend the best parameter choice,
-or compare the effectiveness of indexes for monitoring drought. The
-example below computes two indexes: SPI and SPEI, at various time scales
-and fitted distributions, for stations in the state of Queensland in
-Australia. The purpose of the example is to demonstrate the interfaces
-the tidyindex package built to allow easy computing at different
-parameter combinations.
+The state of Queensland in Australia frequently experience natural
+disaster events such as flood and drought, which can significantly
+impact its agricultural industry. This example uses daily data from
+Global Historical Climatology Network Daily (GHCND), aggregated into
+monthly precipitation, to compute two drought indexes -- SPI and SPEI --
+at various time scales and fitted distributions, for 29 stations in the
+state of Queensland in Australia, spanning from January 1990 to April
+2022. This example showcases the basic calculation of indexes with
+different parameter specifications within the pipeline framework. The
+dataset used in this example is available in the \texttt{tidyindex}
+package as \texttt{queensland} and blow prints the first few rows of the
+data:
 
-The state of Queensland in Australia is frequently affected by natural
-disaster events such as flood and drought, which can have significant
-impacts on its agricultural industry. This study uses daily data from
-Global Historical Climatology Network Daily (GHCND), accessed via the
-package \texttt{rnoaa} to examine drought/flood condition in Queensland.
-Daily data is average into monthly and stations are excluded if monthly
-data contains missings, which is required for calculating both SPI and
-SPEI. This gives 29 stations with complete records from 1990 January to
-2022 April.
+\begin{verbatim}
+# A tibble: 5 x 9
+  id                ym  prcp  tmax  tmin  tavg  long   lat name       
+  <chr>          <mth> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <chr>      
+1 ASN00029038 1990 Jan  1682  34.3  24.7  29.5  142. -15.5 KOWANYAMA ~
+2 ASN00029038 1990 Feb   416  35.2  23.2  29.2  142. -15.5 KOWANYAMA ~
+3 ASN00029038 1990 Mar  2026  32.5  23.6  28.0  142. -15.5 KOWANYAMA ~
+4 ASN00029038 1990 Apr   597  32.9  17.7  25.3  142. -15.5 KOWANYAMA ~
+5 ASN00029038 1990 May   244  31.8  20.1  25.9  142. -15.5 KOWANYAMA ~
+\end{verbatim}
 
 \begin{figure}
 
@@ -772,27 +776,28 @@ SPEI. This gives 29 stations with complete records from 1990 January to
 
 }
 
-\caption{\label{fig-pipeline-spei}Diagram of pipeline steps for index
-construction. will need to be updated with better design and the
-distribution fitting step.}
+\caption{\label{fig-spei}Index pipeline for two drought indexes: the
+Standardized Precipitation Index (SPI) and the Standardized
+Precipitation-Evapotranspiration Index (SPEI). Both indexes share
+similar construction steps with SPEI having two steps additional steps
+(variable transformation and dimension reduction) to convert temperature
+into evapotranspiration and combine it with the precipitation series.}
 
 \end{figure}
 
-The function \texttt{compute\_indexes()} can be used to collectively
-compute multiple indexes. The tidyindex offers wrapper functions, with
-the prefix idx\_, that simplify the calculation of commonly used indexes
-by combining a set of pipeline steps into a single function. For
-example, the function \texttt{idx\_spei()} includes the five steps
-previously described in \textbf{?@sec-toy-example} (variable
-transformation, dimension reduction, temporal aggregation, distribution
-fit, and normalise). Each \texttt{idx\_xxx()} function specifies the
-relevant parameters relevant to the index: the thornthwaite method is
-used to calculate PET in SPEI, with the average temperature
-(\texttt{tavg}) and latitude (\texttt{lat}) used as inputs. The SPEI is
-computed at four time scales (6, 12, 24, and 36 months) and fitted with
-two distributions (Log-logistic and General Extreme Value (GEV)). The
-SPI is also computed at the same four time scales and uses the default
-gamma distribution to fit the aggregated series.
+Figure~\ref{fig-spei} illustrates the pipeline steps of the two indexes.
+The two indexes are similar with the distinct that SPEI involves two
+additional steps -- variable transformation and dimension reduction --
+prior to temporal processing. As introduced in
+Section~\ref{sec-software}, wrapper functions are available for both
+indexes as \texttt{idx\_spi()} and \texttt{idx\_spei()}, which allows
+for the specification of different time scales and distributions for
+fitting the aggregated series. In \texttt{tidyindex}, multiple indexes
+can be calculated collectively using the function
+\texttt{compute\_indexes()}. Both SPI and SPEI are calculated across
+four time scales (6, 12, 24, and 36 months). The SPEI is fitted with two
+distributions (log-logistic and general extreme value distribution) and
+the gamma distribution is used for SPI:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -808,24 +813,48 @@ gamma distribution to fit the aggregated series.
 \end{Highlighting}
 \end{Shaded}
 
-The output from \texttt{compute\_indexes()} contains index values and
-associated parameter in a long tibble. It includes the original
-variables (\texttt{id}, \texttt{ym}, \texttt{prcp}, \texttt{tmax},
-\texttt{tmin}, \texttt{tavg}, \texttt{long}, \texttt{lat}, and
-\texttt{name}), index parameters (\texttt{.idx}, \texttt{.scale},
-\texttt{.method}, and \texttt{.dist}), intermediate variables
-(\texttt{pet}, \texttt{.agg}, and \texttt{.fitted}), and the final index
-(\texttt{.index}). This data can be visualised across space or time, or
-simultaneously, to explore the wet/dry condition in Queensland.
-Figure~\ref{fig-compute-spatial} visualises the spatial distribution of
-SPI at two periods (2010 October - 2011 March and 2019 October - 2020
-March) with significant natural disaster events: 2010/11 Queensland
-flood and 2019 Australia drought, which contributes to the notorious
+\begin{verbatim}
+# A tibble: 128,586 x 19
+   .idx  .period id             ym  prcp  tmax  tmin  tavg  long   lat
+   <chr>   <dbl> <chr>       <mth> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+ 1 spei        6 ASN0002~ 1990 Jun   170  29.7  16.2  23.0  142. -15.5
+ 2 spei        6 ASN0002~ 1990 Jun   170  29.7  16.2  23.0  142. -15.5
+ 3 spei        6 ASN0002~ 1990 Jun     0  23.0  11.8  17.4  139. -20.7
+ 4 spei        6 ASN0002~ 1990 Jun     0  23.0  11.8  17.4  139. -20.7
+ 5 spei        6 ASN0003~ 1990 Jun   794  25.8  18.1  21.9  146. -16.9
+ 6 spei        6 ASN0003~ 1990 Jun   794  25.8  18.1  21.9  146. -16.9
+ 7 spei        6 ASN0003~ 1990 Jun   504  23.0  13.8  18.4  145. -17.1
+ 8 spei        6 ASN0003~ 1990 Jun   504  23.0  13.8  18.4  145. -17.1
+ 9 spei        6 ASN0003~ 1990 Jun  1970  23.9  16.4  20.2  146. -17.6
+10 spei        6 ASN0003~ 1990 Jun  1970  23.9  16.4  20.2  146. -17.6
+# i 128,576 more rows
+# i 9 more variables: name <chr>, pet <dbl>, diff <dbl>,
+#   .scale <dbl>, .agg <dbl>, .method <chr>, .fitted <dbl>,
+#   .dist <chr>, .index <dbl>
+\end{verbatim}
+
+The output contains the original data, index values (\texttt{.index}),
+parameter used (\texttt{.scale}, \texttt{.method}, and \texttt{.dist}),
+and all the intermediate variables (\texttt{pet}, \texttt{.agg}, and
+\texttt{.fitted}). This data can be visualized to investigate the
+spatio-temporal distribution of the drought/flood events, as well as the
+response of index values to different time scales and distribution
+parameters at specific single locations.
+Figure~\ref{fig-compute-spatial} and Figure~\ref{fig-compute-temporal}
+exemplify two possibilities. Figure~\ref{fig-compute-spatial} presents
+the spatial distribution of SPI during two periods: October 2010 to
+March 2011 for the 2010/11 Queensland flood and October 2019 to March
+2020 for the 2019 Australia drought, which contributes to the notorious
 2019/20 bushfire. Figure~\ref{fig-compute-temporal} displays the
-sensitivity of the SPEI series for one particular station, Texas post
-office, at different time scales and fitted distributions. These two
-plots demonstrate some possibilities to explore the indexes after they
-are computed from \texttt{compute\_indexes()}.
+sensitivity of the SPEI series at the Texas post office to different
+time scales and fitted distributions. Larger time scales produce a
+smoother index across time, however, all time scales indicate an extreme
+drought (corresponding to -2 in SPEI) in 2020, confirming the severity
+of the drought across different time horizons. Moreover, the chosen
+distribution has less influence on the index, with general extreme value
+distribution tending to produce more extreme outcomes than log logistic
+distribution for the extreme events (index \textgreater{} 2 or
+\textless-2).
 
 \begin{figure}
 

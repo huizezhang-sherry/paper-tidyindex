@@ -59,7 +59,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
-#options(width = 70)
+options(width = 70)
 library(tidyverse)
 library(latex2exp)
 library(patchwork)
@@ -93,7 +93,7 @@ To be able to test different decision choices systematically for an index, the i
 
 In this work, we provide statistical and computational methods for developing a data pipeline framework to construct and customize indexes using data. The proposed pipeline comprises various modules, including temporal and spatial aggregation, variable transformation and combination, distribution fitting, benchmark setting, and index communication. Given the decisions analysts need to make when combining multivariate data into indexes, the proposed pipeline enables the evaluation of how the specific choice can affect the index, as well as how the index may appear under alternative options. Furthermore, uncertainty calculation can also flow through the pipeline, providing the index with confidence measures. 
 
-The rest of the paper is structured as follows: @sec-tidy reviews the tidy framework in R and how index construction can benefit from such a framework. The details of the pipeline modules are presented in @sec-pipeline. @sec-dev explains the design of the `tidyindex` pacakge that implements the modules. Examples are given in @sec-examples to illustrate the use cases of the pipeline.
+The rest of the paper is structured as follows: @sec-tidy reviews the tidy framework in R and how index construction can benefit from such a framework. The details of the pipeline modules are presented in @sec-pipeline. @sec-software explains the design of the `tidyindex` pacakge that implements the modules. Examples are given in @sec-examples to illustrate the use cases of the pipeline.
 
 <!-- Evaluating indexes is challenging because the underlying concept an index measures is often a latent variable and lacks direct benchmarks for comparison. In literature, researchers typically demonstrate the accuracy of an index through comparing it to some well-known indexes, such as SPI for drought indexes, or to a relevant response variable, such as crop yield for monitoring agricultural drought. For social indexes, @uncertainty proposes a Monte Carlo algorithm to compute index uncertainty through sampling the linear weights.  -->
 
@@ -281,7 +281,7 @@ a_z & C_z \leq x^i(s; t)
 ```
 This is typically used at the end of the index pipeline to simplify the index to communicate to the public the severity of the concept of interest measured by the index. An example of simplification is to map the calculated SPI to four categories: mild, moderate, severe, and extreme drought.
 
-# Software design {#sec-dev}
+# Software design {#sec-software}
 
 The R package `tidyindex` implements the index pipeline modules described in @sec-pipeline. These modules compute an index in a sequential manner, as shown below:
 
@@ -335,19 +335,22 @@ This section uses the example of drought and social indexes to show the analysis
 
 ## Every distribution, every scale, every index all at once
 
-A common task for drought researchers is to compute indexes at different parameter combinations. This can be used to identify the spatial and temporal extent of drought events, recommend the best parameter choice, or compare the effectiveness of indexes for monitoring drought. The example below computes two indexes: SPI and SPEI, at various time scales and fitted distributions, for stations in the state of Queensland in Australia. The purpose of the example is to demonstrate the interfaces the tidyindex package built to allow easy computing at different parameter combinations.
+The state of Queensland in Australia frequently experience natural disaster events such as flood and drought, which can significantly impact its agricultural industry. This example uses daily data from Global Historical Climatology Network Daily (GHCND), aggregated into monthly precipitation, to compute two drought indexes -- SPI and SPEI -- at various time scales and fitted distributions, for  `r length(unique(queensland$id))` stations in the state of Queensland in Australia, spanning from January 1990 to April 2022. This example showcases the basic calculation of indexes with different parameter specifications within the pipeline framework. The dataset used in this example is available in the `tidyindex` package as `queensland` and blow prints the first few rows of the data: 
 
-The state of Queensland in Australia is frequently affected by natural disaster events such as flood and drought, which can have significant impacts on its agricultural industry. This study uses daily data from Global Historical Climatology Network Daily (GHCND), accessed via the package `rnoaa` to examine drought/flood condition in Queensland. Daily data is average into monthly and stations are excluded if monthly data contains missings, which is required for calculating both SPI and SPEI. This gives `r length(unique(queensland$id))` stations with complete records from 1990 January to 2022 April.
-
-```{r fig-pipeline-spei}
-#| fig-align: center
-#| fig-cap: "Diagram of pipeline steps for index construction. will need to be updated with better design and the distribution fitting step."
-#| out-height: 90%
-#| out-width: 100%
-knitr::include_graphics(here::here("figures/pipeline-spei.png"))
+```{r}
+queensland %>% head(5)
 ```
 
-The function `compute_indexes()` can be used to collectively compute multiple indexes. The tidyindex offers wrapper functions, with the prefix idx\_, that simplify the calculation of commonly used indexes by combining a set of pipeline steps into a single function. For example, the function `idx_spei()` includes the five steps previously described in @sec-toy-example (variable transformation, dimension reduction, temporal aggregation, distribution fit, and normalise). Each `idx_xxx()` function specifies the relevant parameters relevant to the index: the thornthwaite method is used to calculate PET in SPEI, with the average temperature (`tavg`) and latitude (`lat`) used as inputs. The SPEI is computed at four time scales (6, 12, 24, and 36 months) and fitted with two distributions (Log-logistic and General Extreme Value (GEV)). The SPI is also computed at the same four time scales and uses the default gamma distribution to fit the aggregated series.
+
+```{r fig-spei}
+#| fig-align: center
+#| fig-cap: "Index pipeline for two drought indexes: the Standardized Precipitation Index (SPI) and the Standardized Precipitation-Evapotranspiration Index (SPEI). Both indexes share similar construction steps with SPEI having two steps additional steps (variable transformation and dimension reduction) to convert temperature into evapotranspiration and combine it with the precipitation series. "
+#| out-height: 90%
+#| out-width: 100%
+knitr::include_graphics(path = here::here("figures/pipeline-spei.png"))
+```
+
+@fig-spei illustrates the pipeline steps of the two indexes. The two indexes are similar with the distinct that SPEI involves two additional steps -- variable transformation and dimension reduction -- prior to temporal processing. As introduced in @sec-software, wrapper functions are available for both indexes as `idx_spi()` and `idx_spei()`, which allows for the specification of different time scales and distributions for fitting the aggregated series. In `tidyindex`, multiple indexes can be calculated collectively using the function `compute_indexes()`. Both SPI and SPEI are calculated across four time scales (6, 12, 24, and 36 months). The SPEI is fitted with two distributions (log-logistic and general extreme value distribution) and the gamma distribution is used for SPI: 
 
 ```{r cache=TRUE, echo = TRUE, message=FALSE, eval=FALSE}
 .scale <- c(6, 12, 24, 36)
@@ -365,12 +368,19 @@ idx <- queensland %>%
 save(idx, file = here::here("data/idx.rda"))
 ```
 
-The output from `compute_indexes()` contains index values and associated parameter in a long tibble. It includes the original variables (`id`, `ym`, `prcp`, `tmax`, `tmin`, `tavg`, `long`, `lat`, and `name`), index parameters (`.idx`, `.scale`, `.method`, and `.dist`), intermediate variables (`pet`, `.agg`, and `.fitted`), and the final index (`.index`). This data can be visualised across space or time, or simultaneously, to explore the wet/dry condition in Queensland. @fig-compute-spatial visualises the spatial distribution of SPI at two periods (2010 October - 2011 March and 2019 October - 2020 March) with significant natural disaster events: 2010/11 Queensland flood and 2019 Australia drought, which contributes to the notorious 2019/20 bushfire. @fig-compute-temporal displays the sensitivity of the SPEI series for one particular station, Texas post office, at different time scales and fitted distributions. These two plots demonstrate some possibilities to explore the indexes after they are computed from `compute_indexes()`.
+```{r}
+load(here::here("data/idx.rda"))
+```
+
+```{r}
+idx
+```
+
+The output contains the original data, index values (`.index`), parameter used (`.scale`, `.method`, and `.dist`), and all the intermediate variables (`pet`, `.agg`, and `.fitted`). This data can be visualized to investigate the spatio-temporal distribution of the drought/flood events, as well as the response of index values to different time scales and distribution parameters at specific single locations. @fig-compute-spatial and @fig-compute-temporal exemplify two possibilities. @fig-compute-spatial presents the spatial distribution of SPI during two periods: October 2010 to March 2011 for the 2010/11 Queensland flood and October 2019 to March 2020 for the 2019 Australia drought, which contributes to the notorious 2019/20 bushfire. @fig-compute-temporal displays the sensitivity of the SPEI series at the Texas post office to different time scales and fitted distributions. Larger time scales produce a smoother index across time, however, all time scales indicate an extreme drought (corresponding to -2 in SPEI) in 2020, confirming the severity of the drought across different time horizons. Moreover, the chosen distribution has less influence on the index, with general extreme value distribution tending to produce more extreme outcomes than log logistic distribution for the extreme events (index > 2 or <-2).
 
 ```{r fig-compute-spatial}
 #| fig-cap: "Spatial distribution of Standardized Precipitation Index (SPI-12) in Queensland, Australia during two major flood and drought events: 2010/11 and 2019/20. The map shows a continous wet period during the 2010/11 flood period and a mitigated drought situation, after its worst in 2019 December and 2020 Janurary, likely due to the increased rainfall in February from the meteorological record."
 #| fig-width: 6
-load(here::here("data/idx.rda"))
 queensland_map <- ozmaps::abs_ste %>% filter(NAME == "Queensland") %>% 
   rmapshaper::ms_simplify(keep = 0.02)
 queensland_map %>%
@@ -380,7 +390,7 @@ queensland_map %>%
     data = idx %>%
       filter(.idx == "spi", .scale == 12) %>%
       filter(((year(ym) %in% c(2010, 2019) & month(ym) >= 10) )|
-               ((year(ym) %in% c(2011, 2020) & month(ym) <= 3) )), 
+               ((year(ym) %in% c(2011, 2020) & month(ym) <= 3) )),
     aes(x = long, y = lat, color = .index)) +
   colorspace::scale_color_continuous_divergingx(palette = "Geyser", rev = TRUE, name = "Index") + 
   theme_void() +
