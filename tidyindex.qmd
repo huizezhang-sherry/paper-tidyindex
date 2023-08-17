@@ -115,8 +115,6 @@ Since the success of tidyverse, more packages have been developed to analyze dat
 
 <!-- **Constructing indexes would also benefit from pipeline and embracing the aforementioned design philosophy.** -->
 
-<!-- For constructing indexes, many indexes have provided available publicly scripts for computation, i.e. Human Development Index (HDI) [@hdi]. Some have made the first level of generalisation from scripts to functions and creates R packages specialised for calculating particular indexes, i.e. the `SPEI` package [@SPEI] for calculating drought indexes SPI and SPEI.  -->
-
 For constructing indexes, the pipeline approach adopts explicit and standalone modules that can be assembled in different ways. Index developers can choose the appropriate modules and arrange them accordingly to generate the data pipeline that is needed for their purpose. The pipeline approach provides many advantages:
 
 -   makes the computation more transparent, and thus more easily debugged.
@@ -538,12 +536,12 @@ gl <-  lapply(rl, grid::rasterGrob)
 wrap_plots(gl, ncol = 3)  
 ```
 
-<!-- When economy and education are given a greater weight, the variation in index values and ranking highlights countries that performs relatively better (moving right) or worse (moving left) in these two single dimensions. For example, the index moves to the left for Ethiopia and Senegal when economy is given a higher weight. This reveals the economy as a weakness for these two countries compared to their similarly-ranked peers.  -->
-
-<!-- These can be helpful in understanding the sensitivity of the index value and country ranking to each variable and identifying the strengths and weaknesses of each country relative to others.  -->
-
 # Conclusion
 
 The paper introduces a data pipeline comprising nine modules designed for the construction and analysis of indexes within the tidy framework. The pipeline offers a modular workflow to allow compute index with different parameterizations, to test minor changes to the original index definition, and to quantify uncertainties. The framework proposed in the paper is universal to index across diverse domains. Examples are provided, including the drought indexes (SPI and SPEI) and Global Gender Gap Index (GGGI), to demonstrate the index calculation with different time scales and distributions and to illustrate how slight adjustment of linear combination weights impact the index. The accompanied package, tidyindex, is not intended to offer an exhaustive implementation for all indexes across every domains. Instead, it provides a realization of the pipeline framework proposed in the paper. When adopting the pipeline approach to construct indexes, analysts may consider developing software that can be readily deployed in the cloud for production purposes. 
+
+# Acknowledgement
+
+This work is funded by a Commonwealth Scientific and Industrial Research Organisation (CSIRO) Data61 Scholarship. The article is created using Quarto in R. The source code for reproducing this paper can be found at: https://github.com/huizezhang-sherry/paper-tidyindex.
 
 # Reference
