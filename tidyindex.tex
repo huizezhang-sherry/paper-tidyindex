@@ -261,7 +261,7 @@ Guangdong, China
 indexes\sep data pipeline\sep 
 software design
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}, frame hidden, sharp corners, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, enhanced, interior hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -319,9 +319,9 @@ potential weaknesses for methodology improvement.
 The rest of the paper is structured as follows:
 Section~\ref{sec-pipeline} reviews the concept of data pipeline in R.
 The pipeline framework for index construction is presented in
-Section~\ref{sec-index-pipeline}. Section~\ref{sec-dev} explains how to
-add new steps into the index methodology in the form of new building
-blocks inside the index construction pipeline. Examples are given in
+\textbf{?@sec-index-pipeline}. Section~\ref{sec-dev} explains how to add
+new steps into the index methodology in the form of new building blocks
+inside the index construction pipeline. Examples are given in
 Section~\ref{sec-examples} to demonstrate the index construction with
 the pipeline built.
 
@@ -405,8 +405,8 @@ purpose. The pipeline approach provides many advantages:
 Adoption of this pipeline approach would provide uniformity to the field
 of index development, research and application.
 
-\hypertarget{sec-index-pipeline}{%
-\section{Details of the index pipeline}\label{sec-index-pipeline}}
+\hypertarget{sec-pipeline}{%
+\section{Details of the index pipeline}\label{sec-pipeline}}
 
 In constructing various indexes, the primary aim is to transform the
 data, often multivariate, into a univariate index. Spatial and temporal
@@ -675,16 +675,83 @@ extreme drought.
 \hypertarget{sec-dev}{%
 \section{Software design}\label{sec-dev}}
 
+The R package \texttt{tidyindex} implements the index pipeline modules
+described in Section~\ref{sec-pipeline}. These modules compute an index
+in a sequential manner, as shown below:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{DATA }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{module1}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{module2}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{module3}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}
+\NormalTok{  ...}
+\end{Highlighting}
+\end{Shaded}
+
+Each module offers a variety of alternatives, each represented by a
+distinct function. For example, within the
+\texttt{dimension\_reduction()} module, three methods are available:
+\texttt{aggregate\_linear()}, \texttt{aggregate\_geometrical()}, and
+\texttt{manual\_input()} and they can be used as:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{dimension\_reduction}\NormalTok{(}\AttributeTok{V1 =} \FunctionTok{aggregate\_linear}\NormalTok{(...))}
+\FunctionTok{dimension\_reduction}\NormalTok{(}\AttributeTok{V2 =} \FunctionTok{aggregate\_geometrical}\NormalTok{(...))}
+\FunctionTok{dimension\_reduction}\NormalTok{(}\AttributeTok{V3 =} \FunctionTok{manual\_input}\NormalTok{(...))}
+\end{Highlighting}
+\end{Shaded}
+
+Each method can be independently evaluated as a recipe, for example,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{manual\_input}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{x1 }\SpecialCharTok{+}\NormalTok{ x2)}
+\end{Highlighting}
+\end{Shaded}
+
+takes a formula to combine the variable \texttt{x1} and \texttt{x2} and
+will return:
+
+\begin{verbatim}
+[1] "manual_input"
+attr(,"formula")
+[1] "x1 + x2"
+attr(,"class")
+[1] "dim_red"
+\end{verbatim}
+
+This recipe will then be evaluated in the pipeline module with data to
+obtain the numerical results. The package also offers wrapper functions
+that combine multiple steps for specific indexes. For instance, the
+\texttt{idx\_spi()} function bundles three steps (temporal aggregation,
+distribution fit, and normalising) into a single command, simplifying
+the syntax for computation. Analysts are also encouraged to create their
+customised indexes from existing modules.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{idx\_spi }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(...)\{}
+\NormalTok{  DATA }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{aggregate}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}
+    \FunctionTok{dist\_fit}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{augment}\NormalTok{(...)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
 \hypertarget{sec-examples}{%
 \section{Examples}\label{sec-examples}}
 
 This section uses the example of drought and social indexes to show the
 analysis made possible with the index pipeline. The drought index
-example computes two indexes with various time scales and distributions
-simultaneously using the pipeline framework to understand the flood and
-drought events in Queensland. The social index example focuses on the
-dimension reduction in Global Gender Gap Index to explore the impact of
-weight changes in linear combination on index value and country ranking.
+example computes two indexes (SPI and SPEI) with various time scales and
+distributions simultaneously using the pipeline framework to understand
+the flood and drought events in Queensland. The second example focuses
+on the dimension reduction step in the Global Gender Gap Index to
+explore how the changes of linear combination weights affect the index
+values and country rankings.
 
 \hypertarget{every-distribution-every-scale-every-index-all-at-once}{%
 \subsection{Every distribution, every scale, every index all at
@@ -989,10 +1056,10 @@ by the example.
 
 \caption{\label{fig-idx-tour}Six frames selected to explore how varying
 the weights of the politics dimension changes the index values and
-country ranking in Global Gender Gap Index (GGGI). The top panel shows
+country rankings in Global Gender Gap Index (GGGI). The top panel shows
 the GGGI value against the country, ranked by its original index value
 in Frame 12. The bottom panel displays the weight used to produce the
-index value in the top panel, with each frame corresponds to a set of
+index values in the top panel, with each frame corresponds to a set of
 weights. Countries selected includes 1) top-ranked countries with GGGI
 \textgreater{} 0.85, 2) countries ranked between 57 and 62 with GGGI
 from 0.72 to 0.73, and 3) low-ranked countries with GGGI \textless{}

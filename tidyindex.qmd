@@ -137,7 +137,7 @@ Adoption of this pipeline approach would provide uniformity to the field of inde
 
 <!-- This approach allows for quick experimentation with alternatives and facilitates building new indexes. Consequently, maintenance is streamlined in the long term, as all the indexes are developed in-house using a unified syntax. -->
 
-# Details of the index pipeline {#sec-index-pipeline}
+# Details of the index pipeline {#sec-pipeline}
 
 In constructing various indexes, the primary aim is to transform the data, often multivariate, into a univariate index. Spatial and temporal considerations are also factored into the process when observational units and time periods are not independent. However, despite the variations in contextual information for indexes in different fields, the underlying statistical methodology remains consistent across diverse domains. Each index can be represented as a series of modular statistical operations on the data. This allows us to decompose the index construction process into a unified pipeline workflow with a standardized set of data processing steps to be applied across different indexes.
 
@@ -289,19 +289,55 @@ This is typically used at the end of the index pipeline to simplify the index to
 
 # Software design {#sec-dev}
 
-<!-- # 1. unpack or the argumebt s  -->
+The R package `tidyindex` implements the index pipeline modules described in @sec-pipeline. These modules compute an index in a sequential manner, as shown below:
 
-<!-- # 2. construct the syntax to evalute: ~rescale_minmax(life_exp, min = xxx, max = xxxx) -->
+```{r eval = FALSE, echo = TRUE}
+DATA |> 
+  module1(...) |>
+  module2(...) |>
+  module3(...) |>
+  ...
+```
 
-<!-- # 3. evalute  -->
+Each module offers a variety of alternatives, each represented by a distinct function. For example, within the `dimension_reduction()` module, three methods are available: `aggregate_linear()`, `aggregate_geometrical()`, and `manual_input()` and they can be used as: 
 
-<!-- # 4. update the data object  -->
+```{r eval = FALSE, , echo = TRUE}
+dimension_reduction(V1 = aggregate_linear(...))
+dimension_reduction(V2 = aggregate_geometrical(...))
+dimension_reduction(V3 = manual_input(...))
+```
 
-<!-- # [Extending the pipeline] a different name here: alternate a module with a different (method) -->
+Each method can be independently evaluated as a recipe, for example, 
+
+```{r eval = FALSE, , echo = TRUE}
+manual_input(~x1 + x2)
+``` 
+
+takes a formula to combine the variable `x1` and `x2` and will return:
+
+````
+[1] "manual_input"
+attr(,"formula")
+[1] "x1 + x2"
+attr(,"class")
+[1] "dim_red"
+````
+
+This recipe will then be evaluated in the pipeline module with data to obtain the numerical results. The package also offers wrapper functions that combine multiple steps for specific indexes. For instance, the `idx_spi()` function bundles three steps (temporal aggregation, distribution fit, and normalising) into a single command, simplifying the syntax for computation. Analysts are also encouraged to create their customised indexes from existing modules.
+
+```{r eval = FALSE, echo = TRUE}
+idx_spi <- function(...){
+  DATA |> 
+    aggregate(...) |>
+    dist_fit(...) |> 
+    augment(...)
+}
+```
+
 
 # Examples {#sec-examples}
 
-This section uses the example of drought and social indexes to show the analysis made possible with the index pipeline. The drought index example computes two indexes with various time scales and distributions simultaneously using the pipeline framework to understand the flood and drought events in Queensland. The social index example focuses on the dimension reduction in Global Gender Gap Index to explore the impact of weight changes in linear combination on index value and country ranking.
+This section uses the example of drought and social indexes to show the analysis made possible with the index pipeline. The drought index example computes two indexes (SPI and SPEI) with various time scales and distributions simultaneously using the pipeline framework to understand the flood and drought events in Queensland. The second example focuses on the dimension reduction step in the Global Gender Gap Index to explore how the changes of linear combination weights affect the index values and country rankings.
 
 ## Every distribution, every scale, every index all at once
 
@@ -489,7 +525,7 @@ gifski::gifski(
 ```
 
 ```{r fig-idx-tour, fig.align='center', fig.height=5}
-#| fig-cap: "Six frames selected to explore how varying the weights of the politics dimension changes the index values and country ranking in Global Gender Gap Index (GGGI). The top panel shows the GGGI value against the country, ranked by its original index value in Frame 12. The bottom panel displays the weight used to produce the index value in the top panel, with each frame corresponds to a set of weights. Countries selected includes 1) top-ranked countries with GGGI > 0.85, 2) countries ranked between 57 and 62 with GGGI from 0.72 to 0.73, and 3) low-ranked countries with GGGI < 0.6. Compared to Frame 12 where equal weigts are used for the four dimension, a reduced weight in politics (Frame 1 and 6) shows narrower gaps between top and mid- or lower- ranked countries, while an increase in the politics weight (Frame 18, 24, and 29) leads to a systematic decrease of GGGI values across all the countries, except for Bangladesh. Full animation is available at https://vimeo.com/847874016."  
+#| fig-cap: "Six frames selected to explore how varying the weights of the politics dimension changes the index values and country rankings in Global Gender Gap Index (GGGI). The top panel shows the GGGI value against the country, ranked by its original index value in Frame 12. The bottom panel displays the weight used to produce the index values in the top panel, with each frame corresponds to a set of weights. Countries selected includes 1) top-ranked countries with GGGI > 0.85, 2) countries ranked between 57 and 62 with GGGI from 0.72 to 0.73, and 3) low-ranked countries with GGGI < 0.6. Compared to Frame 12 where equal weigts are used for the four dimension, a reduced weight in politics (Frame 1 and 6) shows narrower gaps between top and mid- or lower- ranked countries, while an increase in the politics weight (Frame 18, 24, and 29) leads to a systematic decrease of GGGI values across all the countries, except for Bangladesh. Full animation is available at https://vimeo.com/847874016."  
 #frames <- c("001", "013", "037", "061", "085", "109")
 frames <- c("001", "006", "012", "018", "024", "029")
 ani <- paste0(here::here("figures/"), "idx-tour/", "idx-tour-", frames, ".png")
