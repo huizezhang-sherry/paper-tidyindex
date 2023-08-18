@@ -52,6 +52,8 @@ keywords:
   - indexes
   - data pipeline
   - software design
+  - uncertainty
+  - decision-making
 bibliography: bibliography.bib  
 editor_options: 
   chunk_output_type: console
@@ -89,7 +91,7 @@ Indexes are commonly used to combine and summarize different sources of informat
 
 To construct an index, experts typically start by defining a concept of interest that requires measurement. This concept often lacks a direct measurable attribute or can only be measured as a composite of various processes, yet it holds social and public significance. To create an index, once the underlying processes involved are identified, relevant and available variables are then defined, collected, and combined using statistical methods into an index that aims to measure the process of interest. The construction process is often not straightforward, and decisions need to be made, such as the selection of variables to be included, which might depend on data availability and the statistical definition of the index to be used, among others. For instance, the indexes constructed from a linear combination of variables need to decide on the weight assigned to each variable. Some indexes have a spatial and/or temporal component, and variables can be aggregated to different spatial resolutions and temporal scales, leading to various indexes for different monitoring purposes. Hence, all these decisions can result in different index values and have different practical implications.
 
-To be able to test different decision choices systematically for an index, the index needs to be broken down into its fundamental building blocks to analyze the contribution and effect of each component. We call this process of breaking the index construction into different steps the index pipeline. Such decomposition of index components provides the means to standardize index construction via a pipeline and offers benefits for comparing among indexes and calculating index uncertainty. In social indexes, for instance, the OECD handbook [@oecd_handbook_2008] has provided a set of steps and recommendations for constructing composite socio-economic indexes. However, there is still a need to extend these guidelines and methods to accommodate the inclusion of more methodological complex steps required for indexes in general.
+To be able to test different decision choices systematically for an index, the index needs to be broken down into its fundamental building blocks to analyze the contribution and effect of each component. We call this process of breaking the index construction into different steps the index pipeline. Such decomposition of index components provides the means to standardize index construction via a pipeline and offers benefits for comparing among indexes and calculating index uncertainty. 
 
 In this work, we provide statistical and computational methods for developing a data pipeline framework to construct and customize indexes using data. The proposed pipeline comprises various modules, including temporal and spatial aggregation, variable transformation and combination, distribution fitting, benchmark setting, and index communication. Given the decisions analysts need to make when combining multivariate data into indexes, the proposed pipeline enables the evaluation of how the specific choice can affect the index, as well as how the index may appear under alternative options. Furthermore, uncertainty calculation can also flow through the pipeline, providing the index with confidence measures. 
 
@@ -100,6 +102,16 @@ The rest of the paper is structured as follows: @sec-tidy reviews the tidy frame
 <!-- These sometimes make indexes difficult to reach consensus for wider use and large institutes often prefer simple indexes for more stable performance and easier interpretation. -->
 
 <!-- When indexes have a spatial and/or temporal component, different choices on how space and time is aggregated will introduce uncertainty. A slight change in the variable value can sometimes introduce a big difference for the index.  -->
+# Background to index usage and development
+
+<!-- * point to major review papers describing index dev  -->
+<!-- * point to major uses of indexes  -->
+
+Indexes serve as critical tools to guide understanding and decisions across natural and social sciences. In environmental science, climate indexes are produces by major monitoring centres, such as the United States Drought Monitor and National Oceanic and Atmospheric Administration, to facilitate agricultural planning and early monitoring on natural disaster. In economics, indexes provide insight into market trends through combining a collection of representative items. In social sciences, indexes are useful to measure social concepts such as human development, gender equity, and university quality, which leads to country ranking and enables cross-country comparison.
+
+While the concept of combining variables into indexes finds widespread application across various domains, indexes tend to develop separately within each field. The OECD handbook [@oecd_handbook_2008] provides a framework of steps and recommendations. for composing socio-economic composite indexes. The drought index handbook [@svoboda2016handbook], instead, provides a practical guide outlining the advantage and disadvantage of various drought indexes, as recommended by World Meteorology Organization. Review papers in the literature summarise different methodologies for constructing indexes from different variables and statistical methods, for example, @zargar2011review, @hao_drought_2015 @alahacoon_comprehensive_2022 for drought indexes. In specific domains, attention are given to analyze the index construction process, including the implications of the choices made during the index construction [@jones_vulnerability_2007] and uncertainty or sensitivity analysis [@uncertainty; @tate_social_2012]. 
+
+In software development, many tools encapsulate all the construction steps into a single function to allow computing indexes with provided data. This includes the `SPEI` package [@spei] for two drought indexes, the `gpindex` [@gpindex] package for price indexes, and the `fundiversity` package [@fundiversity] for functional diversity indexes in ecology. The package `COINr` [@COINr] deviates from this one-size-fit-all approach by following the guidelines proposed in the OECD handbook to construct, analyze, and visualize composite indexes. 
 
 # Tidy framework {#sec-tidy}
 
@@ -152,17 +164,17 @@ where:
 
 In what follows when geographic or temporal components of the $x_j(s,t)$ process are fixed we will be using suffix notation. For example, $x_{sj}(t)$ represents the data for a fixed location $s$ as a function of time $t$. While $x_{tj}(s)$ denotes the spatial varying process for a fixed $t$. An overview of the notation for pipeline input, operation, and output is present in @tbl-notation.
 
-| No. | Module                  | Input                                                                   | Operation                           | Output                                                                        |
-|--|---------------|----------|---------------|--------------------------|
-| 1   | Temporal processing     | $x_{sj}(t)$                                                             | $f[x_{sj}(t)]$                      | $x^{\text{Temp}}_{sj}(t^\prime) \quad t^\prime \in D_{t^\prime}$ |
-| 2   | Spatial processing      | $x_{tj}(s)$                                                             | $g[x_{tj}(s)]$                      | $x^{\text{Spat}}_{tj}(s^\prime) \quad s^\prime \in D_{s^\prime}$                 |
-| 3   | Variable transformation | $x_{j}(s; t)$                                                           | $T[x_j(s;t)]$                       | $x^{\text{Trans}}_j(s;t)$                                                     |
-| 4   | Scaling                 | $x_j(s; t)$                                                             | $[x_j(s;t) - \alpha]/\gamma$        | $x^{\text{Scale}}_j(s;t)$                                                     |
-| 5   | Dimension reduction     | $\mathbf{x}(s;t) \quad \mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p$ | $h[\mathbf{x}(s;t)]$                | $\mathbf{y}(s;t) \quad \mathbf{y} \subseteq \mathbb{R}^d, d < q$      |
-| 6   | Distribution fit        | $x_j(s; t)$                                                             | $F[x_j(s;t)]$ | $p_j(s;t) \quad p(.) \in [0, 1]$                   |
-| 7   | Normalising             | $x_j(s; t)$                                                             | $\Phi^{-1}[x_j(s; t)]$              | $z_j(s; t)$                              |
-| 8   | Benchmarking            | $x_j(s; t)$                                                             | $u[x_j(s;t)]$                       | $b_j(s;t)$                                                                    |
-| 9   | Simplification          | $x_j(s; t)$                                                             | $v[x_j(s;t)]$                       | $A_j(s;t) \in \{a_1, a_2, \cdots, a_j\}$                                      |
+| Section | Module                  | Input                                                                   | Operation                           | Output                                                                        |
+|-------|---------------|---------|---------------|--------------------------|
+| 3.1   | Temporal processing     | $x_{sj}(t)$                                                             | $f[x_{sj}(t)]$                      | $x^{\text{Temp}}_{sj}(t^\prime) \quad t^\prime \in D_{t^\prime}$ |
+| 3.2   | Spatial processing      | $x_{tj}(s)$                                                             | $g[x_{tj}(s)]$                      | $x^{\text{Spat}}_{tj}(s^\prime) \quad s^\prime \in D_{s^\prime}$                 |
+| 3.3   | Variable transformation | $x_{j}(s; t)$                                                           | $T[x_j(s;t)]$                       | $x^{\text{Trans}}_j(s;t)$                                                     |
+| 3.4   | Scaling                 | $x_j(s; t)$                                                             | $[x_j(s;t) - \alpha]/\gamma$        | $x^{\text{Scale}}_j(s;t)$                                                     |
+| 3.5   | Dimension reduction     | $\mathbf{x}(s;t)$ | $h[\mathbf{x}(s;t)]$                | $\mathbf{y}(s;t) \quad \mathbf{y} \subseteq \mathbb{R}^d, d < q$      |
+| 3.6   | Distribution fit        | $x_j(s; t)$                                                             | $F[x_j(s;t)]$ | $p_j(s;t) \quad p(.) \in [0, 1]$                   |
+| 3.7   | Normalising             | $x_j(s; t)$                                                             | $\Phi^{-1}[x_j(s; t)]$              | $z_j(s; t)$                              |
+| 3.8   | Benchmarking            | $x_j(s; t)$                                                             | $u[x_j(s;t)]$                       | $b_j(s;t)$                                                                    |
+| 3.9   | Simplification          | $x_j(s; t)$                                                             | $v[x_j(s;t)]$                       | $A_j(s;t) \in \{a_1, a_2, \cdots, a_j\}$                                      |
 
 : An notation overview of the input, operation, and output of each pipeline module. {#tbl-notation}
 
@@ -176,7 +188,7 @@ knitr::include_graphics(here::here("figures/pipeline-overall.png"))
 
 ## Temporal processing
 
-The temporal processing module takes as input argument a single variable $x_{sj}(t)$ at location $s$ as a function of time. In this step the original time series can be transformed or summarized into a new one via time aggregation, the transformation is represented by the function $f$, $x^{\text{Temp}}_{sj}(t^\prime) = f[x_{sj}(t)]$ where $t^\prime$ refers to the new temporal resolution after aggregation. An example of temporal processing done in the computation of the Standardized Precipitation Index (SPI), consists of summing the monthly precipitation series over a rolling time window of size $k$. That is also known as the time scale. For SPI, the choice of the time scale $k$ is used to control the accumulation period for the water deficit, enabling the assessment of drought severity across various types (meteorological, agricultural, and hydrological).
+The temporal processing module takes as input argument a single variable $x_{sj}(t)$ at location $s$ as a function of time. In this step the original time series can be transformed or summarized into a new one via time aggregation, the transformation is represented by the function $f$, $x^{\text{Temp}}_{sj}(t^\prime) = f[x_{sj}(t)]$ where $t^\prime$ refers to the new temporal resolution after aggregation. An example of temporal processing done in the computation of the Standardized Precipitation Index (SPI) [@mckee1993relationship], consists of summing the monthly precipitation series over a rolling time window of size $k$. That is also known as the time scale. For SPI, the choice of the time scale $k$ is used to control the accumulation period for the water deficit, enabling the assessment of drought severity across various types (meteorological, agricultural, and hydrological).
 
 ## Spatial processing
 
@@ -247,7 +259,7 @@ trans_df %>%
 
 ## Dimension reduction
 
-Dimension reduction takes the multivariate information $\mathbf{x}(s;t)$, where $\mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p$, as the input. It summarises the high-dimensional information into a lower-dimension representation $\mathbf{y}(s;t)$, where $y \subseteq \mathbb{R}^d$ and $d < q$, as the output. The transformation can be based on domain-specific knowledge, originating from theories describing the underlying physical processes, or guided by statistical methods. For example, the Standardized Precipitation-Evapotranspiration Index (SPEI) calculates the difference $D$ between precipitation ($P$) and potential evapotranspiration ($\text{PET}$), using a water balance model ($D = P - \text{PET}$). This is the only step that differs from the Standardized Precipitation Index (SPI).
+Dimension reduction takes the multivariate information $\mathbf{x}(s;t)$, where $\mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p$, as the input. It summarises the high-dimensional information into a lower-dimension representation $\mathbf{y}(s;t)$, where $y \subseteq \mathbb{R}^d$ and $d < q$, as the output. The transformation can be based on domain-specific knowledge, originating from theories describing the underlying physical processes, or guided by statistical methods. For example, the Standardized Precipitation-Evapotranspiration Index (SPEI) [@SPEI] calculates the difference $D$ between precipitation ($P$) and potential evapotranspiration ($\text{PET}$), using a water balance model ($D = P - \text{PET}$). This is the only step that differs from the Standardized Precipitation Index (SPI).
 
 ## Distribution fit
 
@@ -281,7 +293,7 @@ This is typically used at the end of the index pipeline to simplify the index to
 
 # Software design {#sec-software}
 
-The R package `tidyindex` implements the index pipeline modules described in @sec-pipeline. These modules compute an index in a sequential manner, as shown below:
+The R package `tidyindex` implements a proof-of-concept of the index pipeline modules described in @sec-pipeline. These modules compute an index in a sequential manner, as shown below:
 
 ```{r eval = FALSE, echo = TRUE}
 DATA |> 
@@ -326,6 +338,7 @@ idx_spi <- function(...){
 }
 ```
 
+(more changes) The accompanied package, tidyindex, is not intended to offer an exhaustive implementation for all indexes across every domains. Instead, it provides a realization of the pipeline framework proposed in the paper. When adopting the pipeline approach to construct indexes, analysts may consider developing software that can be readily deployed in the cloud for production purposes. 
 
 # Examples {#sec-examples}
 
@@ -536,12 +549,19 @@ gl <-  lapply(rl, grid::rasterGrob)
 wrap_plots(gl, ncol = 3)  
 ```
 
+TODO: increase font for variable names
+
+## Confidence interval 
+
+also the ABS one - could display some uncertainties
+
+
 # Conclusion
 
-The paper introduces a data pipeline comprising nine modules designed for the construction and analysis of indexes within the tidy framework. The pipeline offers a modular workflow to allow compute index with different parameterizations, to test minor changes to the original index definition, and to quantify uncertainties. The framework proposed in the paper is universal to index across diverse domains. Examples are provided, including the drought indexes (SPI and SPEI) and Global Gender Gap Index (GGGI), to demonstrate the index calculation with different time scales and distributions and to illustrate how slight adjustment of linear combination weights impact the index. The accompanied package, tidyindex, is not intended to offer an exhaustive implementation for all indexes across every domains. Instead, it provides a realization of the pipeline framework proposed in the paper. When adopting the pipeline approach to construct indexes, analysts may consider developing software that can be readily deployed in the cloud for production purposes. 
+The paper introduces a data pipeline comprising nine modules designed for the construction and analysis of indexes within the tidy framework. The pipeline offers a modular workflow to allow compute index with different parameterizations, to test minor changes to the original index definition, and to quantify uncertainties. The framework proposed in the paper is universal to index across diverse domains. Examples are provided, including the drought indexes (SPI and SPEI) and Global Gender Gap Index (GGGI), to demonstrate the index calculation with different time scales and distributions and to illustrate how slight adjustment of linear combination weights impact the index.
 
 # Acknowledgement
 
-This work is funded by a Commonwealth Scientific and Industrial Research Organisation (CSIRO) Data61 Scholarship. The article is created using Quarto in R. The source code for reproducing this paper can be found at: https://github.com/huizezhang-sherry/paper-tidyindex.
+This work is funded by a Commonwealth Scientific and Industrial Research Organisation (CSIRO) Data61 Scholarship. The article is created using Quarto [@] in R [@]. The source code for reproducing this paper can be found at: https://github.com/huizezhang-sherry/paper-tidyindex.
 
 # Reference
