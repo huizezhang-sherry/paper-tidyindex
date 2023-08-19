@@ -102,14 +102,19 @@ The rest of the paper is structured as follows: @sec-tidy reviews the tidy frame
 <!-- These sometimes make indexes difficult to reach consensus for wider use and large institutes often prefer simple indexes for more stable performance and easier interpretation. -->
 
 <!-- When indexes have a spatial and/or temporal component, different choices on how space and time is aggregated will introduce uncertainty. A slight change in the variable value can sometimes introduce a big difference for the index.  -->
-# Background to index usage and development
+
+# Background to index development 
 
 <!-- * point to major review papers describing index dev  -->
 <!-- * point to major uses of indexes  -->
 
-The OECD handbook [@oecd_handbook_2008] provides a framework of steps and recommendations. for composing socio-economic composite indexes. The drought index handbook [@svoboda2016handbook], instead, provides a practical guide outlining the advantage and disadvantage of various drought indexes, as recommended by World Meteorology Organization. Review papers in the literature summarise different methodologies for constructing indexes from different variables and statistical methods, for example, @zargar2011review, @hao_drought_2015 @alahacoon_comprehensive_2022 for drought indexes. In specific domains, attention are given to analyze the index construction process, including the implications of the choices made during the index construction [@jones_vulnerability_2007] and uncertainty or sensitivity analysis [@uncertainty; @tate_social_2012]. 
+There are many documents providing advice on how to construct indexes for different fields, and review articles describing the range of available indexes for specific purposes. The OECD handbook [@oecd_handbook_2008] provides a comprehensive guide for computing socio-economic composite indexes, with detailed steps and recommendations. The drought index handbook [@svoboda2016handbook] provides details of various drought indexes and recommendations from the World Meteorology Organization.  @zargar2011review, @hao_drought_2015 and @alahacoon_comprehensive_2022 are review papers describing the range of possible drought indexes. 
 
-In software development, many tools encapsulate all the construction steps into a single function to allow computing indexes with provided data. This includes the `SPEI` package [@spei] for two drought indexes, the `gpindex` [@gpindex] package for price indexes, and the `fundiversity` package [@fundiversity] for functional diversity indexes in ecology. The package `COINr` [@COINr] deviates from this one-size-fit-all approach by following the guidelines proposed in the OECD handbook to construct, analyze, and visualize composite indexes. 
+There is also some attention being given to the diagnosis of indexes, and incorporation of uncertainty. @jones_vulnerability_2007 investigates the methodological choices made in the development of indexes for assessing vulnerable neighborhoods. @uncertainty describes incorporating uncertainty estimates and conducting sensitivity analysis on composite indexes. @tate_social_2012, similarly, makes a comparative assessment of social vulnerability indexes based on uncertainty estimation and sensitivity analysis. (XXX Something about Ursula's colleagues paper here too.)
+
+There are also R packages supporting index calculation. The  `SPEI` package  [@spei] computes two drought indexes. The `gpindex` package [@gpindex] computes price indexes, and the `fundiversity` package [@fundiversity] computes functional diversity indexes for ecological study. The package `COINr` [@COINr] is more ambitious, making a start on following the broader guidelines in the OECD handbook to construct, analyze, and visualize composite indexes. 
+
+From reviewing this literature, and in the process of developing methods for making it easier to work with multivariate spatiotemporal data, it seems possible to think about indexes in a more organised, cohesive and standard manner. Actually, it seems that the area could benefit from a *tidy* approach. 
 
 # Tidy framework {#sec-tidy}
 

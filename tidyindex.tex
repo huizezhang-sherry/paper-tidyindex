@@ -258,7 +258,7 @@ supported by a new R package, called \texttt{tidyindex}.
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, frame hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, enhanced, borderline west={3pt}{0pt}{shadecolor}, breakable, boxrule=0pt, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -327,35 +327,46 @@ design of the \texttt{tidyindex} package that implements the modules.
 Examples are given in Section~\ref{sec-examples} to illustrate the use
 cases of the pipeline.
 
-\hypertarget{background-to-index-usage-and-development}{%
-\section{Background to index usage and
-development}\label{background-to-index-usage-and-development}}
+\hypertarget{background-to-index-development}{%
+\section{Background to index
+development}\label{background-to-index-development}}
 
-The OECD handbook (OECD, European Union, and Joint Research Centre -
-European Commission 2008) provides a framework of steps and
-recommendations. for composing socio-economic composite indexes. The
-drought index handbook (Svoboda, Fuchs, et al. 2016), instead, provides
-a practical guide outlining the advantage and disadvantage of various
-drought indexes, as recommended by World Meteorology Organization.
-Review papers in the literature summarise different methodologies for
-constructing indexes from different variables and statistical methods,
-for example, Zargar et al. (2011), Hao and Singh (2015) Alahacoon and
-Edirisinghe (2022) for drought indexes. In specific domains, attention
-are given to analyze the index construction process, including the
-implications of the choices made during the index construction (Jones
-and Andrey 2007) and uncertainty or sensitivity analysis (Saisana,
-Saltelli, and Tarantola 2005; Tate 2012).
+There are many documents providing advice on how to construct indexes
+for different fields, and review articles describing the range of
+available indexes for specific purposes. The OECD handbook (OECD,
+European Union, and Joint Research Centre - European Commission 2008)
+provides a comprehensive guide for computing socio-economic composite
+indexes, with detailed steps and recommendations. The drought index
+handbook (Svoboda, Fuchs, et al. 2016) provides details of various
+drought indexes and recommendations from the World Meteorology
+Organization. Zargar et al. (2011), Hao and Singh (2015) and Alahacoon
+and Edirisinghe (2022) are review papers describing the range of
+possible drought indexes.
 
-In software development, many tools encapsulate all the construction
-steps into a single function to allow computing indexes with provided
-data. This includes the \texttt{SPEI} package (Vicente-Serrano,
-Beguería, and López-Moreno 2010) for two drought indexes, the
-\texttt{gpindex} (Martin 2023) package for price indexes, and the
-\texttt{fundiversity} package (Grenié and Gruson 2023) for functional
-diversity indexes in ecology. The package \texttt{COINr} (Becker et al.
-2022) deviates from this one-size-fit-all approach by following the
-guidelines proposed in the OECD handbook to construct, analyze, and
-visualize composite indexes.
+There is also some attention being given to the diagnosis of indexes,
+and incorporation of uncertainty. Jones and Andrey (2007) investigates
+the methodological choices made in the development of indexes for
+assessing vulnerable neighborhoods. Saisana, Saltelli, and Tarantola
+(2005) describes incorporating uncertainty estimates and conducting
+sensitivity analysis on composite indexes. Tate (2012), similarly, makes
+a comparative assessment of social vulnerability indexes based on
+uncertainty estimation and sensitivity analysis. (XXX Something about
+Ursula's colleagues paper here too.)
+
+There are also R packages supporting index calculation. The
+\texttt{SPEI} package (Vicente-Serrano, Beguería, and López-Moreno 2010)
+computes two drought indexes. The \texttt{gpindex} package (Martin 2023)
+computes price indexes, and the \texttt{fundiversity} package (Grenié
+and Gruson 2023) computes functional diversity indexes for ecological
+study. The package \texttt{COINr} (Becker et al. 2022) is more
+ambitious, making a start on following the broader guidelines in the
+OECD handbook to construct, analyze, and visualize composite indexes.
+
+From reviewing this literature, and in the process of developing methods
+for making it easier to work with multivariate spatiotemporal data, it
+seems possible to think about indexes in a more organised, cohesive and
+standard manner. Actually, it seems that the area could benefit from a
+\emph{tidy} approach.
 
 \hypertarget{sec-tidy}{%
 \section{Tidy framework}\label{sec-tidy}}
