@@ -174,7 +174,7 @@ In what follows when geographic or temporal components of the $x_j(s,t)$ process
 | 3.3   | Variable transformation | $x_{j}(s; t)$                                                           | $T[x_j(s;t)]$                       | $x^{\text{Trans}}_j(s;t)$                                                     |
 | 3.4   | Scaling                 | $x_j(s; t)$                                                             | $[x_j(s;t) - \alpha]/\gamma$        | $x^{\text{Scale}}_j(s;t)$                                                     |
 | 3.5   | Dimension reduction     | $\mathbf{x}(s;t)$ | $h[\mathbf{x}(s;t)]$                | $\mathbf{y}(s;t) \quad \mathbf{y} \subseteq \mathbb{R}^d, d < q$      |
-| 3.6   | Distribution fit        | $x_j(s; t)$                                                             | $F[x_j(s;t)]$ | $p_j(s;t) \quad p(.) \in [0, 1]$                   |
+| 3.6   | Distribution fit        | $x_j(s; t)$                                                             | $F[x_j(s;t)]$ | $P_j(s;t) \quad P(.) \in [0, 1]$                   |
 | 3.7   | Normalising             | $x_j(s; t)$                                                             | $\Phi^{-1}[x_j(s; t)]$              | $z_j(s; t)$                              |
 | 3.8   | Benchmarking            | $x_j(s; t)$                                                             | $u[x_j(s;t)]$                       | $b_j(s;t)$                                                                    |
 | 3.9   | Simplification          | $x_j(s; t)$                                                             | $v[x_j(s;t)]$                       | $A_j(s;t) \in \{a_1, a_2, \cdots, a_j\}$                                      |
@@ -264,11 +264,14 @@ trans_df %>%
 
 ## Dimension reduction
 
-Dimension reduction takes the multivariate information $\mathbf{x}(s;t)$, where $\mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p$, as the input. It summarises the high-dimensional information into a lower-dimension representation $\mathbf{y}(s;t)$, where $y \subseteq \mathbb{R}^d$ and $d < q$, as the output. The transformation can be based on domain-specific knowledge, originating from theories describing the underlying physical processes, or guided by statistical methods. For example, the Standardized Precipitation-Evapotranspiration Index (SPEI) [@SPEI] calculates the difference $D$ between precipitation ($P$) and potential evapotranspiration ($\text{PET}$), using a water balance model ($D = P - \text{PET}$). This is the only step that differs from the Standardized Precipitation Index (SPI).
+
+Dimension reduction takes the multivariate information $\mathbf{x}(s;t)$, where $\mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p$, as the input. It summarises the high-dimensional information into a lower-dimension representation $\mathbf{y}(s;t)$, where $y \subseteq \mathbb{R}^d$ and $d < q$, as the output. The transformation can be based on domain-specific knowledge, originating from theories describing the underlying physical processes, or guided by statistical methods. For example, the Standardized Precipitation-Evapotranspiration Index (SPEI) [@SPEI] calculates the difference $D$ between precipitation ($P$) and potential evapotranspiration ($\text{PET}$), using a water balance model ($D = P - \text{PET}$). This is the only step that differs from the Standardized Precipitation Index (SPI). 
+
+Common statistical methods for reducing the variable dimension include linear combinations, Principal Component Analysis (PCA), and linear projections. While all the three methods can lead in the same result due to their shared linear approach in combining variables in an additive structure: $\sum_{j = 1}^{p}\lambda_{j}x_j(s;t)$ where $\lambda$ is the weight or principal component, they offer different interpretation of the weight. Linear combination typically use equal contribution or use expert suggested weights for simplicity. Both PCA and linear projections determine their weights (principal components) through optimizing a function of the data. In PCA, this function is the variance while linear projections allow any function of the data to serve as the objective function in the optimization. 
 
 ## Distribution fit
 
-Distribution fit applies the Cumulative Distribution Function (CDF) $F$ of a distribution on the variable $x_j(s; t)$ to obtain the probability values $p_j(s;t) \in [0, 1]$. In SPEI, many distributions, including log-logistic, Pearson III, lognormal, and general extreme distribution, are candidates for the aggregated series. Different fitting methods and different goodness of fit tests may be used to compare the distribution choice on the index value.
+Distribution fit applies the Cumulative Distribution Function (CDF) $F$ of a distribution on the variable $x_j(s; t)$ to obtain the probability values $P_j(s;t) \in [0, 1]$. In SPEI, many distributions, including log-logistic, Pearson III, lognormal, and general extreme distribution, are candidates for the aggregated series. Different fitting methods and different goodness of fit tests may be used to compare the distribution choice on the index value.
 
 ## Normalising
 
