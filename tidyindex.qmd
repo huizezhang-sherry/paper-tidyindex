@@ -433,7 +433,7 @@ p2 <- idx %>%
   geom_line() +
   theme_benchmark() +
   facet_wrap(vars(scale), labeller = label_both, ncol = 1) +
-  scale_x_yearmonth(breaks = "2 year", date_labels = "%Y") +
+  scale_x_yearmonth(breaks = "4 year", date_labels = "%Y") +
   scale_color_brewer(palette = "Dark2", name = "Distribution") + 
   xlab("Year") + 
   ylab("Index")
@@ -551,9 +551,71 @@ wrap_plots(gl, ncol = 3)
 
 TODO: increase font for variable names
 
-## Confidence interval 
+## Confidence interval
+
+```{r echo = TRUE, eval = FALSE}
+DATA %>% 
+  aggregate(.var = prcp, .scale = 24) %>% 
+  dist_fit(.dist = gamma(), .var = .agg, .n_boot = 100) %>% 
+  augment(.var = .agg)
+
+```
+
+@fig-conf-interval presents the 80% and 95% confidence interval for the Texas post office station, in Queensland, Australia. Since the start of 2019, both confidence intervals indicate an extreme drought condition (below -2). early warning for the bushfire? 
+
 
 also the ABS one - could display some uncertainties
+
+```{r fig-conf-interval}
+#| fig-width: 8
+#| fig-height: 2
+#| fig-cap: "80% and 95% confidence interval of the Standardized Precipitation Index (SPI) for the Texas post office station, in Queensland, Australia. A bootstrap sample of 100 is taken from the aggregated pricipitation series to estimate gamma parameters and calculate the index. Since the start of 2019, both confidence intervals indicate an extreme drought condition (below -2)."
+res <- queensland %>% 
+  filter(name == "TEXAS POST OFFICE") %>% 
+  init(id = id, time = ym) %>% 
+  aggregate(.var = prcp, .scale = 24) %>% 
+  dist_fit(.dist = gamma(), .var = .agg, .n_boot = 100) %>% 
+  augment(.var = .agg)
+
+res_band <- res$data %>% 
+  group_by(ym, id, name) %>% 
+  summarise(
+    q025 = quantile(.index, 0.025),
+    q05 = quantile(.index, 0.05),
+    q10 = quantile(.index, 0.1),
+    q50 = quantile(.index, 0.5),
+    q90 = quantile(.index, 0.9),
+    q95 = quantile(.index, 0.95),
+    q975 = quantile(.index, 0.975)
+    ) %>% 
+  ungroup()
+
+all <- idx %>% 
+  filter(name == "TEXAS POST OFFICE", .idx == "spi", .scale == 24) %>% 
+  select(ym, .index) %>% 
+  left_join(res_band, by = "ym")
+
+loc <- make_yearmonth(2022, 12)
+
+# the sampling uncertainty is quite large here
+# and this is mainly due to we only have 30 year worth of data
+# each month fit has only 30 points
+all %>% 
+  ggplot(aes(x = ym)) + 
+  geom_hline(yintercept = -2, linetype = "dashed", color = "grey50") + 
+  #geom_text(aes(x = loc, y = -2.7, label = "SPI = -2"), color = "grey50") + 
+  geom_ribbon(aes(ymin = q025, ymax = q975), fill = "steelblue1", alpha = 0.5) + 
+  geom_ribbon(aes(ymin = q10, ymax = q90), fill = "steelblue4", alpha = 0.5) + 
+  geom_line(aes(y = .index)) + 
+  scale_x_yearmonth(name = "Year", date_break = "2 years", date_label = "%Y") +
+  theme_bw() + 
+  facet_wrap(vars(name), ncol = 1) + 
+  theme(panel.grid = element_blank(), 
+        legend.position = "bottom") + 
+  ylab("SPI")
+
+```
+
 
 
 # Conclusion
