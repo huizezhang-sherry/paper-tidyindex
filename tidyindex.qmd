@@ -47,7 +47,7 @@ author:
         country: Australia
     orcid: 0000-0003-0701-6315
 abstract: |
-  Indexes are useful for summarizing multivariate information into single metrics for monitoring, communicating, and decision-making. While most work has focused on defining new indexes for specific purposes, more attention needs to be directed towards making it possible to understand index behavior in different data conditions, and to determine how their structure affects their value and variation in values. Here we discuss a modular data pipeline recommendation to assemble indexes. It is universally applicable to index computation and allows investigation of index behavior as part of the development procedure. One can compute with different the index with different parameter choices, adjust steps in the index definition by adding, removing, and swapping them to experiment with various index designs, calculate uncertainty measures, and assess an index's robustness. The paper presents three examples to illustrate the pipeline framework usage: comparison of two different indexes designed to monitor the spatio-temporal distribution of drought in Queensland, Australia; the effect of dimension reduction choices on the Global Gender Gap Index (GGGI) on a country's ranking; and how to calculate bootstrap confidence intervals for XXX index. The methods are supported by a new R package, called `tidyindex`.
+  Indexes are useful for summarizing multivariate information into single metrics for monitoring, communicating, and decision-making. While most work has focused on defining new indexes for specific purposes, more attention needs to be directed towards making it possible to understand index behavior in different data conditions, and to determine how their structure affects their values and variation in values. Here we discuss a modular data pipeline recommendation to assemble indexes. It is universally applicable to index computation and allows investigation of index behavior as part of the development procedure. One can compute indexes with different parameter choices, adjust steps in the index definition by adding, removing, and swapping them to experiment with various index designs, calculate uncertainty measures, and assess indexes' robustness. The paper presents three examples to illustrate the pipeline framework usage: comparison of two different indexes designed to monitor the spatio-temporal distribution of drought in Queensland, Australia; the effect of dimension reduction choices on the Global Gender Gap Index (GGGI) on countries' ranking; and how to calculate bootstrap confidence intervals for the Standardized Precipitation Index (SPI). The methods are supported by a new R package, called `tidyindex`.
 keywords:
   - indexes
   - data pipeline
@@ -87,7 +87,7 @@ library(tourr)
 
 <!-- - who would benefit from this paper -->
 
-Indexes are commonly used to combine and summarize different sources of information into a single number for monitoring, communicating, and decision-making. They serve as critical tools across the natural and social sciences. Examples include the Air Quality Index, El Niño-Southern Oscillation Index, Consumer Price Index, QS University Rankings, and the Human Development Index. In environmental science climate indexes are produced by major monitoring centers, like the United States Drought Monitor and National Oceanic and Atmospheric Administration, to facilitate agricultural planning and early detection of natural disasters.  In economics, indexes provide insight into market trends through combining prices of a basket of goods and services. In social sciences, indexes are used to monitor human development, gender equity, or university quality. The problem is that every index is developed in its own unique way, by different researchers or organizations, and often indexes designed for the same purpose cannot easily be compared. 
+Indexes are commonly used to combine and summarize different sources of information into a single number for monitoring, communicating, and decision-making. They serve as critical tools across the natural and social sciences. Examples include the Air Quality Index, El Niño-Southern Oscillation Index, Consumer Price Index, QS University Rankings, and the Human Development Index. In environmental science, climate indexes are produced by major monitoring centers, like the United States Drought Monitor and National Oceanic and Atmospheric Administration, to facilitate agricultural planning and early detection of natural disasters.  In economics, indexes provide insight into market trends through combining prices of a basket of goods and services. In social sciences, indexes are used to monitor human development, gender equity, or university quality. The problem is that every index is developed in its own unique way, by different researchers or organizations, and often indexes designed for the same purpose cannot easily be compared. 
 
 To construct an index, experts typically start by defining a concept of interest that requires measurement. This concept often lacks a direct measurable attribute or can only be measured as a composite of various processes, yet it holds social and public significance. To create an index, once the underlying processes involved are identified, relevant and available variables are then defined, collected, and combined using statistical methods into an index that aims to measure the process of interest. The construction process is often not straightforward, and decisions need to be made, such as the selection of variables to be included, which might depend on data availability and the statistical definition of the index to be used, among others. For instance, the indexes constructed from a linear combination of variables need to decide on the weight assigned to each variable. Some indexes have a spatial and/or temporal component, and variables can be aggregated to different spatial resolutions and temporal scales, leading to various indexes for different monitoring purposes. Hence, all these decisions can result in different index values and have different practical implications.
 
@@ -110,11 +110,11 @@ The rest of the paper is structured as follows: @sec-tidy reviews the tidy frame
 
 There are many documents providing advice on how to construct indexes for different fields, and review articles describing the range of available indexes for specific purposes. The OECD handbook [@oecd_handbook_2008] provides a comprehensive guide for computing socio-economic composite indexes, with detailed steps and recommendations. The drought index handbook [@svoboda2016handbook] provides details of various drought indexes and recommendations from the World Meteorology Organization.  @zargar2011review, @hao_drought_2015 and @alahacoon_comprehensive_2022 are review papers describing the range of possible drought indexes. 
 
-There is also some attention being given to the diagnosis of indexes, and incorporation of uncertainty. @jones_vulnerability_2007 investigates the methodological choices made in the development of indexes for assessing vulnerable neighborhoods. @uncertainty describes incorporating uncertainty estimates and conducting sensitivity analysis on composite indexes. @tate_social_2012, similarly, makes a comparative assessment of social vulnerability indexes based on uncertainty estimation and sensitivity analysis. (XXX Something about Ursula's colleagues paper here too.)
+There is also some attention being given to the diagnosis of indexes, and incorporation of uncertainty. @jones_vulnerability_2007 investigates the methodological choices made in the development of indexes for assessing vulnerable neighborhoods. @uncertainty describes incorporating uncertainty estimates and conducting sensitivity analysis on composite indexes. @tate_social_2012 and @tate_uncertainty_2013, similarly, make a comparative assessment of social vulnerability indexes based on uncertainty estimation and sensitivity analysis. @laimighofer_how_2022 studies five uncertainty sources (record length, observation period, distribution choice, parameter estimation method, and GOF-test) of drought indexes. 
 
 There are also R packages supporting index calculation. The  `SPEI` package  [@spei] computes two drought indexes. The `gpindex` package [@gpindex] computes price indexes, and the `fundiversity` package [@fundiversity] computes functional diversity indexes for ecological study. The package `COINr` [@COINr] is more ambitious, making a start on following the broader guidelines in the OECD handbook to construct, analyze, and visualize composite indexes. 
 
-From reviewing this literature, and in the process of developing methods for making it easier to work with multivariate spatiotemporal data, it seems possible to think about indexes in a more organised, cohesive and standard manner. Actually, it seems that the area could benefit from a *tidy* approach. 
+From reviewing this literature, and in the process of developing methods for making it easier to work with multivariate spatio- temporal data, it seems possible to think about indexes in a more organised, cohesive and standard manner. Actually, it seems that the area could benefit from a *tidy* approach. 
 
 # Tidy framework {#sec-tidy}
 
@@ -207,8 +207,8 @@ Unlike variable transformation, scaling maintains the distributional shape of th
 
 ```{r fig-scale-var-trans-compare}
 #| fig-cap: "Comparison of the module scaling (green) and variable transformation (orange). While both modules change the variable range, scaling maintains the same distributional shape, which is not the case with variable transformation. "
-#| fig-height: 8
-#| fig-width: 12
+#| fig-height: 6
+#| fig-width: 8
 set.seed(123)
 x <- rgamma(n = 1000, shape = 1, scale = 2)
 
@@ -228,12 +228,12 @@ trans_df <- tibble(origin = x,
   pivot_longer(-id, names_to = "var", values_to = "value") %>% 
   mutate(category = ifelse(
     var %in% c("origin", "z-score", "minmax", "centering"),
-    "Scaling", "Var. Trans.")
-    ) 
+    "Scaling", "Variable Transformation")
+    )
 
 latex_df <- tibble(
-  var = c("origin", "z-score", "qudratic", "log", "square root", "cubic root",
-          "minmax", "boxcox", "centering"),
+  var = c("origin", "z-score", "qudratic", "log", "square root",
+      "cubic root","minmax", "boxcox", "centering"),
   latex = c(
            r"($x$)",
            r"($\frac{x - \bar{x}}{sd(x)}$)",
@@ -254,7 +254,9 @@ trans_df %>%
   geom_label(data = latex_df, 
              aes(x = 0.8 * max, y = 0.8, label = TeX(latex, output = "character")), 
              parse = TRUE) + 
-  facet_wrap(vars(var), scales = "free") + 
+  facet_wrap(vars(factor(var, levels = c(
+      "origin", "centering", "minmax","z-score", "boxcox", "cubic root",
+      "log", "qudratic", "square root"))), scales = "free") + 
   scale_color_brewer(palette = "Dark2", name = "module") + 
   theme_bw() + 
   theme(legend.position = "bottom")
@@ -395,6 +397,7 @@ The output contains the original data, index values (`.index`), parameters used 
 ```{r fig-compute-spatial}
 #| fig-cap: "Spatial distribution of Standardized Precipitation Index (SPI-12) in Queensland, Australia during two major flood and drought events: 2010/11 and 2019/20. The map shows a continuous wet period during the 2010/11 flood period and a mitigated drought situation, after its worst in 2019 December and 2020 January, likely due to the increased rainfall in February from the meteorological record."
 #| fig-width: 6
+#| fig-height: 3
 queensland_map <- ozmaps::abs_ste %>% filter(NAME == "Queensland") %>% 
   rmapshaper::ms_simplify(keep = 0.02)
 queensland_map %>%
@@ -522,14 +525,14 @@ b[,,3] <- matrix(c(0.1, 0.1, 0.1, 0.7), ncol= 1) %>% find_next(angle = 0.6)
 
 render(
   dt[,5:8], planned2_tour(b), dev = "png",
-  display_idx(half_range = 2,cex = 4, label_cex = 3.5, col = "black",
+  display_idx(half_range = 2,cex = 4, label_cex = 3.5, col = "black", 
               panel_height_ratio = c(4,1),
               axis_bar_lwd = c(rep(3, 3), 7),
               axis_bar_col = c(rep("#000000", 3), "red"),
               axis_bar_label_cex = c(rep(2.5, 3), 3),
               axis_bar_label_col = c(rep("#000000", 3), "red"), 
-              axis_label_cex = 3, frame_x_pos = 0.16, 
-              axis_var_cex = 2.5,
+              axis_label_cex = 3, frame_x_pos = 0.16,  frame_cex = 4,
+              axis_var_cex = 3.6, 
               label = dt$country, abb_vars = FALSE),
   width = 900, height = 1400, apf = 1/20, frames = 120,
   here::here("figures/idx-tour/idx-tour-%03d.png")
@@ -542,7 +545,7 @@ gifski::gifski(
 
 ```
 
-```{r fig-idx-tour, fig.align='center', fig.height=5}
+```{r fig-idx-tour, fig.align='center', fig.height=5} 
 #| fig-cap: "Six frames selected to explore how varying the weights of the politics dimension changes the index values and country rankings in Global Gender Gap Index (GGGI). The top panel shows the GGGI value against the country, ranked by its original index value in Frame 12. The bottom panel displays the weight used to produce the index values in the top panel, with each frame corresponds to a set of weights. Countries selected includes 1) top-ranked countries with GGGI > 0.85, 2) countries ranked between 57 and 62 with GGGI from 0.72 to 0.73, and 3) low-ranked countries with GGGI < 0.6. Compared to Frame 12 where equal weigts are used for the four dimension, a reduced weight in politics (Frame 1 and 6) shows narrower gaps between top and mid- or lower- ranked countries, while an increase in the politics weight (Frame 18, 24, and 29) leads to a systematic decrease of GGGI values across all the countries, except for Bangladesh. Full animation is available at https://vimeo.com/847874016."  
 #frames <- c("001", "013", "037", "061", "085", "109")
 frames <- c("001", "006", "012", "018", "024", "029")
@@ -552,13 +555,11 @@ gl <-  lapply(rl, grid::rasterGrob)
 wrap_plots(gl, ncol = 3)  
 ```
 
-TODO: increase font for variable names
-
-## Confidence interval [TO BE CHANGED]
+## Decoding uncertainty through the wisdom of the crowd 
 
 Index uncertainties may arise from various stages of the pipeline, including from different parameterisation choices, as illustrated from @sec-example1, or from the statistical procedures in the pipeline. Given the lack of direct instruments for measurement, true values for indexes can never be obtained to compare the index against. Nevertheless, an index can be provided with confidence interval to report it accuracy. In this example, the Texas post office station highlighted in @fig-compute-temporal is used to illustrate the calculation of confidence interval for the Standardized Precipitation Index (SPI). Bootstrapping is used to account for the sampling uncertainty in the distribution fit step of the index pipeline and to assess its impact on the SPI series. 
 
-In SPI, the distribution fit step fits the gamma distribution to the aggregated precipitation series separately for each month. This results in  31 or 32 points, from 1990 Jan to 2022 Apr, for estimating each set of distribution parameters. To account for this sampling uncertainty with these samples, bootstrapping is used to generate replicates of the aggregated series. In the `tidyindex` package, this bootstrap sampling is activated when the argument `.n_boot` is set to a value other than the default of 1. In the following code, the Standardized Precipitation Index (SPI) is calculated using a time scale of 24. The bootstrap procedure samples the aggregated precipitation (`.agg`) for 100 iterations ( `.n_boot = 100`) and then fits the gamma distribution. The resulting gamma probabilities are then transformed into normal densities in the normalizing step with `agument()`.
+In SPI, the distribution fit step fits the gamma distribution to the aggregated precipitation series separately for each month. This results in  31 or 32 points, from January 1990 to April 2022, for estimating each set of distribution parameters. To account for this sampling uncertainty with these samples, bootstrapping is used to generate replicates of the aggregated series. In the `tidyindex` package, this bootstrap sampling is activated when the argument `.n_boot` is set to a value other than the default of 1. In the following code, the Standardized Precipitation Index (SPI) is calculated using a time scale of 24. The bootstrap procedure samples the aggregated precipitation (`.agg`) for 100 iterations (`.n_boot = 100`) and then fits the gamma distribution. The resulting gamma probabilities are then transformed into normal densities in the normalizing step with `agument()`.
 
 ```{r echo = TRUE, eval = FALSE}
 DATA %>% 
@@ -568,12 +569,12 @@ DATA %>%
 
 ```
 
-The confidence interval can then be calculated using the quantile method from the bootstrap samples. @fig-conf-interval presents the 80% and 95% confidence interval for the Texas post office station, in Queensland, Australia. From the start of 2019 to 2020,  the majority of the confidence intervals lie below the extreme drought line (SPI = -2), suggesting a high level of certainty that the Texas post office is suffering from a drastic drought. The relatively wide confidence interval, as well as during the excessive precipitation events in 1996-1998 and 1999-2000, suggests a high variation of the gamma parameters estimated from the bootstrap samples and its difficulty to accurately quantifying the drought/ flood severity in extreme events.
+The confidence interval can then be calculated using the quantile method from the bootstrap samples. @fig-conf-interval presents the 80% and 95% confidence interval for the Texas post office station, in Queensland, Australia. From the start of 2019 to 2020,  the majority of the confidence intervals lie below the extreme drought line (SPI = -2), suggesting a high level of certainty that the Texas post office is suffering from a drastic drought. The relatively wide confidence interval, as well as during the excessive precipitation events in 1996-1998 and 1999-2000, suggests a high variation of the gamma parameters estimated from the bootstrap samples and its difficulty to accurately quantifying the drought and flood severity in extreme events.
 
 ```{r fig-conf-interval}
 #| fig-width: 8
 #| fig-height: 2
-#| fig-cap: "80% and 95% confidence interval of the Standardized Precipitation Index (SPI-24) for the Texas post office station, in Queensland, Australia. A bootstrap sample of 100 is taken from the aggregated pricipitation series to estimate gamma parameters and to calculate the index. The dashed line at SPI = -2 represents an extreme drought as defined by the SPI. Most parts of the confidence intervals from 2019 to 2020 sit below the extreme drought line (-2) and are relatively wide compared to other time periods. This suggests that while it is certain that the Texas post office is suffering from a drastic drought, there is considerable uncertainty in quantifying its severity, given the extremity of the event."
+#| fig-cap: "80% and 95% confidence interval of the Standardized Precipitation Index (SPI-24) for the Texas post office station, in Queensland, Australia. A bootstrap sample of 100 is taken from the aggregated pricipitation series to estimate gamma parameters and to calculate the index. The dashed line at SPI = -2 represents an extreme drought as defined by the SPI. Most parts of the confidence intervals from 2019 to 2020 sit below the extreme drought line and are relatively wide compared to other time periods. This suggests that while it is certain that the Texas post office is suffering from a drastic drought, there is considerable uncertainty in quantifying its severity, given the extremity of the event."
 res <- queensland %>% 
   filter(name == "TEXAS POST OFFICE") %>% 
   init(id = id, time = ym) %>% 
