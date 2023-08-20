@@ -253,7 +253,7 @@ supported by a new R package, called \texttt{tidyindex}.
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced, interior hidden, breakable, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -797,9 +797,9 @@ on the dimension reduction step in the Global Gender Gap Index to
 explore how the changes in linear combination weights affect the index
 values and country rankings.
 
-\hypertarget{every-distribution-every-scale-every-index-all-at-once}{%
+\hypertarget{sec-example1}{%
 \subsection{Every distribution, every scale, every index all at
-once}\label{every-distribution-every-scale-every-index-all-at-once}}
+once}\label{sec-example1}}
 
 The state of Queensland in Australia frequently experiences natural
 disaster events such as flood and drought, which can significantly
@@ -1147,8 +1147,37 @@ Full animation is available at https://vimeo.com/847874016.}
 
 TODO: increase font for variable names
 
-\hypertarget{confidence-interval}{%
-\subsection{Confidence interval}\label{confidence-interval}}
+\hypertarget{confidence-interval-to-be-changed}{%
+\subsection{Confidence interval {[}TO BE
+CHANGED{]}}\label{confidence-interval-to-be-changed}}
+
+Index uncertainties may arise from various stages of the pipeline,
+including from different parameterisation choices, as illustrated from
+Section~\ref{sec-example1}, or from the statistical procedures in the
+pipeline. Given the lack of direct instruments for measurement, true
+values for indexes can never be obtained to compare the index against.
+Nevertheless, an index can be provided with confidence interval to
+report it accuracy. In this example, the Texas post office station
+highlighted in Figure~\ref{fig-compute-temporal} is used to illustrate
+the calculation of confidence interval for the Standardized
+Precipitation Index (SPI). Bootstrapping is used to account for the
+sampling uncertainty in the distribution fit step of the index pipeline
+and to assess its impact on the SPI series.
+
+In SPI, the distribution fit step fits the gamma distribution to the
+aggregated precipitation series separately for each month. This results
+in 31 or 32 points, from 1990 Jan to 2022 Apr, for estimating each set
+of distribution parameters. To account for this sampling uncertainty
+with these samples, bootstrapping is used to generate replicates of the
+aggregated series. In the \texttt{tidyindex} package, this bootstrap
+sampling is activated when the argument \texttt{.n\_boot} is set to a
+value other than the default of 1. In the following code, the
+Standardized Precipitation Index (SPI) is calculated using a time scale
+of 24. The bootstrap procedure samples the aggregated precipitation
+(\texttt{.agg}) for 100 iterations ( \texttt{.n\_boot\ =\ 100}) and then
+fits the gamma distribution. The resulting gamma probabilities are then
+transformed into normal densities in the normalizing step with
+\texttt{agument()}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1159,12 +1188,17 @@ TODO: increase font for variable names
 \end{Highlighting}
 \end{Shaded}
 
-Figure~\ref{fig-conf-interval} presents the 80\% and 95\% confidence
-interval for the Texas post office station, in Queensland, Australia.
-Since the start of 2019, both confidence intervals indicate an extreme
-drought condition (below -2). early warning for the bushfire?
-
-also the ABS one - could display some uncertainties
+The confidence interval can then be calculated using the quantile method
+from the bootstrap samples. Figure~\ref{fig-conf-interval} presents the
+80\% and 95\% confidence interval for the Texas post office station, in
+Queensland, Australia. From the start of 2019 to 2020, the majority of
+the confidence intervals lie below the extreme drought line (SPI = -2),
+suggesting a high level of certainty that the Texas post office is
+suffering from a drastic drought. The relatively wide confidence
+interval, as well as during the excessive precipitation events in
+1996-1998 and 1999-2000, suggests a high variation of the gamma
+parameters estimated from the bootstrap samples and its difficulty to
+accurately quantifying the drought/ flood severity in extreme events.
 
 \begin{figure}
 
@@ -1173,11 +1207,16 @@ also the ABS one - could display some uncertainties
 }
 
 \caption{\label{fig-conf-interval}80\% and 95\% confidence interval of
-the Standardized Precipitation Index (SPI) for the Texas post office
+the Standardized Precipitation Index (SPI-24) for the Texas post office
 station, in Queensland, Australia. A bootstrap sample of 100 is taken
 from the aggregated pricipitation series to estimate gamma parameters
-and calculate the index. Since the start of 2019, both confidence
-intervals indicate an extreme drought condition (below -2).}
+and to calculate the index. The dashed line at SPI = -2 represents an
+extreme drought as defined by the SPI. Most parts of the confidence
+intervals from 2019 to 2020 sit below the extreme drought line (-2) and
+are relatively wide compared to other time periods. This suggests that
+while it is certain that the Texas post office is suffering from a
+drastic drought, there is considerable uncertainty in quantifying its
+severity, given the extremity of the event.}
 
 \end{figure}
 
@@ -1192,8 +1231,9 @@ definition, and to quantify uncertainties. The framework proposed in the
 paper is universal to index across diverse domains. Examples are
 provided, including the drought indexes (SPI and SPEI) and Global Gender
 Gap Index (GGGI), to demonstrate the index calculation with different
-time scales and distributions and to illustrate how slight adjustment of
-linear combination weights impact the index.
+time scales and distributions, to illustrate how slight adjustment of
+linear combination weights impact the index, and to calculate confidence
+intervals on the index.
 
 \hypertarget{acknowledgement}{%
 \section{Acknowledgement}\label{acknowledgement}}

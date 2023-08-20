@@ -347,7 +347,7 @@ idx_spi <- function(...){
 
 This section uses the example of drought and social indexes to show the analysis made possible with the index pipeline. The drought index example computes two indexes (SPI and SPEI) with various time scales and distributions simultaneously using the pipeline framework to understand the flood and drought events in Queensland. The second example focuses on the dimension reduction step in the Global Gender Gap Index to explore how the changes in linear combination weights affect the index values and country rankings.
 
-## Every distribution, every scale, every index all at once
+## Every distribution, every scale, every index all at once {#sec-example1}
 
 The state of Queensland in Australia frequently experiences natural disaster events such as flood and drought, which can significantly impact its agricultural industry. This example uses daily data from Global Historical Climatology Network Daily (GHCND), aggregated into monthly precipitation, to compute two drought indexes -- SPI and SPEI -- at various time scales and fitted distributions, for  `r length(unique(queensland$id))` stations in the state of Queensland in Australia, spanning from January 1990 to April 2022. This example showcases the basic calculation of indexes with different parameter specifications within the pipeline framework. The dataset used in this example is available in the `tidyindex` package as `queensland` and blow prints the first few rows of the data: 
 
@@ -554,7 +554,11 @@ wrap_plots(gl, ncol = 3)
 
 TODO: increase font for variable names
 
-## Confidence interval
+## Confidence interval [TO BE CHANGED]
+
+Index uncertainties may arise from various stages of the pipeline, including from different parameterisation choices, as illustrated from @sec-example1, or from the statistical procedures in the pipeline. Given the lack of direct instruments for measurement, true values for indexes can never be obtained to compare the index against. Nevertheless, an index can be provided with confidence interval to report it accuracy. In this example, the Texas post office station highlighted in @fig-compute-temporal is used to illustrate the calculation of confidence interval for the Standardized Precipitation Index (SPI). Bootstrapping is used to account for the sampling uncertainty in the distribution fit step of the index pipeline and to assess its impact on the SPI series. 
+
+In SPI, the distribution fit step fits the gamma distribution to the aggregated precipitation series separately for each month. This results in  31 or 32 points, from 1990 Jan to 2022 Apr, for estimating each set of distribution parameters. To account for this sampling uncertainty with these samples, bootstrapping is used to generate replicates of the aggregated series. In the `tidyindex` package, this bootstrap sampling is activated when the argument `.n_boot` is set to a value other than the default of 1. In the following code, the Standardized Precipitation Index (SPI) is calculated using a time scale of 24. The bootstrap procedure samples the aggregated precipitation (`.agg`) for 100 iterations ( `.n_boot = 100`) and then fits the gamma distribution. The resulting gamma probabilities are then transformed into normal densities in the normalizing step with `agument()`.
 
 ```{r echo = TRUE, eval = FALSE}
 DATA %>% 
@@ -564,15 +568,12 @@ DATA %>%
 
 ```
 
-@fig-conf-interval presents the 80% and 95% confidence interval for the Texas post office station, in Queensland, Australia. Since the start of 2019, both confidence intervals indicate an extreme drought condition (below -2). early warning for the bushfire? 
-
-
-also the ABS one - could display some uncertainties
+The confidence interval can then be calculated using the quantile method from the bootstrap samples. @fig-conf-interval presents the 80% and 95% confidence interval for the Texas post office station, in Queensland, Australia. From the start of 2019 to 2020,  the majority of the confidence intervals lie below the extreme drought line (SPI = -2), suggesting a high level of certainty that the Texas post office is suffering from a drastic drought. The relatively wide confidence interval, as well as during the excessive precipitation events in 1996-1998 and 1999-2000, suggests a high variation of the gamma parameters estimated from the bootstrap samples and its difficulty to accurately quantifying the drought/ flood severity in extreme events.
 
 ```{r fig-conf-interval}
 #| fig-width: 8
 #| fig-height: 2
-#| fig-cap: "80% and 95% confidence interval of the Standardized Precipitation Index (SPI) for the Texas post office station, in Queensland, Australia. A bootstrap sample of 100 is taken from the aggregated pricipitation series to estimate gamma parameters and calculate the index. Since the start of 2019, both confidence intervals indicate an extreme drought condition (below -2)."
+#| fig-cap: "80% and 95% confidence interval of the Standardized Precipitation Index (SPI-24) for the Texas post office station, in Queensland, Australia. A bootstrap sample of 100 is taken from the aggregated pricipitation series to estimate gamma parameters and to calculate the index. The dashed line at SPI = -2 represents an extreme drought as defined by the SPI. Most parts of the confidence intervals from 2019 to 2020 sit below the extreme drought line (-2) and are relatively wide compared to other time periods. This suggests that while it is certain that the Texas post office is suffering from a drastic drought, there is considerable uncertainty in quantifying its severity, given the extremity of the event."
 res <- queensland %>% 
   filter(name == "TEXAS POST OFFICE") %>% 
   init(id = id, time = ym) %>% 
@@ -584,11 +585,8 @@ res_band <- res$data %>%
   group_by(ym, id, name) %>% 
   summarise(
     q025 = quantile(.index, 0.025),
-    q05 = quantile(.index, 0.05),
     q10 = quantile(.index, 0.1),
-    q50 = quantile(.index, 0.5),
     q90 = quantile(.index, 0.9),
-    q95 = quantile(.index, 0.95),
     q975 = quantile(.index, 0.975)
     ) %>% 
   ungroup()
@@ -623,7 +621,9 @@ all %>%
 
 # Conclusion
 
-The paper introduces a data pipeline comprising nine modules designed for the construction and analysis of indexes within the tidy framework. The pipeline offers a modular workflow to allow compute index with different parameterizations, to test minor changes to the original index definition, and to quantify uncertainties. The framework proposed in the paper is universal to index across diverse domains. Examples are provided, including the drought indexes (SPI and SPEI) and Global Gender Gap Index (GGGI), to demonstrate the index calculation with different time scales and distributions and to illustrate how slight adjustment of linear combination weights impact the index.
+The paper introduces a data pipeline comprising nine modules designed for the construction and analysis of indexes within the tidy framework. The pipeline offers a modular workflow to allow compute index with different parameterizations, to test minor changes to the original index definition, and to quantify uncertainties. The framework proposed in the paper is universal to index across diverse domains. Examples are provided, including the drought indexes (SPI and SPEI) and Global Gender Gap Index (GGGI), to demonstrate the index calculation with different time scales and distributions, to illustrate how slight adjustment of linear combination weights impact the index, and to calculate confidence intervals on the index.  
+
+<!-- When adopting the pipeline approach to construct indexes, analysts may consider developing software that can be readily deployed in the cloud for production purposes. -->
 
 # Acknowledgement
 
