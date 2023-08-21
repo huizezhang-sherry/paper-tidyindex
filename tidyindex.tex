@@ -259,7 +259,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, boxrule=0pt, enhanced, interior hidden, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, sharp corners, boxrule=0pt, breakable, interior hidden, frame hidden, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -320,17 +320,18 @@ how the index may appear under alternative options. Furthermore,
 uncertainty calculation can also flow through the pipeline, providing
 the index with confidence measures.
 
-The rest of the paper is structured as follows: Section~\ref{sec-tidy}
-reviews the tidy framework in R and how index construction can benefit
-from such a framework. The details of the pipeline modules are presented
-in Section~\ref{sec-pipeline}. Section~\ref{sec-software} explains the
-design of the \texttt{tidyindex} package that implements the modules.
-Examples are given in Section~\ref{sec-examples} to illustrate the use
-cases of the pipeline.
+The rest of the paper is structured as follows.
+Section~\ref{sec-idx-dev} provides background about the development of
+indexes. Section~\ref{sec-tidy} reviews the tidy framework in R and how
+index construction can benefit from such a framework. The details of the
+pipeline modules are presented in Section~\ref{sec-pipeline}.
+Section~\ref{sec-software} explains the design of the \texttt{tidyindex}
+package that implements the modules. Examples are given in
+Section~\ref{sec-examples} to illustrate three use cases of the
+pipeline.
 
-\hypertarget{background-to-index-development}{%
-\section{Background to index
-development}\label{background-to-index-development}}
+\hypertarget{sec-idx-dev}{%
+\section{Background to index development}\label{sec-idx-dev}}
 
 There are many documents providing advice on how to construct indexes
 for different fields, and review articles describing the range of
@@ -964,9 +965,9 @@ result in more extreme values, i.e.~in 1998 and 2020.}
 
 \end{figure}
 
-\hypertarget{does-a-minor-change-in-variable-weights-cause-a-tornado}{%
-\subsection{Does a minor change in variable weights cause a
-tornado?}\label{does-a-minor-change-in-variable-weights-cause-a-tornado}}
+\hypertarget{does-a-puff-of-change-in-variable-weights-cause-a-tornado-in-ranks}{%
+\subsection{Does a puff of change in variable weights cause a tornado in
+ranks?}\label{does-a-puff-of-change-in-variable-weights-cause-a-tornado-in-ranks}}
 
 The Global Gender Gap Index (GGGI), published annually by the World
 Economic Forum, measures gender parity by assessing relative gaps
@@ -1114,7 +1115,9 @@ This process creates an animation showing the movement of index values
 in response to changing weights. This visualization technique, which
 presents a sequence of data projections, is referred to as a ``tour''.
 The specific kind of tour that moves between the original and nearby
-projections is known as a ``local tour''.
+projections is known as a ``local tour''. XXX-ref to tourr package, and
+also tour theory paper (Buja
+https://doi.org/10.1016/S0169-7161(04)24014-7 )
 
 In Figure~\ref{fig-idx-tour}, six frames have been chosen from the
 animation available at https://vimeo.com/847874016. When the weight of

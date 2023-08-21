@@ -95,7 +95,7 @@ To be able to test different decision choices systematically for an index, the i
 
 In this work, we provide statistical and computational methods for developing a data pipeline framework to construct and customize indexes using data. The proposed pipeline comprises various modules, including temporal and spatial aggregation, variable transformation and combination, distribution fitting, benchmark setting, and index communication. Given the decisions analysts need to make when combining multivariate data into indexes, the proposed pipeline enables the evaluation of how the specific choice can affect the index, as well as how the index may appear under alternative options. Furthermore, uncertainty calculation can also flow through the pipeline, providing the index with confidence measures. 
 
-The rest of the paper is structured as follows: @sec-tidy reviews the tidy framework in R and how index construction can benefit from such a framework. The details of the pipeline modules are presented in @sec-pipeline. @sec-software explains the design of the `tidyindex` package that implements the modules. Examples are given in @sec-examples to illustrate the use cases of the pipeline.
+The rest of the paper is structured as follows. @sec-idx-dev provides background about the development of indexes. @sec-tidy reviews the tidy framework in R and how index construction can benefit from such a framework. The details of the pipeline modules are presented in @sec-pipeline. @sec-software explains the design of the `tidyindex` package that implements the modules. Examples are given in @sec-examples to illustrate three use cases of the pipeline.
 
 <!-- Evaluating indexes is challenging because the underlying concept an index measures is often a latent variable and lacks direct benchmarks for comparison. In literature, researchers typically demonstrate the accuracy of an index through comparing it to some well-known indexes, such as SPI for drought indexes, or to a relevant response variable, such as crop yield for monitoring agricultural drought. For social indexes, @uncertainty proposes a Monte Carlo algorithm to compute index uncertainty through sampling the linear weights.  -->
 
@@ -103,7 +103,7 @@ The rest of the paper is structured as follows: @sec-tidy reviews the tidy frame
 
 <!-- When indexes have a spatial and/or temporal component, different choices on how space and time is aggregated will introduce uncertainty. A slight change in the variable value can sometimes introduce a big difference for the index.  -->
 
-# Background to index development 
+# Background to index development {#sec-idx-dev}
 
 <!-- * point to major review papers describing index dev  -->
 <!-- * point to major uses of indexes  -->
@@ -454,7 +454,7 @@ p2 <- idx %>%
   
 ```
 
-## Does a minor change in variable weights cause a tornado?
+## Does a puff of change in variable weights cause a tornado in ranks?
 
 The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index, compiled from 14 variables expressed as female-to-male ratios, first aggregates these variables into four dimensions through linear combinations. These dimensions are then combined through another linear combination to form the index. @fig-pp-gggi illustrates this pipeline construction by applying the dimension reduction module twice on the data to generate the index. @tbl-gggi-weights presents the variable weights (`V-weight`) and dimension weights (`D-weight`) used in the two dimension reduction steps. In the table, the variable weights are computed as the inverse of the standard deviation of each variable, scaled to sum to 1. These weights ensure that a one percentage point change in the standard deviation of each variable contributes equally to the index. Dimension weights are equal across the four dimensions and the last column, `weight`, multiples the variable and dimension weights to produce a single set of weights.
 
@@ -502,7 +502,7 @@ A linear combination can also be interpreted as a linear projection of multivari
 2)  Countries ranked between 57 and 62, with GGGI values from 0.72 to 0.73, and
 3)  Low-ranked countries with GGGI \< 0.6.
 
-We slightly vary the weight of the politics dimension from the original 0.25 while keeping the weights constant for the other three dimensions. This process creates an animation showing the movement of index values in response to changing weights. This visualization technique, which presents a sequence of data projections, is referred to as a "tour". The specific kind of tour that moves between the original and nearby projections is known as a "local tour".
+We slightly vary the weight of the politics dimension from the original 0.25 while keeping the weights constant for the other three dimensions. This process creates an animation showing the movement of index values in response to changing weights. This visualization technique, which presents a sequence of data projections, is referred to as a "tour". The specific kind of tour that moves between the original and nearby projections is known as a "local tour". XXX-ref to tourr package, and also tour theory paper (Buja https://doi.org/10.1016/S0169-7161(04)24014-7 )
 
 In @fig-idx-tour, six frames have been chosen from the animation available at https://vimeo.com/847874016. When the weight of politics is reduced (Frame 1 and 6 vs. Frame 12), the difference in GGGI values between the top Nordic countries and mid- or low-ranked countries narrows, suggesting a smaller variation among countries in achieving gender parity. Conversely, when the weight of politics increases (Frame 18, 24, and 29 vs. Frame 12), nearly all the countries in the three categories experience a decrease in GGGI values. A noticeable exception to this trend is Bangladesh, where its index value moves in the same direction as the politics weight. This leads to its index value being almost similar to those of the top-ranked Nordic countries when the politics dimension is assigned a weight of 0.52 in Frame 29.
 
