@@ -456,7 +456,7 @@ p2 <- idx %>%
 
 ## Does a puff of change in variable weights cause a tornado in ranks?
 
-The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index, compiled from 14 variables expressed as female-to-male ratios, first aggregates these variables into four dimensions through linear combinations. These dimensions are then combined through another linear combination to form the index. @fig-pp-gggi illustrates this pipeline construction by applying the dimension reduction module twice on the data to generate the index. @tbl-gggi-weights presents the variable weights (`V-weight`) and dimension weights (`D-weight`) used in the two dimension reduction steps. In the table, the variable weights are computed as the inverse of the standard deviation of each variable, scaled to sum to 1. These weights ensure that a one percentage point change in the standard deviation of each variable contributes equally to the index. Dimension weights are equal across the four dimensions and the last column, `weight`, multiples the variable and dimension weights to produce a single set of weights.
+The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index, defined on 14 variables measuring female-to-male ratios, first aggregates these variables into four dimensions using the linear combination (`V-weight` in @tbl-gggi-weights). The weights are the inverse of the standard deviation of each variable, scaled to sum to 1, thus ensuring equal relative contribution of each variable to each of the four new variables.  These new variables are then combined through another linear combination (`D-weight` in @tbl-gggi-weights) to form the final index value. @fig-pp-gggi illustrates that the pipeline is constructed by applying the dimension reduction module twice on the data. Dimension weights are equal across the four dimensions and the last column, `weight`, multiples the variable and dimension weights to produce a single set of weights.
 
 ```{r fig-pp-gggi}
 #| fig-align: center
@@ -467,19 +467,33 @@ knitr::include_graphics(here::here("figures/pipeline-gggi.png"))
 ```
 
 ```{r tbl-gggi-weights}
-#| tbl-cap: Weights used to compute the Global Gender Gap Index
+#| tbl-cap: "Weights for the two applications of dimension reduction to compute the Global Gender Gap Index. V-weight is used to compute four new variables from the original 14. These are then equally combined to get the final index value."
 #| tbl-cap-location: bottom
+library(kableExtra)
 gggi_weights %>%  
    mutate(variable = str_replace_all(variable, "_", " ") %>%
             str_to_sentence()) %>% 
-  select(c(1,2, 5:7)) %>% 
-  mutate(dimension = c(rep("Economy", 5), rep("Education" ,4), 
-                       rep("Health", 2), rep("Politics", 3))) %>% 
+  select(c(1, 5, 2, 6)) %>% 
+  mutate(dimension = c("Economy", rep("", 4), 
+                       "Education", rep("" , 3), 
+                       "Health", "", 
+                       "Politics", rep("", 2)),
+         dim_weight = c(0.25, rep("", 4),
+                        0.25, rep("", 3),
+                        0.25, "",
+                        0.25, rep("", 2))) %>% 
   knitr::kable(
     digits = 3, 
-    col.names = c("Variable", "Dimension", "V-weight",
-        "D-weight", "Weight")
-    ) 
+    col.names = c("Variable", "V-weight", "Dimension", 
+        "D-weight"),
+        linesep = c("", "", "", "", "\\hline",
+                    "", "", "", "\\hline",
+                    "", "\\hline",
+                    "", "", "\\hline"),
+      align = c("l", "r", "l", "r")
+    ) %>%
+  kable_styling(full_width = FALSE) %>%
+  row_spec(0, bold = TRUE) 
 ```
 
 The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the country's economy profile and can be accessed in R via the `tidyindex` package as `gggi` and @tbl-gggi-weights as `gggi_weights`. The index can be reproduced with the package as:
@@ -560,7 +574,7 @@ wrap_plots(gl, ncol = 3)
 
 ## Decoding uncertainty through the wisdom of the crowd 
 
-Index uncertainties may arise from various stages of the pipeline, including from different parameterisation choices, as illustrated from @sec-example1, or from the statistical procedures in the pipeline. Given the lack of direct instruments for measurement, true values for indexes can never be obtained to compare the index against. Nevertheless, an index can be provided with confidence interval to report it accuracy. In this example, the Texas post office station highlighted in @fig-compute-temporal is used to illustrate the calculation of confidence interval for the Standardized Precipitation Index (SPI). Bootstrapping is used to account for the sampling uncertainty in the distribution fit step of the index pipeline and to assess its impact on the SPI series. 
+Errors in measurement, variability and sampling error, may arise at various stages of the pipeline calculation, including from different parameterisation choices, as illustrated from @sec-example1, or from the statistical summarization procedures applied in the pipeline. Although it may note be possible to perfectly measure these errors, it is important that they are recognised and estimated for an index, especially to provide potential confidence intervals. In this example, the Texas post office station highlighted in @fig-compute-temporal is used to illustrate one possibility to compute a confidence interval for the Standardized Precipitation Index (SPI). Bootstrapping is used to account for the sampling uncertainty in the distribution fit step of the index pipeline and to assess its impact on the SPI series. 
 
 In SPI, the distribution fit step fits the gamma distribution to the aggregated precipitation series separately for each month. This results in  31 or 32 points, from January 1990 to April 2022, for estimating each set of distribution parameters. To account for this sampling uncertainty with these samples, bootstrapping is used to generate replicates of the aggregated series. In the `tidyindex` package, this bootstrap sampling is activated when the argument `.n_boot` is set to a value other than the default of 1. In the following code, the Standardized Precipitation Index (SPI) is calculated using a time scale of 24. The bootstrap procedure samples the aggregated precipitation (`.agg`) for 100 iterations (`.n_boot = 100`) and then fits the gamma distribution. The resulting gamma probabilities are then transformed into normal densities in the normalizing step with `agument()`.
 
