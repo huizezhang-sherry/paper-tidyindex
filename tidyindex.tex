@@ -7,7 +7,6 @@
 ]{interact}
 
 \usepackage{amsmath,amssymb}
-\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -17,6 +16,10 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -181,10 +184,12 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 \makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[many]{tcolorbox}}
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
 \makeatother
 \makeatletter
 \@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
+\makeatother
+\makeatletter
 \makeatother
 \makeatletter
 \makeatother
@@ -254,7 +259,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced, sharp corners, interior hidden, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, boxrule=0pt, enhanced, interior hidden, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -351,7 +356,7 @@ and Laaha (2022) studies five uncertainty sources (record length,
 observation period, distribution choice, parameter estimation method,
 and GOF-test) of drought indexes.
 
-There are also R packages supporting index calculation. The
+There are also a few R packages supporting index calculation. The
 \texttt{SPEI} package (Vicente-Serrano, Beguería, and López-Moreno 2010)
 computes two drought indexes. The \texttt{gpindex} package (Martin 2023)
 computes price indexes, and the \texttt{fundiversity} package (Grenié
@@ -361,10 +366,10 @@ ambitious, making a start on following the broader guidelines in the
 OECD handbook to construct, analyze, and visualize composite indexes.
 
 From reviewing this literature, and in the process of developing methods
-for making it easier to work with multivariate spatio- temporal data, it
+for making it easier to work with multivariate spatio-temporal data, it
 seems possible to think about indexes in a more organised, cohesive and
-standard manner. Actually, it seems that the area could benefit from a
-\emph{tidy} approach.
+standard manner. Actually, the area could benefit from a \emph{tidy}
+approach.
 
 \hypertarget{sec-tidy}{%
 \section{Tidy framework}\label{sec-tidy}}
@@ -510,7 +515,7 @@ Table~\ref{tbl-notation}.
   >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.3611}}@{}}
 \caption{\label{tbl-notation}An notation overview of the input,
 operation, and output of each pipeline module.}\tabularnewline
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Section
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -522,9 +527,9 @@ Operation
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Output
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endfirsthead
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Section
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -536,8 +541,10 @@ Operation
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Output
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endhead
+\bottomrule\noalign{}
+\endlastfoot
 3.1 & Temporal processing & \(x_{sj}(t)\) & \(f[x_{sj}(t)]\) &
 \(x^{\text{Temp}}_{sj}(t^\prime) \quad t^\prime \in D_{t^\prime}\) \\
 3.2 & Spatial processing & \(x_{tj}(s)\) & \(g[x_{tj}(s)]\) &
@@ -555,7 +562,6 @@ Output
 3.8 & Benchmarking & \(x_j(s; t)\) & \(u[x_j(s;t)]\) & \(b_j(s;t)\) \\
 3.9 & Simplification & \(x_j(s; t)\) & \(v[x_j(s;t)]\) &
 \(A_j(s;t) \in \{a_1, a_2, \cdots, a_j\}\) \\
-\bottomrule()
 \end{longtable}
 
 \begin{figure}
@@ -652,20 +658,16 @@ example, the Standardized Precipitation-Evapotranspiration Index (SPEI)
 between precipitation (\(P\)) and potential evapotranspiration
 (\(\text{PET}\)), using a water balance model (\(D = P - \text{PET}\)).
 This is the only step that differs from the Standardized Precipitation
-Index (SPI).
+Index (SPI), and can be considered to be a dimension reduction using a
+particular linear combination.
 
-Common statistical methods for reducing the variable dimension include
-linear combinations, Principal Component Analysis (PCA), and linear
-projections. While all the three methods can lead in the same result due
-to their shared linear approach in combining variables in an additive
-structure: \(\sum_{j = 1}^{p}\lambda_{j}x_j(s;t)\) where \(\lambda\) is
-the weight or principal component, they offer different interpretation
-of the weight. Linear combination typically use equal contribution or
-use expert suggested weights for simplicity. Both PCA and linear
-projections determine their weights (principal components) through
-optimizing a function of the data. In PCA, this function is the variance
-while linear projections allow any function of the data to serve as the
-objective function in the optimization.
+Linear combinations of variables are commonly used to reduce the
+dimension in statistical methodology, and chosen using a method like
+principal component analysis (PCA) (XXX-ref) or linear discriminant
+analysis (XXX-ref), preparing contrasts to test particular elements in
+analysis of variance, or hand-crafted by a content-area expert. Linear
+combinations also form the basis for visualizing multivariate data, in
+methods such as tours (XXX-ref).
 
 \hypertarget{distribution-fit}{%
 \subsection{Distribution fit}\label{distribution-fit}}
@@ -1008,7 +1010,7 @@ reduction twice on the data.}
   >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0909}}@{}}
 \caption{\label{tbl-gggi-weights}Weights used to compute the Global
 Gender Gap Index}\tabularnewline
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Variable
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -1020,9 +1022,9 @@ D-weight
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 Weight
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endfirsthead
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Variable
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -1034,8 +1036,10 @@ D-weight
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 Weight
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endhead
+\bottomrule\noalign{}
+\endlastfoot
 Labour force participation & Economy & 0.199 & 0.25 & 0.050 \\
 Wage equality for similar work & Economy & 0.310 & 0.25 & 0.078 \\
 Estimated earned income & Economy & 0.221 & 0.25 & 0.055 \\
@@ -1051,7 +1055,6 @@ Healthy life expectancy & Health & 0.307 & 0.25 & 0.077 \\
 Women in parliament & Politics & 0.310 & 0.25 & 0.078 \\
 Women in ministerial positions & Politics & 0.247 & 0.25 & 0.062 \\
 Years with female head of state & Politics & 0.443 & 0.25 & 0.111 \\
-\bottomrule()
 \end{longtable}
 
 The 2023 GGGI data is available from the Global Gender Gap Report 2023
