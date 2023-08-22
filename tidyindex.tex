@@ -268,7 +268,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, breakable, enhanced, borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, frame hidden, interior hidden, boxrule=0pt, enhanced, breakable, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -401,7 +401,7 @@ modularity makes it easier to modify certain steps in the pipeline and
 to maintain and extend the code base.
 
 Examples of using a pipeline approach for data analysis can be traced
-back to the interactive graphics literature, including Buja et al.
+back to the interactive graphics literature, including A. Buja et al.
 (1988); Sutherland et al. (2000); Xie, Hofmann, and Cheng (2014);
 Wickham et al. (2009). Wickham et al. (2009) argue that whether made
 explicit or not, a pipeline has to be presented in every graphics
@@ -1074,60 +1074,45 @@ out of the total 146 countries. However, after aggregating variables
 into the four dimensions, where no missing values exist, the index is
 reproducible for all the countries.
 
-A linear combination can also be interpreted as a linear projection of
-multivariate information with a weight vector. Projecting data from
-higher to lower dimensions unavoidably leads to information loss and the
-weights used require careful examination to understand their effects on
-the index and implications for interpretation and decision-making. By
-making slight adjustments to the weight vector, we can observe how index
-values and country rankings change. For illustration, we select a set of
-countries including:
+Frame 12 in Figure~\ref{fig-idx-tour} presents the original index values
+when equal weights are applied across the four dimensions. Leading the
+rankings, Nordic countries (Iceland, Norway, and Finland) and New
+Zealand show a good progression on reaching gender parity, with over
+80\% of the gender gap closed. In the middle range, an index value over
+0.7 is achieved for Brazil, Panama, Poland, Bangladesh, Kazakhstan,
+Armenia, and Slovakia. The last group of countries (Pakistan, Iran,
+Algeria, Chad), with GGGI \textless{} 0.6, have a wider gender gap to
+closed and Afghanistan lags further behind with GGGI = 0.4.
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi})}
-\tightlist
-\item
-  Top-ranked countries with GGGI \textgreater{} 0.85,
-\item
-  Countries ranked between 57 and 62, with GGGI values from 0.72 to
-  0.73, and
-\item
-  Low-ranked countries with GGGI \textless{} 0.6.
-\end{enumerate}
+To observe the effect of a minor weight change on the index, we slightly
+vary the politics weight (while maintain equal weights among other
+dimensions) to generate an animation of the movement of index values in
+response to the changing weights. This visualization technique, which
+presents a sequence of data projections, is referred to as a ``tour''
+and the specific kind of tour used here to move between nearby
+projections is known as a ``local tour'' (Andreas Buja et al. 2005;
+Wickham et al. 2011).
 
-We slightly vary the weight of the politics dimension from the original
-0.25 while keeping the weights constant for the other three dimensions.
-This process creates an animation showing the movement of index values
-in response to changing weights. This visualization technique, which
-presents a sequence of data projections, is referred to as a ``tour''.
-The specific kind of tour that moves between the original and nearby
-projections is known as a ``local tour''. XXX-ref to tourr package, and
-also tour theory paper (Buja
-https://doi.org/10.1016/S0169-7161(04)24014-7 )
-
-In Figure~\ref{fig-idx-tour}, six frames have been chosen from the
-animation available at https://vimeo.com/847874016. When the weight of
-politics is reduced (Frame 1 and 6 vs.~Frame 12), the difference in GGGI
-values between the top Nordic countries and mid- or low-ranked countries
+In Figure~\ref{fig-idx-tour}, six frames have been chosen from the local
+tour to explore the role of the politics dimension to the index. When
+the weight of politics is reduced (Frame 1 and 6 vs.~Frame 12), the
+difference in GGGI values between the Nordic and other countries
 narrows, suggesting a smaller variation among countries in achieving
 gender parity. Conversely, when the weight of politics increases (Frame
-18, 24, and 29 vs.~Frame 12), nearly all the countries in the three
-categories experience a decrease in GGGI values. A noticeable exception
-to this trend is Bangladesh, where its index value moves in the same
-direction as the politics weight. This leads to its index value being
-almost similar to those of the top-ranked Nordic countries when the
-politics dimension is assigned a weight of 0.52 in Frame 29.
+18, 24, and 29 vs.~Frame 12), nearly all the countries experience a
+decrease in GGGI values. A noticeable exception to this trend is
+Bangladesh, where its index value moves in the same direction as the
+politics weight, which leads to an almost similar index value to the
+Nordics when the politics dimension is assigned a weight of 0.52 in
+Frame 29.
 
-In GGGI, the index value has a direct interpretation as the percentage
-of the gender gap that has been closed. When countries exhibit closer or
-consistent decreasing index values, it can be directly interpreted as a
-reflection of a country's progress toward gender parity. Ideally, an
-index should be robust against minor changes in its construction
-components. This example provides researchers with means to observe
-changes in the index resulting from variations in the weights used in
-linear combinations. This approach can be applied broadly to different
-sets of weights of interest, extending beyond the change in a single
-dimension illustrated by the example.
+Ideally, an index should be robust against minor changes in its
+construction components. Unfortunately, this is not the case with GGGI,
+which raises concerns about the index's quality. For other indexes that
+use linear combination to reduce variable dimensions, the demonstrated
+local tour can be applied similarly to assess the index robustness
+through observing how index values respond to perturbation of the
+weights.
 
 \begin{figure}
 
@@ -1284,6 +1269,12 @@ Calculation of the Standardised Precipitation-Evapotranspiration Index}.
 Buja, A, D Asimov, C Hurley, and JA McDonald. 1988. {``Elements of a
 Viewing Pipeline for Data Analysis.''} In \emph{Dynamic Graphics for
 Statistics}, 277--308. Wadsworth, Belmont.
+
+\leavevmode\vadjust pre{\hypertarget{ref-buja2005computational}{}}%
+Buja, Andreas, Dianne Cook, Daniel Asimov, and Catherine Hurley. 2005.
+{``Computational Methods for High-Dimensional Rotations in Data
+Visualization.''} \emph{Handbook of Statistics} 24: 391--413.
+\url{https://doi.org/10.1016/S0169-7161(04)24014-7}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-fisher1936use}{}}%
 Fisher, Ronald A. 1936. {``The Use of Multiple Measurements in Taxonomic
