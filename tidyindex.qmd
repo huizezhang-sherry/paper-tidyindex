@@ -471,6 +471,7 @@ knitr::include_graphics(here::here("figures/pipeline-gggi.png"))
 ```{r tbl-gggi-weights}
 #| tbl-cap: "Weights for the two applications of dimension reduction to compute the Global Gender Gap Index. V-weight is used to compute four new variables from the original 14. These are then equally combined to get the final index value."
 #| tbl-cap-location: bottom
+# table cap location is not working: https://github.com/quarto-dev/quarto-cli/issues/6417
 library(kableExtra)
 gggi_weights %>%  
    mutate(variable = str_replace_all(variable, "_", " ") %>%
@@ -486,16 +487,18 @@ gggi_weights %>%
                         0.25, rep("", 2))) %>% 
   knitr::kable(
     digits = 3, booktabs = TRUE, 
-    col.names = c("Variable", "V-weight", "Dimension", 
-        "D-weight", "weight"),
-        linesep = c("", "", "", "", "\\hline",
-                    "", "", "", "\\hline",
-                    "", "\\hline",
-                    "", "", "\\hline"),
+    col.names = c("Variable", "V-weight", "Dimension", "D-weight", "weight"),
+    linesep = c("", "", "", "", "\\hline",
+                "", "", "", "\\hline",
+                "", "\\hline",
+                "", "", "\\hline"),
       align = c("l", "r", "l", "r", "r")
     ) %>%
-  kable_styling(full_width = FALSE, ) %>%
-  row_spec(0, bold = TRUE)
+  kable_styling(font_size = 9) %>%
+  row_spec(0, bold = TRUE) %>% 
+  column_spec(1, width = "18em") %>% 
+  column_spec(3, width = "4em") %>% 
+  column_spec(c(2, 4, 5), width = "5em")
 ```
 
 The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the country's economy profile and can be accessed in the `tidyindex` package as `gggi` with @tbl-gggi-weights as `gggi_weights`. The index can be reproduced with:
