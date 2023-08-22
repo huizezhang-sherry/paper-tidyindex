@@ -475,7 +475,7 @@ library(kableExtra)
 gggi_weights %>%  
    mutate(variable = str_replace_all(variable, "_", " ") %>%
             str_to_sentence()) %>% 
-  select(c(1, 5, 2, 6)) %>% 
+  select(c(1, 5, 2, 6, 7)) %>% 
   mutate(dimension = c("Economy", rep("", 4), 
                        "Education", rep("" , 3), 
                        "Health", "", 
@@ -487,12 +487,12 @@ gggi_weights %>%
   knitr::kable(
     digits = 3, booktabs = TRUE, 
     col.names = c("Variable", "V-weight", "Dimension", 
-        "D-weight"),
+        "D-weight", "weight"),
         linesep = c("", "", "", "", "\\hline",
                     "", "", "", "\\hline",
                     "", "\\hline",
                     "", "", "\\hline"),
-      align = c("l", "r", "l", "r")
+      align = c("l", "r", "l", "r", "r")
     ) %>%
   kable_styling(full_width = FALSE, ) %>%
   row_spec(0, bold = TRUE)

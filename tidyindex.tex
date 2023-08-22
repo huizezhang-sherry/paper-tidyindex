@@ -7,7 +7,6 @@
 ]{interact}
 
 \usepackage{amsmath,amssymb}
-\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -17,6 +16,10 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -195,10 +198,12 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 \makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[many]{tcolorbox}}
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
 \makeatother
 \makeatletter
 \@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
+\makeatother
+\makeatletter
 \makeatother
 \makeatletter
 \makeatother
@@ -268,7 +273,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, enhanced, frame hidden, sharp corners, interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, frame hidden, enhanced, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -525,7 +530,7 @@ Table~\ref{tbl-notation}.
   >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.3611}}@{}}
 \caption{\label{tbl-notation}An notation overview of the input,
 operation, and output of each pipeline module.}\tabularnewline
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Section
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -537,9 +542,9 @@ Operation
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Output
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endfirsthead
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Section
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -551,8 +556,10 @@ Operation
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Output
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endhead
+\bottomrule\noalign{}
+\endlastfoot
 3.1 & Temporal processing & \(x_{sj}(t)\) & \(f[x_{sj}(t)]\) &
 \(x^{\text{Temp}}_{sj}(t^\prime) \quad t^\prime \in D_{t^\prime}\) \\
 3.2 & Spatial processing & \(x_{tj}(s)\) & \(g[x_{tj}(s)]\) &
@@ -570,7 +577,6 @@ Output
 3.8 & Benchmarking & \(x_j(s; t)\) & \(u[x_j(s;t)]\) & \(b_j(s;t)\) \\
 3.9 & Simplification & \(x_j(s; t)\) & \(v[x_j(s;t)]\) &
 \(A_j(s;t) \in \{a_1, a_2, \cdots, a_j\}\) \\
-\bottomrule()
 \end{longtable}
 
 \begin{figure}
@@ -1017,27 +1023,27 @@ from the original 14. These are then equally combined to get the final
 index value. }\tabularnewline
 
 \centering
-\begin{tabular}{lrlr}
+\begin{tabular}{lrlrr}
 \toprule
-\textbf{Variable} & \textbf{V-weight} & \textbf{Dimension} & \textbf{D-weight}\\
+\textbf{Variable} & \textbf{V-weight} & \textbf{Dimension} & \textbf{D-weight} & \textbf{weight}\\
 \midrule
-Labour force participation & 0.199 & Economy & 0.25\\
-Wage equality for similar work & 0.310 &  & \\
-Estimated earned income & 0.221 &  & \\
-Legislators senior officials and managers & 0.149 &  & \\
-Professional and technical workers & 0.121 &  & \\
+Labour force participation & 0.199 & Economy & 0.25 & 0.050\\
+Wage equality for similar work & 0.310 &  &  & 0.078\\
+Estimated earned income & 0.221 &  &  & 0.055\\
+Legislators senior officials and managers & 0.149 &  &  & 0.037\\
+Professional and technical workers & 0.121 &  &  & 0.030\\
 \hline
-Literacy rate & 0.191 & Education & 0.25\\
-Enrolment in primary education & 0.459 &  & \\
-Enrolment in secondary education & 0.230 &  & \\
-Enrolment in tertiary education & 0.121 &  & \\
+Literacy rate & 0.191 & Education & 0.25 & 0.048\\
+Enrolment in primary education & 0.459 &  &  & 0.115\\
+Enrolment in secondary education & 0.230 &  &  & 0.058\\
+Enrolment in tertiary education & 0.121 &  &  & 0.030\\
 \hline
-Sex ratio at birth & 0.693 & Health & 0.25\\
-Healthy life expectancy & 0.307 &  & \\
+Sex ratio at birth & 0.693 & Health & 0.25 & 0.173\\
+Healthy life expectancy & 0.307 &  &  & 0.077\\
 \hline
-Women in parliament & 0.310 & Politics & 0.25\\
-Women in ministerial positions & 0.247 &  & \\
-Years with female head of state & 0.443 &  & \\
+Women in parliament & 0.310 & Politics & 0.25 & 0.078\\
+Women in ministerial positions & 0.247 &  &  & 0.062\\
+Years with female head of state & 0.443 &  &  & 0.111\\
 \bottomrule
 \end{tabular}
 \end{table}
