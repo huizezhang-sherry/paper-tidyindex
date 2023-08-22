@@ -7,7 +7,6 @@
 ]{interact}
 
 \usepackage{amsmath,amssymb}
-\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -17,6 +16,10 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -195,10 +198,12 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 \makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[many]{tcolorbox}}
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
 \makeatother
 \makeatletter
 \@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
+\makeatother
+\makeatletter
 \makeatother
 \makeatletter
 \makeatother
@@ -268,7 +273,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, borderline west={3pt}{0pt}{shadecolor}, interior hidden, enhanced, frame hidden, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -526,7 +531,7 @@ Table~\ref{tbl-notation}.
   >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.3611}}@{}}
 \caption{\label{tbl-notation}An notation overview of the input,
 operation, and output of each pipeline module.}\tabularnewline
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Section
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -538,9 +543,9 @@ Operation
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Output
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endfirsthead
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Section
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -552,8 +557,10 @@ Operation
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Output
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endhead
+\bottomrule\noalign{}
+\endlastfoot
 3.1 & Temporal processing & \(x_{sj}(t)\) & \(f[x_{sj}(t)]\) &
 \(x^{\text{Temp}}_{sj}(t^\prime) \quad t^\prime \in D_{t^\prime}\) \\
 3.2 & Spatial processing & \(x_{tj}(s)\) & \(g[x_{tj}(s)]\) &
@@ -571,7 +578,6 @@ Output
 3.8 & Benchmarking & \(x_j(s; t)\) & \(u[x_j(s;t)]\) & \(b_j(s;t)\) \\
 3.9 & Simplification & \(x_j(s; t)\) & \(v[x_j(s;t)]\) &
 \(A_j(s;t) \in \{a_1, a_2, \cdots, a_z\}\) \\
-\bottomrule()
 \end{longtable}
 
 \begin{figure}
@@ -675,10 +681,13 @@ Linear combinations of variables are commonly used to reduce the
 dimension in statistical methodology, and chosen using a method like
 principal component analysis (PCA) (Hotelling 1933) or linear
 discriminant analysis (Fisher 1936), preparing contrasts to test
-particular elements in analysis of variance, or hand-crafted by a
-content-area expert. Linear combinations also form the basis for
+particular elements in analysis of variance (XXX-ref), or hand-crafted
+by a content-area expert. Linear combinations also form the basis for
 visualizing multivariate data, in methods such as tours (Wickham et al.
-2011).
+2011). This dimension reduction method can accommodate linear
+combinations as provided by any method, and hence is linear by design.
+The transformation module provides variable-wise non-linear
+transformation.
 
 \hypertarget{distribution-fit}{%
 \subsection{Distribution fit}\label{distribution-fit}}
