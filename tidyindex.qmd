@@ -458,7 +458,7 @@ p2 <- idx %>%
 
 ## Does a puff of change in variable weights cause a tornado in ranks?
 
-The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index, defined on 14 variables measuring female-to-male ratios, first aggregates these variables into four dimensions (using the linear combination given by `V-weight` in @tbl-gggi-weights). The weights are the inverse of the standard deviation of each variable, scaled to sum to 1, thus ensuring equal relative contribution of each variable to each of the four new variables.  These new variables are then combined through another linear combination (`D-weight` in @tbl-gggi-weights) to form the final index value. @fig-pp-gggi illustrates that the pipeline is constructed by applying the dimension reduction module twice on the data. <!--Dimension weights are equal across the four dimensions and the last column, `weight`, multiples the variable and dimension weights to produce a single set of weights.--> The data for GGGI does not needs to be transformed or scaled so these steps are not included, but they might still need to be used for other similar indexes.
+The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index, defined on 14 variables measuring female-to-male ratios, first aggregates these variables into four dimensions (using the linear combination given by `V-wgt` in @tbl-gggi-weights). The weights are the inverse of the standard deviation of each variable, scaled to sum to 1, thus ensuring equal relative contribution of each variable to each of the four new variables.  These new variables are then combined through another linear combination (`D-wgt` in @tbl-gggi-weights) to form the final index value. @fig-pp-gggi illustrates that the pipeline is constructed by applying the dimension reduction module twice on the data. <!--Dimension weights are equal across the four dimensions and the last column, `weight`, multiples the variable and dimension weights to produce a single set of weights.--> The data for GGGI does not needs to be transformed or scaled so these steps are not included, but they might still need to be used for other similar indexes.
 
 ```{r fig-pp-gggi}
 #| fig-align: center
@@ -469,7 +469,7 @@ knitr::include_graphics(here::here("figures/pipeline-gggi.png"))
 ```
 
 ```{r tbl-gggi-weights}
-#| tbl-cap: "Weights for the two applications of dimension reduction to compute the Global Gender Gap Index. V-weight is used to compute four new variables from the original 14. These are then equally combined to get the final index value."
+#| tbl-cap: "Weights for the two applications of dimension reduction to compute the Global Gender Gap Index. V-wgt is used to compute four new variables from the original 14. These are then equally combined to get the final index value."
 #| tbl-cap-location: bottom
 # table cap location is not working: https://github.com/quarto-dev/quarto-cli/issues/6417
 library(kableExtra)
@@ -487,18 +487,19 @@ gggi_weights %>%
                         0.25, rep("", 2))) %>% 
   knitr::kable(
     digits = 3, booktabs = TRUE, 
-    col.names = c("Variable", "V-weight", "Dimension", "D-weight", "weight"),
+    col.names = c("Variable", "V-wgt", "Dimension", "D-wgt", "wgt"),
     linesep = c("", "", "", "", "\\hline",
                 "", "", "", "\\hline",
                 "", "\\hline",
                 "", "", "\\hline"),
       align = c("l", "r", "l", "r", "r")
     ) %>%
-  kable_styling(font_size = 9) %>%
+  kable_styling(font_size = 11) %>%
   row_spec(0, bold = TRUE) %>% 
-  column_spec(1, width = "18em") %>% 
-  column_spec(3, width = "4em") %>% 
-  column_spec(c(2, 4, 5), width = "5em")
+  column_spec(1, width = "17.5em") %>% 
+  column_spec(3, width = "3.5em") %>% 
+  column_spec(c(2, 4), width = "4em") %>% 
+  column_spec(5, width = "3em")
 ```
 
 The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the country's economy profile and can be accessed in the `tidyindex` package as `gggi` with @tbl-gggi-weights as `gggi_weights`. The index can be reproduced with:
@@ -513,7 +514,7 @@ gggi %>%
       weight = weight)) 
 ```
 
-After initialzing the `gggi` object and attaching the `gggi_weights` as meta-data, a single linear combination within the dimension reduction module is applied to the 14 variables (from column `labour_force_participation` to `years_with_female_head_of_state`), using the weight specified in the `weight` column of the attached metadata. While computing the index from the original 14 variables, it remains unclear how the missing values are handled within the index, which impacts 68 out of the total 146 countries. However, after aggregating variables into the four dimensions, where no missing values exist, the index is reproducible for all the countries.
+After initializing the `gggi` object and attaching the `gggi_weights` as meta-data, a single linear combination within the dimension reduction module is applied to the 14 variables (from column `labour_force_participation` to `years_with_female_head_of_state`), using the weight specified in the `wgt` column of the attached metadata. While computing the index from the original 14 variables, it remains unclear how the missing values are handled within the index, which impacts 68 out of the total 146 countries. However, after aggregating variables into the four dimensions, where no missing values exist, the index is reproducible for all the countries.
 
 Frame 12 in @fig-idx-tour presents the original index values when equal weights are applied across the four dimensions. Leading the rankings, Nordic countries (Iceland, Norway, and Finland) and New Zealand show a good progression on reaching gender parity, with over 80% of the gender gap closed. In the middle range, an index value over 0.7 is achieved for Brazil, Panama, Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia. The last group of countries (Pakistan, Iran, Algeria, Chad), with GGGI < 0.6, have a wider gender gap to closed and Afghanistan lags further behind with GGGI = 0.4.
 
