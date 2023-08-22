@@ -179,7 +179,7 @@ In what follows when geographic or temporal components of the $x_j(s,t)$ process
 | 3.8   | Benchmarking            | $x_j(s; t)$                                                             | $u[x_j(s;t)]$                       | $b_j(s;t)$                                                                    |
 | 3.9   | Simplification          | $x_j(s; t)$                                                             | $v[x_j(s;t)]$                       | $A_j(s;t) \in \{a_1, a_2, \cdots, a_z\}$                                      |
 
-: An notation overview of the input, operation, and output of each pipeline module. {#tbl-notation}
+: Summary of the notation for input, operation, and output of each pipeline module. {#tbl-notation}
 
 ```{r fig-pipeline-steps}
 #| fig-align: center
