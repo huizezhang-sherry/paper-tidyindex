@@ -267,7 +267,9 @@ trans_df %>%
 
 Dimension reduction takes the multivariate information $\mathbf{x}(s;t)$, where $\mathbf{x} \subseteq \mathbb{R}^q,\; q\leq p$, as the input. It summarises the high-dimensional information into a lower-dimension representation $\mathbf{y}(s;t)$, where $y \subseteq \mathbb{R}^d$ and $d < q$, as the output. The transformation can be based on domain-specific knowledge, originating from theories describing the underlying physical processes, or guided by statistical methods. For example, the Standardized Precipitation-Evapotranspiration Index (SPEI) [@SPEI] calculates the difference $D$ between precipitation ($P$) and potential evapotranspiration ($\text{PET}$), using a water balance model ($D = P - \text{PET}$). This is the only step that differs from the Standardized Precipitation Index (SPI), and can be considered to be a dimension reduction using a particular linear combination. 
 
-Linear combinations of variables are commonly used to reduce the dimension in statistical methodology, and chosen using a method like principal component analysis (PCA) (XXX-ref) or linear discriminant analysis (XXX-ref), preparing contrasts to test particular elements in analysis of variance, or hand-crafted by a content-area expert. Linear combinations also form the basis for visualizing multivariate data, in methods such as tours (XXX-ref). <!--While all the three methods can lead in the same result due to their shared linear approach in combining variables in an additive structure: $\sum_{j = 1}^{p}\lambda_{j}x_j(s;t)$ where $\lambda$ is the weight or principal component, they offer different interpretation of the weight. Linear combination typically use equal contribution or use expert suggested weights for simplicity. Both PCA and linear projections determine their weights through optimizing a function of the data. In PCA, this function is the variance while linear projections allow any function of the data to serve as the objective function in the optimization.-->
+Linear combinations of variables are commonly used to reduce the dimension in statistical methodology, and chosen using a method like principal component analysis (PCA) or linear discriminant analysis [@james2013introduction; hastie2009elements], preparing contrasts to test particular elements in analysis of variance, or hand-crafted by a content-area expert. Linear combinations also form the basis for visualizing multivariate data, in methods such as tours [@wickham_tourr_2011]. 
+
+<!--While all the three methods can lead in the same result due to their shared linear approach in combining variables in an additive structure: $\sum_{j = 1}^{p}\lambda_{j}x_j(s;t)$ where $\lambda$ is the weight or principal component, they offer different interpretation of the weight. Linear combination typically use equal contribution or use expert suggested weights for simplicity. Both PCA and linear projections determine their weights through optimizing a function of the data. In PCA, this function is the variance while linear projections allow any function of the data to serve as the objective function in the optimization.-->
 
 ## Distribution fit
 
@@ -483,7 +485,7 @@ gggi_weights %>%
                         0.25, "",
                         0.25, rep("", 2))) %>% 
   knitr::kable(
-    digits = 3, 
+    digits = 3, booktabs = TRUE, 
     col.names = c("Variable", "V-weight", "Dimension", 
         "D-weight"),
         linesep = c("", "", "", "", "\\hline",
@@ -492,8 +494,8 @@ gggi_weights %>%
                     "", "", "\\hline"),
       align = c("l", "r", "l", "r")
     ) %>%
-  kable_styling(full_width = FALSE) %>%
-  row_spec(0, bold = TRUE) 
+  kable_styling(full_width = FALSE, ) %>%
+  row_spec(0, bold = TRUE)
 ```
 
 The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the country's economy profile and can be accessed in R via the `tidyindex` package as `gggi` and @tbl-gggi-weights as `gggi_weights`. The index can be reproduced with the package as:
@@ -574,7 +576,7 @@ wrap_plots(gl, ncol = 3)
 
 ## Decoding uncertainty through the wisdom of the crowd 
 
-Errors in measurement, variability and sampling error, may arise at various stages of the pipeline calculation, including from different parameterisation choices, as illustrated from @sec-example1, or from the statistical summarization procedures applied in the pipeline. Although it may note be possible to perfectly measure these errors, it is important that they are recognised and estimated for an index, especially to provide potential confidence intervals. In this example, the Texas post office station highlighted in @fig-compute-temporal is used to illustrate one possibility to compute a confidence interval for the Standardized Precipitation Index (SPI). Bootstrapping is used to account for the sampling uncertainty in the distribution fit step of the index pipeline and to assess its impact on the SPI series. 
+Errors in measurement, variability and sampling error, may arise at various stages of the pipeline calculation, including from different parameterisation choices, as illustrated from @sec-example1, or from the statistical summarization procedures applied in the pipeline. Although it may not be possible to perfectly measure these errors, it is important that they are recognised and estimated for an index, especially to provide potential confidence intervals. In this example, the Texas post office station highlighted in @fig-compute-temporal is used to illustrate one possibility to compute a confidence interval for the Standardized Precipitation Index (SPI). Bootstrapping is used to account for the sampling uncertainty in the distribution fit step of the index pipeline and to assess its impact on the SPI series. 
 
 In SPI, the distribution fit step fits the gamma distribution to the aggregated precipitation series separately for each month. This results in  31 or 32 points, from January 1990 to April 2022, for estimating each set of distribution parameters. To account for this sampling uncertainty with these samples, bootstrapping is used to generate replicates of the aggregated series. In the `tidyindex` package, this bootstrap sampling is activated when the argument `.n_boot` is set to a value other than the default of 1. In the following code, the Standardized Precipitation Index (SPI) is calculated using a time scale of 24. The bootstrap procedure samples the aggregated precipitation (`.agg`) for 100 iterations (`.n_boot = 100`) and then fits the gamma distribution. The resulting gamma probabilities are then transformed into normal densities in the normalizing step with `agument()`.
 
