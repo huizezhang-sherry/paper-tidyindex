@@ -7,7 +7,6 @@
 ]{interact}
 
 \usepackage{amsmath,amssymb}
-\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -17,6 +16,10 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -195,10 +198,12 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 \makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[many]{tcolorbox}}
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
 \makeatother
 \makeatletter
 \@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
+\makeatother
+\makeatletter
 \makeatother
 \makeatletter
 \makeatother
@@ -268,7 +273,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, boxrule=0pt, frame hidden, sharp corners, breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, enhanced, frame hidden, boxrule=0pt, sharp corners, borderline west={3pt}{0pt}{shadecolor}, interior hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -525,7 +530,7 @@ Table~\ref{tbl-notation}.
   >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.3611}}@{}}
 \caption{\label{tbl-notation}An notation overview of the input,
 operation, and output of each pipeline module.}\tabularnewline
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Section
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -537,9 +542,9 @@ Operation
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Output
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endfirsthead
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Section
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -551,8 +556,10 @@ Operation
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Output
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endhead
+\bottomrule\noalign{}
+\endlastfoot
 3.1 & Temporal processing & \(x_{sj}(t)\) & \(f[x_{sj}(t)]\) &
 \(x^{\text{Temp}}_{sj}(t^\prime) \quad t^\prime \in D_{t^\prime}\) \\
 3.2 & Spatial processing & \(x_{tj}(s)\) & \(g[x_{tj}(s)]\) &
@@ -570,7 +577,6 @@ Output
 3.8 & Benchmarking & \(x_j(s; t)\) & \(u[x_j(s;t)]\) & \(b_j(s;t)\) \\
 3.9 & Simplification & \(x_j(s; t)\) & \(v[x_j(s;t)]\) &
 \(A_j(s;t) \in \{a_1, a_2, \cdots, a_j\}\) \\
-\bottomrule()
 \end{longtable}
 
 \begin{figure}
@@ -984,18 +990,18 @@ between men and women in four key areas: Economic Participation and
 Opportunity, Educational Attainment, Health and Survival, and Political
 Empowerment (World Economic Forum 2023). The index, defined on 14
 variables measuring female-to-male ratios, first aggregates these
-variables into four dimensions using the linear combination
-(\texttt{V-weight} in Table~\ref{tbl-gggi-weights}). The weights are the
+variables into four dimensions (using the linear combination given by
+\texttt{V-weight} in Table~\ref{tbl-gggi-weights}). The weights are the
 inverse of the standard deviation of each variable, scaled to sum to 1,
 thus ensuring equal relative contribution of each variable to each of
 the four new variables. These new variables are then combined through
 another linear combination (\texttt{D-weight} in
 Table~\ref{tbl-gggi-weights}) to form the final index value.
 Figure~\ref{fig-pp-gggi} illustrates that the pipeline is constructed by
-applying the dimension reduction module twice on the data. Dimension
-weights are equal across the four dimensions and the last column,
-\texttt{weight}, multiples the variable and dimension weights to produce
-a single set of weights.
+applying the dimension reduction module twice on the data. The data for
+GGGI does not needs to be transformed or scaled so these steps are not
+included, but they might still need to be used for other similar
+indexes.
 
 \begin{figure}
 
@@ -1043,10 +1049,10 @@ Years with female head of state & 0.443 &  & \\
 \end{table}
 
 The 2023 GGGI data is available from the Global Gender Gap Report 2023
-in the country's economy profile and can be accessed in R via the
-\texttt{tidyindex} package as \texttt{gggi} and
+in the country's economy profile and can be accessed in the
+\texttt{tidyindex} package as \texttt{gggi} with
 Table~\ref{tbl-gggi-weights} as \texttt{gggi\_weights}. The index can be
-reproduced with the package as:
+reproduced with:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1061,9 +1067,9 @@ reproduced with the package as:
 \end{Shaded}
 
 After initialzing the \texttt{gggi} object and attaching the
-\texttt{gggi\_weights} as meta-data, a single linear combination step
-within the dimension reduction module is applied to the 14 variables
-(from column \texttt{labour\_force\_participation} to
+\texttt{gggi\_weights} as meta-data, a single linear combination within
+the dimension reduction module is applied to the 14 variables (from
+column \texttt{labour\_force\_participation} to
 \texttt{years\_with\_female\_head\_of\_state}), using the weight
 specified in the \texttt{weight} column of the attached metadata. While
 computing the index from the original 14 variables, it remains unclear

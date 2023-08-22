@@ -458,7 +458,7 @@ p2 <- idx %>%
 
 ## Does a puff of change in variable weights cause a tornado in ranks?
 
-The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index, defined on 14 variables measuring female-to-male ratios, first aggregates these variables into four dimensions using the linear combination (`V-weight` in @tbl-gggi-weights). The weights are the inverse of the standard deviation of each variable, scaled to sum to 1, thus ensuring equal relative contribution of each variable to each of the four new variables.  These new variables are then combined through another linear combination (`D-weight` in @tbl-gggi-weights) to form the final index value. @fig-pp-gggi illustrates that the pipeline is constructed by applying the dimension reduction module twice on the data. Dimension weights are equal across the four dimensions and the last column, `weight`, multiples the variable and dimension weights to produce a single set of weights.
+The Global Gender Gap Index (GGGI), published annually by the World Economic Forum, measures gender parity by assessing relative gaps between men and women in four key areas: Economic Participation and Opportunity, Educational Attainment, Health and Survival, and Political Empowerment [@WEF2023]. The index, defined on 14 variables measuring female-to-male ratios, first aggregates these variables into four dimensions (using the linear combination given by `V-weight` in @tbl-gggi-weights). The weights are the inverse of the standard deviation of each variable, scaled to sum to 1, thus ensuring equal relative contribution of each variable to each of the four new variables.  These new variables are then combined through another linear combination (`D-weight` in @tbl-gggi-weights) to form the final index value. @fig-pp-gggi illustrates that the pipeline is constructed by applying the dimension reduction module twice on the data. <!--Dimension weights are equal across the four dimensions and the last column, `weight`, multiples the variable and dimension weights to produce a single set of weights.--> The data for GGGI does not needs to be transformed or scaled so these steps are not included, but they might still need to be used for other similar indexes.
 
 ```{r fig-pp-gggi}
 #| fig-align: center
@@ -498,7 +498,7 @@ gggi_weights %>%
   row_spec(0, bold = TRUE)
 ```
 
-The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the country's economy profile and can be accessed in R via the `tidyindex` package as `gggi` and @tbl-gggi-weights as `gggi_weights`. The index can be reproduced with the package as:
+The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the country's economy profile and can be accessed in the `tidyindex` package as `gggi` with @tbl-gggi-weights as `gggi_weights`. The index can be reproduced with:
 
 ```{r eval = FALSE, echo = TRUE}
 gggi %>% 
@@ -510,7 +510,7 @@ gggi %>%
       weight = weight)) 
 ```
 
-After initialzing the `gggi` object and attaching the `gggi_weights` as meta-data, a single linear combination step within the dimension reduction module is applied to the 14 variables (from column `labour_force_participation` to `years_with_female_head_of_state`), using the weight specified in the `weight` column of the attached metadata. While computing the index from the original 14 variables, it remains unclear how the missing values are handled within the index, which impacts 68 out of the total 146 countries. However, after aggregating variables into the four dimensions, where no missing values exist, the index is reproducible for all the countries.
+After initialzing the `gggi` object and attaching the `gggi_weights` as meta-data, a single linear combination within the dimension reduction module is applied to the 14 variables (from column `labour_force_participation` to `years_with_female_head_of_state`), using the weight specified in the `weight` column of the attached metadata. While computing the index from the original 14 variables, it remains unclear how the missing values are handled within the index, which impacts 68 out of the total 146 countries. However, after aggregating variables into the four dimensions, where no missing values exist, the index is reproducible for all the countries.
 
 A linear combination can also be interpreted as a linear projection of multivariate information with a weight vector. Projecting data from higher to lower dimensions unavoidably leads to information loss and the weights used require careful examination to understand their effects on the index and implications for interpretation and decision-making. By making slight adjustments to the weight vector, we can observe how index values and country rankings change. For illustration, we select a set of countries including:
 
