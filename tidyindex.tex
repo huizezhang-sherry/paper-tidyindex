@@ -268,7 +268,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, frame hidden, interior hidden, boxrule=0pt, enhanced, breakable, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -301,13 +301,12 @@ interest. The construction process is often not straightforward, and
 decisions need to be made, such as the selection of variables to be
 included, which might depend on data availability and the statistical
 definition of the index to be used, among others. For instance, the
-indexes constructed from a linear combination of variables need to
-decide on the weight assigned to each variable. Some indexes have a
-spatial and/or temporal component, and variables can be aggregated to
-different spatial resolutions and temporal scales, leading to various
-indexes for different monitoring purposes. Hence, all these decisions
-can result in different index values and have different practical
-implications.
+indexes constructed from a linear combination of variables require to
+decide the weight assigned to each variable. Some indexes have a spatial
+and/or temporal component, and variables can be aggregated to different
+spatial resolutions and temporal scales, leading to various indexes for
+different monitoring purposes. Hence, all these decisions can result in
+different index values and have different practical implications.
 
 To be able to test different decision choices systematically for an
 index, the index needs to be broken down into its fundamental building
@@ -315,7 +314,8 @@ blocks to analyze the contribution and effect of each component. We call
 this process of breaking the index construction into different steps the
 index pipeline. Such decomposition of index components provides the
 means to standardize index construction via a pipeline and offers
-benefits for comparing among indexes and calculating index uncertainty.
+benefits for comparing among indexes, calculating index uncertainty, and
+assessing index robustness.
 
 In this work, we provide statistical and computational methods for
 developing a data pipeline framework to construct and customize indexes
@@ -402,19 +402,19 @@ to maintain and extend the code base.
 
 Examples of using a pipeline approach for data analysis can be traced
 back to the interactive graphics literature, including A. Buja et al.
-(1988); Sutherland et al. (2000); Xie, Hofmann, and Cheng (2014);
-Wickham et al. (2009). Wickham et al. (2009) argue that whether made
-explicit or not, a pipeline has to be presented in every graphics
-program, and making them explicit is beneficial for understanding the
-implementation and comparing between different graphic systems. While
-this comment is made in the context of interactive graphics programs, it
-is also applicable generally to any data analysis workflow. More
-recently, the tidyverse suite (Wickham et al. 2019) takes the pipeline
-approach for general-purpose data wrangling and has gained popularity
-within the R community. The pipeline-style code can be directly read as
-a series of operations applied successively on tidy data objects,
-offering a method to document the data wrangling process with all the
-computational details for reproducibility.
+(1988); Sutherland et al. (2000); Wickham et al. (2009); Xie, Hofmann,
+and Cheng (2014). Wickham et al. (2009) argue that whether made explicit
+or not, a pipeline has to be presented in every graphics program, and
+making them explicit is beneficial for understanding the implementation
+and comparing between different graphic systems. While this comment is
+made in the context of interactive graphics programs, it is also
+applicable generally to any data analysis workflow. More recently, the
+tidyverse suite (Wickham et al. 2019) takes the pipeline approach for
+general-purpose data wrangling and has gained popularity within the R
+community. The pipeline-style code can be directly read as a series of
+operations applied successively on tidy data objects, offering a method
+to document the data wrangling process with all the computational
+details for reproducibility.
 
 Since the success of tidyverse, more packages have been developed to
 analyze data using the tidy framework for domains specific applications,
@@ -459,7 +459,8 @@ purpose. The pipeline approach provides many advantages:
 \end{itemize}
 
 Adoption of this pipeline approach would provide uniformity to the field
-of index development, research, and application.
+of index development, research, and application to improve
+comparability, reporducibility, and communication
 
 \hypertarget{sec-pipeline}{%
 \section{Details of the index pipeline}\label{sec-pipeline}}
@@ -569,7 +570,7 @@ Output
 \(z_j(s; t)\) \\
 3.8 & Benchmarking & \(x_j(s; t)\) & \(u[x_j(s;t)]\) & \(b_j(s;t)\) \\
 3.9 & Simplification & \(x_j(s; t)\) & \(v[x_j(s;t)]\) &
-\(A_j(s;t) \in \{a_1, a_2, \cdots, a_j\}\) \\
+\(A_j(s;t) \in \{a_1, a_2, \cdots, a_z\}\) \\
 \bottomrule()
 \end{longtable}
 
@@ -623,7 +624,7 @@ Variable transformation takes the input of a single variable
 \(x_j(s;t)\) and reshapes its distribution using the function \(T[.]\)
 to produce \(x^{\text{Trans}}_{j}(s;t)\). When a variable has a skewed
 distribution, transformations such as log, square root, or cubic root
-can adjust the distribution towards normality. For example, in Human
+can adjust the distribution towards normality. For example, in the Human
 Development Index (HDI), a logarithmic transformation is applied to the
 variable Gross National Income per capita (GNI), to reduce its impact on
 HDI, particularly for countries with high GNI values.
@@ -634,9 +635,9 @@ HDI, particularly for countries with high GNI values.
 Unlike variable transformation, scaling maintains the distributional
 shape of the variable. It includes techniques such as centering, z-score
 standardization, and min-max standardization and can be expressed as
-\([x_{j}(s;t) - \alpha]/\gamma\). In Human Development Index (HDI), the
-three dimensions (health, education, and economy) are converted into the
-same scale (0-1) using min-max standardization.
+\([x_{j}(s;t) - \alpha]/\gamma\). In the Human Development Index (HDI),
+the three dimensions (health, education, and economy) are converted into
+the same scale (0-1) using min-max standardization.
 
 \begin{figure}
 
@@ -717,8 +718,8 @@ monitoring and planning.
 \subsection{Simplification}\label{simplification}}
 
 Simplification takes a continuous variable \(x_j(s;t)\) and categorises
-it into a discrete set \(A_j(s;t) \in \{a_1, a_2, \cdots, a_j\}\)
-through a piecewise function,
+it into a discrete set \(A_j(s;t) \in \{a_1, a_2, \cdots, a_z\}\)
+through a piecewise constant function,
 
 \begin{equation}
 v[x_i(s;t)] = 
@@ -928,7 +929,7 @@ exemplify two possibilities. Figure~\ref{fig-compute-spatial} presents
 the spatial distribution of SPI during two periods: October 2010 to
 March 2011 for the 2010/11 Queensland flood and October 2019 to March
 2020 for the 2019 Australia drought, which contributes to the notorious
-2019/20 bushfire. Figure~\ref{fig-compute-temporal} displays the
+2019/20 bushfire season. Figure~\ref{fig-compute-temporal} displays the
 sensitivity of the SPEI series at the Texas post office to different
 time scales and fitted distributions. Larger time scales produce a
 smoother index across time, however, all time scales indicate an extreme
@@ -1169,7 +1170,7 @@ of 24. The bootstrap procedure samples the aggregated precipitation
 (\texttt{.agg}) for 100 iterations (\texttt{.n\_boot\ =\ 100}) and then
 fits the gamma distribution. The resulting gamma probabilities are then
 transformed into normal densities in the normalizing step with
-\texttt{agument()}.
+\texttt{augment()}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1190,7 +1191,7 @@ suffering from a drastic drought. The relatively wide confidence
 interval, as well as during the excessive precipitation events in
 1996-1998 and 1999-2000, suggests a high variation of the gamma
 parameters estimated from the bootstrap samples and its difficulty to
-accurately quantifying the drought and flood severity in extreme events.
+accurately quantify the drought and flood severity in extreme events.
 
 \begin{figure}
 

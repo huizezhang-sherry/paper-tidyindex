@@ -89,9 +89,9 @@ library(tourr)
 
 Indexes are commonly used to combine and summarize different sources of information into a single number for monitoring, communicating, and decision-making. They serve as critical tools across the natural and social sciences. Examples include the Air Quality Index, El Niño-Southern Oscillation Index, Consumer Price Index, QS University Rankings, and the Human Development Index. In environmental science, climate indexes are produced by major monitoring centers, like the United States Drought Monitor and National Oceanic and Atmospheric Administration, to facilitate agricultural planning and early detection of natural disasters.  In economics, indexes provide insight into market trends through combining prices of a basket of goods and services. In social sciences, indexes are used to monitor human development, gender equity, or university quality. The problem is that every index is developed in its own unique way, by different researchers or organizations, and often indexes designed for the same purpose cannot easily be compared. 
 
-To construct an index, experts typically start by defining a concept of interest that requires measurement. This concept often lacks a direct measurable attribute or can only be measured as a composite of various processes, yet it holds social and public significance. To create an index, once the underlying processes involved are identified, relevant and available variables are then defined, collected, and combined using statistical methods into an index that aims to measure the process of interest. The construction process is often not straightforward, and decisions need to be made, such as the selection of variables to be included, which might depend on data availability and the statistical definition of the index to be used, among others. For instance, the indexes constructed from a linear combination of variables need to decide on the weight assigned to each variable. Some indexes have a spatial and/or temporal component, and variables can be aggregated to different spatial resolutions and temporal scales, leading to various indexes for different monitoring purposes. Hence, all these decisions can result in different index values and have different practical implications.
+To construct an index, experts typically start by defining a concept of interest that requires measurement. This concept often lacks a direct measurable attribute or can only be measured as a composite of various processes, yet it holds social and public significance. To create an index, once the underlying processes involved are identified, relevant and available variables are then defined, collected, and combined using statistical methods into an index that aims to measure the process of interest. The construction process is often not straightforward, and decisions need to be made, such as the selection of variables to be included, which might depend on data availability and the statistical definition of the index to be used, among others. For instance, the indexes constructed from a linear combination of variables require to decide the weight assigned to each variable. Some indexes have a spatial and/or temporal component, and variables can be aggregated to different spatial resolutions and temporal scales, leading to various indexes for different monitoring purposes. Hence, all these decisions can result in different index values and have different practical implications.
 
-To be able to test different decision choices systematically for an index, the index needs to be broken down into its fundamental building blocks to analyze the contribution and effect of each component. We call this process of breaking the index construction into different steps the index pipeline. Such decomposition of index components provides the means to standardize index construction via a pipeline and offers benefits for comparing among indexes and calculating index uncertainty. 
+To be able to test different decision choices systematically for an index, the index needs to be broken down into its fundamental building blocks to analyze the contribution and effect of each component. We call this process of breaking the index construction into different steps the index pipeline. Such decomposition of index components provides the means to standardize index construction via a pipeline and offers benefits for comparing among indexes,  calculating index uncertainty, and assessing index robustness. 
 
 In this work, we provide statistical and computational methods for developing a data pipeline framework to construct and customize indexes using data. The proposed pipeline comprises various modules, including temporal and spatial aggregation, variable transformation and combination, distribution fitting, benchmark setting, and index communication. Given the decisions analysts need to make when combining multivariate data into indexes, the proposed pipeline enables the evaluation of how the specific choice can affect the index, as well as how the index may appear under alternative options. Furthermore, uncertainty calculation can also flow through the pipeline, providing the index with confidence measures. 
 
@@ -124,7 +124,7 @@ The tidy framework consists of two key components: tidy data and tidy tools. The
 
 <!-- **What is pipeline, its underlying software design philosophy, and how these are reflected in R** -->
 
-Examples of using a pipeline approach for data analysis can be traced back to the interactive graphics literature, including @buja_elements_1988; @sutherland_orca_2000; @xie_reactive_2014; @wickham_plumbing_2009. @wickham_plumbing_2009 argue that whether made explicit or not, a pipeline has to be presented in every graphics program, and making them explicit is beneficial for understanding the implementation and comparing between different graphic systems. While this comment is made in the context of interactive graphics programs, it is also applicable generally to any data analysis workflow. More recently, the tidyverse suite [@wickham_welcome_2019] takes the pipeline approach for general-purpose data wrangling and has gained popularity within the R community. The pipeline-style code can be directly read as a series of operations applied successively on tidy data objects, offering a method to document the data wrangling process with all the computational details for reproducibility.
+Examples of using a pipeline approach for data analysis can be traced back to the interactive graphics literature, including @buja_elements_1988; @sutherland_orca_2000; @wickham_plumbing_2009; @xie_reactive_2014. @wickham_plumbing_2009 argue that whether made explicit or not, a pipeline has to be presented in every graphics program, and making them explicit is beneficial for understanding the implementation and comparing between different graphic systems. While this comment is made in the context of interactive graphics programs, it is also applicable generally to any data analysis workflow. More recently, the tidyverse suite [@wickham_welcome_2019] takes the pipeline approach for general-purpose data wrangling and has gained popularity within the R community. The pipeline-style code can be directly read as a series of operations applied successively on tidy data objects, offering a method to document the data wrangling process with all the computational details for reproducibility.
 
 Since the success of tidyverse, more packages have been developed to analyze data using the tidy framework for domains specific applications, a noticeable example of which is `tidymodels` for building machine learning models [@tidymodels]. To create a tidy workflow tailored to a specific domain, developers first need to identify the fundamental building blocks to create a workflow. These components are then implemented as modules, which can be combined to form the pipeline. For example, in supervised machine learning models, steps such as data splitting, model training, and model evaluation are commonly used in most workflow. In the `tidymodels`, these steps are correspondingly implemented as package `rsample`, `parsnip`, and `yardstick`, agnostic to the specific model chosen. The uniform interface in tidymodels frees analysts from recalling model-specific syntax for performing the same operation across different models, increasing the efficiency to work with different models simultaneously.
 
@@ -138,7 +138,7 @@ For constructing indexes, the pipeline approach adopts explicit and standalone m
 -   enables systematic comparison of surrogate indexes designed to measure the same phenomenon.
 -   it may even be possible to automate diagrammatic explanations and documentation of the index.
 
-Adoption of this pipeline approach would provide uniformity to the field of index development, research, and application.
+Adoption of this pipeline approach would provide uniformity to the field of index development, research, and application to improve comparability, reporducibility, and communication
 
 <!-- They might even  insert new modules to experiment with possible new index definitions or to understand an index's behaviour. Also, the readability of the pipeline code can complement conventional diagrams and textual information to understand the how indexes are constructed. The uniform interface of pipeline allows analysts to assemble a diverse array of indexes with a shared set of components, reducing the learning curve for adopting new implementation for different indexes.-->
 
@@ -177,7 +177,7 @@ In what follows when geographic or temporal components of the $x_j(s,t)$ process
 | 3.6   | Distribution fit        | $x_j(s; t)$                                                             | $F[x_j(s;t)]$ | $P_j(s;t) \quad P(.) \in [0, 1]$                   |
 | 3.7   | Normalising             | $x_j(s; t)$                                                             | $\Phi^{-1}[x_j(s; t)]$              | $z_j(s; t)$                              |
 | 3.8   | Benchmarking            | $x_j(s; t)$                                                             | $u[x_j(s;t)]$                       | $b_j(s;t)$                                                                    |
-| 3.9   | Simplification          | $x_j(s; t)$                                                             | $v[x_j(s;t)]$                       | $A_j(s;t) \in \{a_1, a_2, \cdots, a_j\}$                                      |
+| 3.9   | Simplification          | $x_j(s; t)$                                                             | $v[x_j(s;t)]$                       | $A_j(s;t) \in \{a_1, a_2, \cdots, a_z\}$                                      |
 
 : An notation overview of the input, operation, and output of each pipeline module. {#tbl-notation}
 
@@ -199,11 +199,11 @@ The spatial processing module takes a single variable with a fixed temporal dime
 
 ## Variable transformation
 
-Variable transformation takes the input of a single variable $x_j(s;t)$ and reshapes its distribution using the function $T[.]$ to produce $x^{\text{Trans}}_{j}(s;t)$. When a variable has a skewed distribution, transformations such as log, square root, or cubic root can adjust the distribution towards normality. For example, in Human Development Index (HDI), a logarithmic transformation is applied to the variable Gross National Income per capita (GNI), to reduce its impact on HDI, particularly for countries with high GNI values.
+Variable transformation takes the input of a single variable $x_j(s;t)$ and reshapes its distribution using the function $T[.]$ to produce $x^{\text{Trans}}_{j}(s;t)$. When a variable has a skewed distribution, transformations such as log, square root, or cubic root can adjust the distribution towards normality. For example, in the Human Development Index (HDI), a logarithmic transformation is applied to the variable Gross National Income per capita (GNI), to reduce its impact on HDI, particularly for countries with high GNI values.
 
 ## Scaling
 
-Unlike variable transformation, scaling maintains the distributional shape of the variable. It includes techniques such as centering, z-score standardization, and min-max standardization and can be expressed as $[x_{j}(s;t) - \alpha]/\gamma$. In Human Development Index (HDI), the three dimensions (health, education, and economy) are converted into the same scale (0-1) using min-max standardization.
+Unlike variable transformation, scaling maintains the distributional shape of the variable. It includes techniques such as centering, z-score standardization, and min-max standardization and can be expressed as $[x_{j}(s;t) - \alpha]/\gamma$. In the Human Development Index (HDI), the three dimensions (health, education, and economy) are converted into the same scale (0-1) using min-max standardization.
 
 ```{r fig-scale-var-trans-compare}
 #| fig-cap: "Comparison of the module scaling (green) and variable transformation (orange). While both modules change the variable range, scaling maintains the same distributional shape, which is not the case with variable transformation. "
@@ -215,7 +215,7 @@ x <- rgamma(n = 1000, shape = 1, scale = 2)
 
 trans_df <- tibble(origin = x, 
        `z-score` = (x - mean(x)/ sd(x)), 
-       qudratic = x^2,
+       quadratic = x^2,
        log = log(x),
        `square root` = sqrt(x),
        `cubic root` = x^(1/3),
@@ -232,7 +232,7 @@ trans_df <- tibble(origin = x,
     )
 
 latex_df <- tibble(
-  var = c("origin", "z-score", "qudratic", "log", "square root",
+  var = c("origin", "z-score", "quadratic", "log", "square root",
       "cubic root","minmax", "boxcox", "centering"),
   latex = c(
            r"($x$)",
@@ -256,7 +256,7 @@ trans_df %>%
              parse = TRUE) + 
   facet_wrap(vars(factor(var, levels = c(
       "origin", "centering", "minmax","z-score", "boxcox", "cubic root",
-      "log", "qudratic", "square root"))), scales = "free") + 
+      "log", "quadratic", "square root"))), scales = "free") + 
   scale_color_brewer(palette = "Dark2", name = "module") + 
   theme_bw() + 
   theme(legend.position = "bottom")
@@ -285,7 +285,7 @@ Benchmark sets a value $b_j(s,t)$ for comparing against the original variable $x
 
 ## Simplification
 
-Simplification takes a continuous variable $x_j(s;t)$ and categorises it into a discrete set $A_j(s;t) \in \{a_1, a_2, \cdots, a_j\}$ through a piecewise function,
+Simplification takes a continuous variable $x_j(s;t)$ and categorises it into a discrete set $A_j(s;t) \in \{a_1, a_2, \cdots, a_z\}$ through a piecewise constant function,
 
 ```{=tex}
 \begin{equation}
@@ -397,7 +397,7 @@ load(here::here("data/idx.rda"))
 idx
 ```
 
-The output contains the original data, index values (`.index`), parameters used (`.scale`, `.method`, and `.dist`), and all the intermediate variables (`pet`, `.agg`, and `.fitted`). This data can be visualized to investigate the spatio-temporal distribution of the drought/flood events, as well as the response of index values to different time scales and distribution parameters at specific single locations. @fig-compute-spatial and @fig-compute-temporal exemplify two possibilities. @fig-compute-spatial presents the spatial distribution of SPI during two periods: October 2010 to March 2011 for the 2010/11 Queensland flood and October 2019 to March 2020 for the 2019 Australia drought, which contributes to the notorious 2019/20 bushfire. @fig-compute-temporal displays the sensitivity of the SPEI series at the Texas post office to different time scales and fitted distributions. Larger time scales produce a smoother index across time, however, all time scales indicate an extreme drought (corresponding to -2 in SPEI) in 2020, confirming the severity of the drought across different time horizons. Moreover, the chosen distribution has less influence on the index, with general extreme value distribution tending to produce more extreme outcomes than log-logistic distribution for the extreme events (index > 2 or <-2).
+The output contains the original data, index values (`.index`), parameters used (`.scale`, `.method`, and `.dist`), and all the intermediate variables (`pet`, `.agg`, and `.fitted`). This data can be visualized to investigate the spatio-temporal distribution of the drought/flood events, as well as the response of index values to different time scales and distribution parameters at specific single locations. @fig-compute-spatial and @fig-compute-temporal exemplify two possibilities. @fig-compute-spatial presents the spatial distribution of SPI during two periods: October 2010 to March 2011 for the 2010/11 Queensland flood and October 2019 to March 2020 for the 2019 Australia drought, which contributes to the notorious 2019/20 bushfire season. @fig-compute-temporal displays the sensitivity of the SPEI series at the Texas post office to different time scales and fitted distributions. Larger time scales produce a smoother index across time, however, all time scales indicate an extreme drought (corresponding to -2 in SPEI) in 2020, confirming the severity of the drought across different time horizons. Moreover, the chosen distribution has less influence on the index, with general extreme value distribution tending to produce more extreme outcomes than log-logistic distribution for the extreme events (index > 2 or <-2).
 
 ```{r fig-compute-spatial}
 #| fig-cap: "Spatial distribution of Standardized Precipitation Index (SPI-12) in Queensland, Australia during two major flood and drought events: 2010/11 and 2019/20. The map shows a continuous wet period during the 2010/11 flood period and a mitigated drought situation, after its worst in 2019 December and 2020 January, likely due to the increased rainfall in February from the meteorological record."
@@ -578,17 +578,16 @@ wrap_plots(gl, ncol = 3)
 
 Errors in measurement, variability and sampling error, may arise at various stages of the pipeline calculation, including from different parameterisation choices, as illustrated from @sec-example1, or from the statistical summarization procedures applied in the pipeline. Although it may not be possible to perfectly measure these errors, it is important that they are recognised and estimated for an index, especially to provide potential confidence intervals. In this example, the Texas post office station highlighted in @fig-compute-temporal is used to illustrate one possibility to compute a confidence interval for the Standardized Precipitation Index (SPI). Bootstrapping is used to account for the sampling uncertainty in the distribution fit step of the index pipeline and to assess its impact on the SPI series. 
 
-In SPI, the distribution fit step fits the gamma distribution to the aggregated precipitation series separately for each month. This results in  31 or 32 points, from January 1990 to April 2022, for estimating each set of distribution parameters. To account for this sampling uncertainty with these samples, bootstrapping is used to generate replicates of the aggregated series. In the `tidyindex` package, this bootstrap sampling is activated when the argument `.n_boot` is set to a value other than the default of 1. In the following code, the Standardized Precipitation Index (SPI) is calculated using a time scale of 24. The bootstrap procedure samples the aggregated precipitation (`.agg`) for 100 iterations (`.n_boot = 100`) and then fits the gamma distribution. The resulting gamma probabilities are then transformed into normal densities in the normalizing step with `agument()`.
+In SPI, the distribution fit step fits the gamma distribution to the aggregated precipitation series separately for each month. This results in  31 or 32 points, from January 1990 to April 2022, for estimating each set of distribution parameters. To account for this sampling uncertainty with these samples, bootstrapping is used to generate replicates of the aggregated series. In the `tidyindex` package, this bootstrap sampling is activated when the argument `.n_boot` is set to a value other than the default of 1. In the following code, the Standardized Precipitation Index (SPI) is calculated using a time scale of 24. The bootstrap procedure samples the aggregated precipitation (`.agg`) for 100 iterations (`.n_boot = 100`) and then fits the gamma distribution. The resulting gamma probabilities are then transformed into normal densities in the normalizing step with `augment()`.
 
 ```{r echo = TRUE, eval = FALSE}
 DATA %>% 
   aggregate(.var = prcp, .scale = 24) %>% 
   dist_fit(.dist = gamma(), .var = .agg, .n_boot = 100) %>% 
   augment(.var = .agg)
-
 ```
 
-The confidence interval can then be calculated using the quantile method from the bootstrap samples. @fig-conf-interval presents the 80% and 95% confidence interval for the Texas post office station, in Queensland, Australia. From the start of 2019 to 2020,  the majority of the confidence intervals lie below the extreme drought line (SPI = -2), suggesting a high level of certainty that the Texas post office is suffering from a drastic drought. The relatively wide confidence interval, as well as during the excessive precipitation events in 1996-1998 and 1999-2000, suggests a high variation of the gamma parameters estimated from the bootstrap samples and its difficulty to accurately quantifying the drought and flood severity in extreme events.
+The confidence interval can then be calculated using the quantile method from the bootstrap samples. @fig-conf-interval presents the 80% and 95% confidence interval for the Texas post office station, in Queensland, Australia. From the start of 2019 to 2020,  the majority of the confidence intervals lie below the extreme drought line (SPI = -2), suggesting a high level of certainty that the Texas post office is suffering from a drastic drought. The relatively wide confidence interval, as well as during the excessive precipitation events in 1996-1998 and 1999-2000, suggests a high variation of the gamma parameters estimated from the bootstrap samples and its difficulty to accurately quantify the drought and flood severity in extreme events.
 
 ```{r fig-conf-interval}
 #| fig-width: 8
