@@ -7,6 +7,7 @@
 ]{interact}
 
 \usepackage{amsmath,amssymb}
+\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -16,10 +17,6 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-\fi
-\usepackage{lmodern}
-\ifPDFTeX\else  
-    % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -198,12 +195,10 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 \makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
+\@ifpackageloaded{tcolorbox}{}{\usepackage[many]{tcolorbox}}
 \makeatother
 \makeatletter
 \@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
-\makeatother
-\makeatletter
 \makeatother
 \makeatletter
 \makeatother
@@ -273,7 +268,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, frame hidden, enhanced, boxrule=0pt, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, enhanced, breakable, frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -531,7 +526,7 @@ Table~\ref{tbl-notation}.
   >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.3611}}@{}}
 \caption{\label{tbl-notation}Summary of the notation for input,
 operation, and output of each pipeline module.}\tabularnewline
-\toprule\noalign{}
+\toprule()
 \begin{minipage}[b]{\linewidth}\raggedright
 Section
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -543,9 +538,9 @@ Operation
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Output
 \end{minipage} \\
-\midrule\noalign{}
+\midrule()
 \endfirsthead
-\toprule\noalign{}
+\toprule()
 \begin{minipage}[b]{\linewidth}\raggedright
 Section
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -557,10 +552,8 @@ Operation
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Output
 \end{minipage} \\
-\midrule\noalign{}
+\midrule()
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
 3.1 & Temporal processing & \(x_{sj}(t)\) & \(f[x_{sj}(t)]\) &
 \(x^{\text{Temp}}_{sj}(t^\prime) \quad t^\prime \in D_{t^\prime}\) \\
 3.2 & Spatial processing & \(x_{tj}(s)\) & \(g[x_{tj}(s)]\) &
@@ -578,6 +571,7 @@ Output
 3.8 & Benchmarking & \(x_j(s; t)\) & \(u[x_j(s;t)]\) & \(b_j(s;t)\) \\
 3.9 & Simplification & \(x_j(s; t)\) & \(v[x_j(s;t)]\) &
 \(A_j(s;t) \in \{a_1, a_2, \cdots, a_z\}\) \\
+\bottomrule()
 \end{longtable}
 
 \begin{figure}
@@ -1174,7 +1168,7 @@ assess its impact on the SPI series.
 
 In SPI, the distribution fit step fits the gamma distribution to the
 aggregated precipitation series separately for each month. This results
-in 31 or 32 points, from January 1990 to April 2022, for estimating each
+in 32 or 33 points, from January 1990 to April 2022, for estimating each
 set of distribution parameters. To account for this sampling uncertainty
 with these samples, bootstrapping is used to generate replicates of the
 aggregated series. In the \texttt{tidyindex} package, this bootstrap

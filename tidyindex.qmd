@@ -536,7 +536,8 @@ One aspect of the GGGI not well-described in the Global Gender Gap Report is han
 dt <- tidyindex::gggi %>% 
   dplyr::select(country: political_empowerment) %>%
   filter(between(index, 0.72, 0.729)  | index < 0.6 | index >= 0.85) %>%
-  arrange(index) 
+  arrange(index) %>% 
+  mutate(country = ifelse(country == "Iran (Islamic Republic of)", "Iran", country))
 colnames(dt) <- c(colnames(dt)[1:4], "economy", "education", "health", "politics")
 
 w_proj2idx <- function(w){w/sum(w)}
@@ -552,41 +553,53 @@ b[,,3] <- matrix(c(0.1, 0.1, 0.1, 0.7), ncol= 1) %>% find_next(angle = 0.6)
 
 render(
   dt[,5:8], planned2_tour(b), dev = "png",
-  display_idx(half_range = 2,cex = 4, label_cex = 3.5, col = "black", 
-              panel_height_ratio = c(4,1),
-              axis_bar_lwd = c(rep(3, 3), 7),
+  display_idx(half_range = 2,cex = 6, label_cex = 4, col = "black", 
+              panel_height_ratio = c(4,1), label_x_pos = 0.1, 
+              axis_bar_lwd = c(rep(7, 3), 9), label_col = "grey70",
               axis_bar_col = c(rep("#000000", 3), "red"),
-              axis_bar_label_cex = c(rep(2.5, 3), 3),
+              axis_bar_label_cex = 5,
               axis_bar_label_col = c(rep("#000000", 3), "red"), 
-              axis_label_cex = 3, frame_x_pos = 0.16,  frame_cex = 4,
-              axis_var_cex = 3.6, 
+              axis_label_cex_upper = 3, axis_label_cex_lower = 3,
+              axis_var_cex = 5, 
               label = dt$country, abb_vars = FALSE),
-  width = 900, height = 1400, apf = 1/20, frames = 120,
+  width = 1200, height = 2000, apf = 1/20, frames = 120,
   here::here("figures/idx-tour/idx-tour-%03d.png")
 )
+
+library(magick)
+path <- list.files(here::here("figures/idx-tour"), full.names = TRUE)
+frame_num <- str_extract(path, "-[0-9]+") %>% as.numeric() %>% -.
+walk2(path, frame_num, ~{
+  img <- image_read(.x)
+  img <- image_annotate(img, glue::glue("Frame {.y}"), size = 60, location = "+920+10")
+  image_write(img, path = .x)
+})
+
+# img <- image_read(here::here("figures/idx-tour/idx-tour-015.png"))
+# img <- image_annotate(img, "Frame 10", size = 40, location = "+712+10")
+# image_write(img, path = here::here("figures/idx-tour/idx-tour-014.png"))
 
 gifski::gifski(
   list.files(here::here("figures/idx-tour"), full.names = TRUE),
   gif_file = here::here("figures/idx-tour.gif"),
-  delay = 0.15, width = 900, height = 1400)
+  delay = 0.15, width = 1200, height = 2000)
 
 ```
 
-```{r fig-idx-tour, fig.align='center', fig.height=5} 
-#| fig-cap: "Exploring the sensitivity of the GGGI, by varying the politics component's contribution, for a subset of countries. Each panel shows a dotplot of the index values, computed for the linear combination represented by the segment plots below. Frame 12 shows the actual GGGI values, and countries are sorted from highest to lowest on this. Frames 1 and 6 show the GGGI if the politics component is reduced. Frames 18, 24, 29 show the GGGI when the politics component is increased. The most notable feature is that Bangladesh's GGGI drops substantially when politics is removed, indicating that this component plays a large role in it's relatively high value. Also, politics plays a substantial role in the GGGI's for the top ranked countries, because each of them drops, to the state of being similar to the middle ranked countries when the politics component's contribution is reduced. The animation can be viewed at https://vimeo.com/847874016."  
-#frames <- c("001", "013", "037", "061", "085", "109")
-frames <- c("001", "006", "012", "018", "024", "029")
+```{r fig-idx-tour, fig.align='center', fig.height=6, fig.width=6}   
+#| fig-cap: "Exploring the sensitivity of the GGGI, by varying the politics component's contribution, for a subset of countries. Each panel shows a dotplot of the index values, computed for the linear combination represented by the segment plots below. Frame 12 shows the actual GGGI values, and countries are sorted from highest to lowest on this. Frames 1 and 6 show the GGGI if the politics component is reduced. Frames 18, 24, 29 show the GGGI when the politics component is increased. The most notable feature is that Bangladesh's GGGI drops substantially when politics is removed, indicating that this component plays a large role in it's relatively high value. Also, politics plays a substantial role in the GGGI's for the top ranked countries, because each of them drops, to the state of being similar to the middle ranked countries when the politics component's contribution is reduced. The animation can be viewed at https://vimeo.com/847874016."
+frames <- c("001", "006", "012", "018", "024", "029") 
 ani <- paste0(here::here("figures/"), "idx-tour/", "idx-tour-", frames, ".png")
 rl <- lapply(ani, png::readPNG)
 gl <-  lapply(rl, grid::rasterGrob)
-wrap_plots(gl, ncol = 3)  
+wrap_plots(gl, ncol = 3)
 ```
 
 ## Decoding uncertainty through the wisdom of the crowd 
 
 Errors in measurement, variability and sampling error, may arise at various stages of the pipeline calculation, including from different parameterization choices, as illustrated from @sec-example1, or from the statistical summarization procedures applied in the pipeline. Although it may not be possible to perfectly measure these errors, it is important that they are recognised and estimated for an index, so that it is possible to compute confidence intervals. In this example, the Texas post office station highlighted in @fig-compute-temporal is used to illustrate one possibility to compute a confidence interval for the Standardized Precipitation Index (SPI). Bootstrapping is used to account for the sampling uncertainty in the distribution fit step of the index pipeline and to assess its impact on the SPI series. 
 
-In SPI, the distribution fit step fits the gamma distribution to the aggregated precipitation series separately for each month. This results in  31 or 32 points, from January 1990 to April 2022, for estimating each set of distribution parameters. To account for this sampling uncertainty with these samples, bootstrapping is used to generate replicates of the aggregated series. In the `tidyindex` package, this bootstrap sampling is activated when the argument `.n_boot` is set to a value other than the default of 1. In the following code, the Standardized Precipitation Index (SPI) is calculated using a time scale of 24. The bootstrap procedure samples the aggregated precipitation (`.agg`) for 100 iterations (`.n_boot = 100`) and then fits the gamma distribution. The resulting gamma probabilities are then transformed into normal densities in the normalizing step with `augment()`.
+In SPI, the distribution fit step fits the gamma distribution to the aggregated precipitation series separately for each month. This results in  32 or 33 points, from January 1990 to April 2022, for estimating each set of distribution parameters. To account for this sampling uncertainty with these samples, bootstrapping is used to generate replicates of the aggregated series. In the `tidyindex` package, this bootstrap sampling is activated when the argument `.n_boot` is set to a value other than the default of 1. In the following code, the Standardized Precipitation Index (SPI) is calculated using a time scale of 24. The bootstrap procedure samples the aggregated precipitation (`.agg`) for 100 iterations (`.n_boot = 100`) and then fits the gamma distribution. The resulting gamma probabilities are then transformed into normal densities in the normalizing step with `augment()`.
 
 ```{r echo = TRUE, eval = FALSE}
 DATA %>% 
