@@ -273,7 +273,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, enhanced, sharp corners, breakable, interior hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -1084,45 +1084,52 @@ out of the total 146 countries. However, after aggregating variables
 into the four dimensions, where no missing values exist, the index is
 reproducible for all the countries.
 
-Frame 12 in Figure~\ref{fig-idx-tour} presents the original index values
-when equal weights are applied across the four dimensions. Leading the
-rankings, Nordic countries (Iceland, Norway, and Finland) and New
-Zealand show a good progression on reaching gender parity, with over
-80\% of the gender gap closed. In the middle range, an index value over
-0.7 is achieved for Brazil, Panama, Poland, Bangladesh, Kazakhstan,
-Armenia, and Slovakia. The last group of countries (Pakistan, Iran,
-Algeria, Chad), with GGGI \textless{} 0.6, have a wider gender gap to
-closed and Afghanistan lags further behind with GGGI = 0.4.
+Figure~\ref{fig-idx-tour} illustrates doing sensitivity analysis for
+GGGI, for a subset of 16 countries. Frame 12 shows the dot plot of the
+original index values sorted from highest to lowest. Leading the
+rankings are the Nordic countries (Iceland, Norway, and Finland) and New
+Zealand. The index values are between 0 and 1, and indicate proportional
+difference between men and women, with a value of 0.8 indicating women
+are 80\% of the way to equality of these measures. There is a gap in
+values between these countries and the middle group (Brazil, Panama,
+Poland, Bangladesh, Kazakhstan, Armenia, Slovakia), and another big drop
+to the next group (Pakistan, Iran, Algeria, Chad). Afghanistan lags much
+further behind.
 
-To observe the effect of a minor weight change on the index, we slightly
-vary the politics weight (while maintain equal weights among other
-dimensions) to generate an animation of the movement of index values in
-response to the changing weights. This visualization technique, which
-presents a sequence of data projections, is referred to as a ``tour''
-and the specific kind of tour used here to move between nearby
-projections is known as a ``local tour'' (Andreas Buja et al. 2005;
-Wickham et al. 2011).
+To make a simple illustration of sensitivity analysis, we slightly vary
+the weight for politics, between 0.07 and 0.52, while maintain equal
+weights among other dimensions. This can be viewed as an animation to
+examine change in relative index values as a response to the changing
+weights. This visualization technique, which presents a sequence of data
+projections, is referred to as a ``tour'' and the specific kind of tour
+used here to move between nearby projections is known as a ``radial
+tour'' (see Andreas Buja et al. (2005), Wickham et al. (2011) and Laa et
+al. (2023) for more details{]}.
 
-In Figure~\ref{fig-idx-tour}, six frames have been chosen from the local
-tour to explore the role of the politics dimension to the index. When
-the weight of politics is reduced (Frame 1 and 6 vs.~Frame 12), the
-difference in GGGI values between the Nordic and other countries
-narrows, suggesting a smaller variation among countries in achieving
-gender parity. Conversely, when the weight of politics increases (Frame
-18, 24, and 29 vs.~Frame 12), nearly all the countries experience a
-decrease in GGGI values. A noticeable exception to this trend is
-Bangladesh, where its index value moves in the same direction as the
-politics weight, which leads to an almost similar index value to the
-Nordics when the politics dimension is assigned a weight of 0.52 in
-Frame 29.
+Frames 1 and 6 show linear combinations where politics contributes less
+than the original. It is interesting to note that the gap between the
+nordic countries and the middle countries dissipates, indicating that
+this component was one reason for the relatively higher GGGI values of
+these countries. Also interesting is the large drop in value for
+Bangladesh.
+
+Frames 18, 24, 29 show linear combinations where politics contributes
+more than the original. The most notable feature is that Bangladesh
+retains it's high index value whereas the other middle group countries
+decline, indicating that the politics score is a major component for
+Bangladesh's index value.
 
 Ideally, an index should be robust against minor changes in its
-construction components. Unfortunately, this is not the case with GGGI,
-which raises concerns about the index's quality. For other indexes that
-use linear combination to reduce variable dimensions, the demonstrated
-local tour can be applied similarly to assess the index robustness
-through observing how index values respond to perturbation of the
-weights.
+construction components. This is not the case with GGGI, where small
+changes to one component lead to fairly large change in the index. The
+modular pipeline framework for computing the index makes it easy to
+conduct this type of sensitivity analysis, where one or more components
+are perturbed and the index re-calculated. One aspect of the GGGI not
+well-described in the Global Gender Gap Report is handling of missing
+values that are present in the initial variables for many countries,
+something that is common for this type of data. This could also be made
+more transparent with the dimension reduction module, by specifying an
+imputation method or providing warnings about missing values.
 
 \begin{figure}
 
@@ -1317,6 +1324,13 @@ Management} 4 (2): 269--95.
 Kuhn, Max, and Hadley Wickham. 2020. \emph{Tidymodels: A Collection of
 Packages for Modeling and Machine Learning Using Tidyverse Principles.}
 \url{https://www.tidymodels.org}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-radial-tour}{}}%
+Laa, Ursula, Alex Aumann, Dianne Cook, and German Valencia. 2023. {``New
+and Simplified Manual Controls for Projection and Slice Tours, with
+Application to Exploring Classification Boundaries in High
+Dimensions.''} \emph{Journal of Computational and Graphical Statistics}
+0 (0): 1--8. \url{https://doi.org/10.1080/10618600.2023.2206459}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-laimighofer_how_2022}{}}%
 Laimighofer, Johannes, and Gregor Laaha. 2022. {``How Standard Are
