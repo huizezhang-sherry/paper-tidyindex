@@ -268,7 +268,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, enhanced, breakable, frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced, frame hidden, breakable, boxrule=0pt, interior hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -460,7 +460,7 @@ purpose. The pipeline approach provides many advantages:
 
 Adoption of this pipeline approach would provide uniformity to the field
 of index development, research, and application to improve
-comparability, reporducibility, and communication
+comparability, reproducibility, and communication.
 
 \hypertarget{sec-pipeline}{%
 \section{Details of the index pipeline}\label{sec-pipeline}}
@@ -674,14 +674,14 @@ combination.
 Linear combinations of variables are commonly used to reduce the
 dimension in statistical methodology, and chosen using a method like
 principal component analysis (PCA) (Hotelling 1933) or linear
-discriminant analysis (Fisher 1936), preparing contrasts to test
-particular elements in analysis of variance (XXX-ref), or hand-crafted
-by a content-area expert. Linear combinations also form the basis for
-visualizing multivariate data, in methods such as tours (Wickham et al.
-2011). This dimension reduction method can accommodate linear
-combinations as provided by any method, and hence is linear by design.
-The transformation module provides variable-wise non-linear
-transformation.
+discriminant analysis (Ronald A. Fisher 1936), preparing contrasts to
+test particular elements in analysis of variance (Ronald Aylmer Fisher
+1970), or hand-crafted by a content-area expert. Linear combinations
+also form the basis for visualizing multivariate data, in methods such
+as tours (Wickham et al. 2011). This dimension reduction method can
+accommodate linear combinations as provided by any method, and hence is
+linear by design. The transformation module provides variable-wise
+non-linear transformation.
 
 \hypertarget{distribution-fit}{%
 \subsection{Distribution fit}\label{distribution-fit}}
@@ -810,10 +810,10 @@ customized indexes from existing modules.
 \end{Highlighting}
 \end{Shaded}
 
-(more changes) The accompanied package, tidyindex, is not intended to
-offer an exhaustive implementation for all indexes across every domains.
-Instead, it provides a realization of the pipeline framework proposed in
-the paper. When adopting the pipeline approach to construct indexes,
+The accompanied package, tidyindex, is not intended to offer an
+exhaustive implementation for all indexes across every domains. Instead,
+it provides a realization of the pipeline framework proposed in the
+paper. When adopting the pipeline approach to construct indexes,
 analysts may consider developing software that can be readily deployed
 in the cloud for production purposes.
 
@@ -924,8 +924,8 @@ The output contains the original data, index values (\texttt{.index}),
 parameters used (\texttt{.scale}, \texttt{.method}, and \texttt{.dist}),
 and all the intermediate variables (\texttt{pet}, \texttt{.agg}, and
 \texttt{.fitted}). This data can be visualized to investigate the
-spatio-temporal distribution of the drought/flood events, as well as the
-response of index values to different time scales and distribution
+spatio-temporal distribution of the drought or flood events, as well as
+the response of index values to different time scales and distribution
 parameters at specific single locations.
 Figure~\ref{fig-compute-spatial} and Figure~\ref{fig-compute-temporal}
 exemplify two possibilities. Figure~\ref{fig-compute-spatial} presents
@@ -1086,44 +1086,9 @@ Zealand. The index values are between 0 and 1, and indicate proportional
 difference between men and women, with a value of 0.8 indicating women
 are 80\% of the way to equality of these measures. There is a gap in
 values between these countries and the middle group (Brazil, Panama,
-Poland, Bangladesh, Kazakhstan, Armenia, Slovakia), and another big drop
-to the next group (Pakistan, Iran, Algeria, Chad). Afghanistan lags much
-further behind.
-
-To make a simple illustration of sensitivity analysis, we slightly vary
-the weight for politics, between 0.07 and 0.52, while maintain equal
-weights among other dimensions. This can be viewed as an animation to
-examine change in relative index values as a response to the changing
-weights. This visualization technique, which presents a sequence of data
-projections, is referred to as a ``tour'' and the specific kind of tour
-used here to move between nearby projections is known as a ``radial
-tour'' (see Andreas Buja et al. (2005), Wickham et al. (2011) and Laa et
-al. (2023) for more details{]}.
-
-Frames 1 and 6 show linear combinations where politics contributes less
-than the original. It is interesting to note that the gap between the
-nordic countries and the middle countries dissipates, indicating that
-this component was one reason for the relatively higher GGGI values of
-these countries. Also interesting is the large drop in value for
-Bangladesh.
-
-Frames 18, 24, 29 show linear combinations where politics contributes
-more than the original. The most notable feature is that Bangladesh
-retains it's high index value whereas the other middle group countries
-decline, indicating that the politics score is a major component for
-Bangladesh's index value.
-
-Ideally, an index should be robust against minor changes in its
-construction components. This is not the case with GGGI, where small
-changes to one component lead to fairly large change in the index. The
-modular pipeline framework for computing the index makes it easy to
-conduct this type of sensitivity analysis, where one or more components
-are perturbed and the index re-calculated. One aspect of the GGGI not
-well-described in the Global Gender Gap Report is handling of missing
-values that are present in the initial variables for many countries,
-something that is common for this type of data. This could also be made
-more transparent with the dimension reduction module, by specifying an
-imputation method or providing warnings about missing values.
+Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia), and another big
+drop to the next group (Pakistan, Iran, Algeria, and Chad). Afghanistan
+lags much further behind.
 
 \begin{figure}
 
@@ -1147,6 +1112,41 @@ countries when the politics component's contribution is reduced. The
 animation can be viewed at https://vimeo.com/847874016.}
 
 \end{figure}
+
+To make a simple illustration of sensitivity analysis, we slightly vary
+the weight for politics, between 0.07 and 0.52, while maintain equal
+weights among other dimensions. This can be viewed as an animation to
+examine change in relative index values as a response to the changing
+weights. This visualization technique, which presents a sequence of data
+projections, is referred to as a ``tour'' and the specific kind of tour
+used here to move between nearby projections is known as a ``radial
+tour'' (see Andreas Buja et al. (2005), Wickham et al. (2011) and
+Spyrison and Cook (2020) for more details).
+
+Frames 1 and 6 show linear combinations where politics contributes less
+than the original. It is interesting to note that the gap between the
+Nordic countries and the middle countries dissipates, indicating that
+this component was one reason for the relatively higher GGGI values of
+these countries. Also interesting is the large drop in value for
+Bangladesh.
+
+Frames 18, 24, 29 show linear combinations where politics contributes
+more than the original. The most notable feature is that Bangladesh
+retains it's high index value whereas the other middle group countries
+decline, indicating that the politics score is a major component for
+Bangladesh's index value.
+
+Ideally, an index should be robust against minor changes in its
+construction components. This is not the case with GGGI, where small
+changes to one component lead to fairly large change in the index. The
+modular pipeline framework for computing the index makes it easy to
+conduct this type of sensitivity analysis, where one or more components
+are perturbed and the index re-calculated. One aspect of the GGGI not
+well-described in the Global Gender Gap Report is handling of missing
+values that are present in the initial variables for many countries,
+something that is common for this type of data. This could also be made
+more transparent with the dimension reduction module, by specifying an
+imputation method or providing warnings about missing values.
 
 \hypertarget{decoding-uncertainty-through-the-wisdom-of-the-crowd}{%
 \subsection{Decoding uncertainty through the wisdom of the
@@ -1211,7 +1211,7 @@ accurately quantify the drought and flood severity in extreme events.
 \caption{\label{fig-conf-interval}80\% and 95\% confidence interval of
 the Standardized Precipitation Index (SPI-24) for the Texas post office
 station, in Queensland, Australia. A bootstrap sample of 100 is taken
-from the aggregated pricipitation series to estimate gamma parameters
+from the aggregated precipitation series to estimate gamma parameters
 and to calculate the index. The dashed line at SPI = -2 represents an
 extreme drought as defined by the SPI. Most parts of the confidence
 intervals from 2019 to 2020 sit below the extreme drought line and are
@@ -1244,7 +1244,7 @@ This work is funded by a Commonwealth Scientific and Industrial Research
 Organisation (CSIRO) Data61 Scholarship. The article is created using
 Quarto (Allaire et al. 2022) in R (R Core Team 2021). The source code
 for reproducing this paper can be found at:
-https://github.com/huizezhang-sherry/paper-tidyindex.
+\url{https://github.com/huizezhang-sherry/paper-tidyindex}.
 
 \hypertarget{reference}{%
 \section*{Reference}\label{reference}}
@@ -1290,6 +1290,12 @@ Visualization.''} \emph{Handbook of Statistics} 24: 391--413.
 Fisher, Ronald A. 1936. {``The Use of Multiple Measurements in Taxonomic
 Problems.''} \emph{Annals of Eugenics} 7 (2): 179--88.
 
+\leavevmode\vadjust pre{\hypertarget{ref-fisher1970statistical}{}}%
+Fisher, Ronald Aylmer. 1970. {``Statistical Methods for Research
+Workers.''} In \emph{Breakthroughs in Statistics: Methodology and
+Distribution}, 66--70. Springer.
+\url{https://doi.org/10.1007/978-1-4612-4380-9_6}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-fundiversity}{}}%
 Grenié, Matthias, and Hugo Gruson. 2023. \emph{{fundiversity}: Easy
 Computation of Functional Diversity Indices}.
@@ -1317,13 +1323,6 @@ Management} 4 (2): 269--95.
 Kuhn, Max, and Hadley Wickham. 2020. \emph{Tidymodels: A Collection of
 Packages for Modeling and Machine Learning Using Tidyverse Principles.}
 \url{https://www.tidymodels.org}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-radial-tour}{}}%
-Laa, Ursula, Alex Aumann, Dianne Cook, and German Valencia. 2023. {``New
-and Simplified Manual Controls for Projection and Slice Tours, with
-Application to Exploring Classification Boundaries in High
-Dimensions.''} \emph{Journal of Computational and Graphical Statistics}
-0 (0): 1--8. \url{https://doi.org/10.1080/10618600.2023.2206459}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-laimighofer_how_2022}{}}%
 Laimighofer, Johannes, and Gregor Laaha. 2022. {``How Standard Are
@@ -1358,6 +1357,12 @@ Sensitivity Analysis Techniques as Tools for the Quality Assessment of
 Composite Indicators}.''} \emph{Journal of the Royal Statistical Society
 Series A: Statistics in Society} 168 (2): 307--23.
 \url{https://doi.org/10.1111/j.1467-985X.2005.00350.x}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RJ-2020-027}{}}%
+Spyrison, Nicholas, and Dianne Cook. 2020. {``The r Journal: Spinifex:
+An r Package for Creating a Manual Tour of Low-Dimensional Projections
+of Multivariate Data.''} \emph{The R Journal} 12: 243--57.
+\url{https://doi.org/10.32614/RJ-2020-027}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-sutherland_orca_2000}{}}%
 Sutherland, Peter, Anthony Rossini, Thomas Lumley, Nicholas Lewin-Koh,
