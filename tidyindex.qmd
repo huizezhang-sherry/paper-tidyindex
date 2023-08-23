@@ -276,7 +276,7 @@ Linear combinations of variables are commonly used to reduce the dimension in st
 
 ## Distribution fit
 
-Distribution fit applies the Cumulative Distribution Function (CDF) $F$ of a distribution on the variable $x_j(s; t)$ to obtain the probability values $P_j(s;t) \in [0, 1]$. In SPEI, many distributions, including log-logistic, Pearson III, lognormal, and general extreme distribution, are candidates for the aggregated series. Different fitting methods and different goodness of fit tests may be used to compare the distribution choice on the index value.
+Distribution fit applies the Cumulative Distribution Function (CDF) $F$ of a distribution on the variable $x_j(s; t)$ to obtain the probability values $P_j(s;t) \in [0, 1]$. In SPEI, many distributions, including log-logistic, Pearson III, lognormal, and general extreme distribution, are candidates for the aggregated series. Different fitting methods and different goodness of fit tests may be used to compare the distribution choice on the index value. This could be considered to be a variable transformation because it is usually conducted separately for each variable.  However, very occasionally a fit is conducted on two or more variables simulataneously. For this reaosn, and because it usually is applied later in the pipeline it is neater to make this a separate module.
 
 ## Normalising
 
@@ -284,7 +284,7 @@ Normalizing applies the inverse normal CDF $\Phi^{-1}$ on the input data to obta
 
 ## Benchmarking
 
-Benchmark sets a value $b_j(s,t)$ for comparing against the original variable $x_j(s;t)$. This benchmark can be a fixed value consistently across space and time or determined by the data through the function $u[x_j(s;t)]$. Once a benchmark is set, observations can be highlighted for adjustments in other modules or can serve as targets for monitoring and planning.
+Benchmark sets a value $b_j(s,t)$ for comparing against the original variable $x_j(s;t)$. This benchmark can be a fixed value consistently across space and time, perhaps extracted from expert knowledge, or determined by the data through the function $u[x_j(s;t)]$. Once a benchmark is set, observations can be highlighted for adjustments in other modules or can serve as targets for monitoring and planning.
 
 ## Simplification
 
