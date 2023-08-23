@@ -273,7 +273,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, frame hidden, enhanced, boxrule=0pt, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -1137,21 +1137,20 @@ imputation method or providing warnings about missing values.
 
 }
 
-\caption{\label{fig-idx-tour}Six frames selected to explore how varying
-the weights of the politics dimension changes the index values and
-country rankings in Global Gender Gap Index (GGGI). The top panel shows
-the GGGI value against the country, ranked by its original index value
-in Frame 12. The bottom panel displays the weight used to produce the
-index values in the top panel, with each frame corresponds to a set of
-weights. Countries selected includes 1) top-ranked countries with GGGI
-\textgreater{} 0.85, 2) countries ranked between 57 and 62 with GGGI
-from 0.72 to 0.73, and 3) low-ranked countries with GGGI \textless{}
-0.6. Compared to Frame 12 where equal weigts are used for the four
-dimension, a reduced weight in politics (Frame 1 and 6) shows narrower
-gaps between top and mid- or lower- ranked countries, while an increase
-in the politics weight (Frame 18, 24, and 29) leads to a systematic
-decrease of GGGI values across all the countries, except for Bangladesh.
-Full animation is available at https://vimeo.com/847874016.}
+\caption{\label{fig-idx-tour}Exploring the sensitivity of the GGGI, by
+varying the politics component's contribution, for a subset of
+countries. Each panel shows a dotplot of the index values, computed for
+the linear combination represented by the segment plots below. Frame 12
+shows the actual GGGI values, and countries are sorted from highest to
+lowest on this. Frames 1 and 6 show the GGGI if the politics component
+is reduced. Frames 18, 24, 29 show the GGGI when the politics component
+is increased. The most notable feature is that Bangladesh's GGGI drops
+substantially when politics is removed, indicating that this component
+plays a large role in it's relatively high value. Also, politics plays a
+substantial role in the GGGI's for the top ranked countries, because
+each of them drops, to the state of being similar to the middle ranked
+countries when the politics component's contribution is reduced. The
+animation can be viewed at https://vimeo.com/847874016.}
 
 \end{figure}
 
@@ -1161,11 +1160,11 @@ crowd}\label{decoding-uncertainty-through-the-wisdom-of-the-crowd}}
 
 Errors in measurement, variability and sampling error, may arise at
 various stages of the pipeline calculation, including from different
-parameterisation choices, as illustrated from
+parameterization choices, as illustrated from
 Section~\ref{sec-example1}, or from the statistical summarization
 procedures applied in the pipeline. Although it may not be possible to
 perfectly measure these errors, it is important that they are recognised
-and estimated for an index, especially to provide potential confidence
+and estimated for an index, so that it is possible to compute confidence
 intervals. In this example, the Texas post office station highlighted in
 Figure~\ref{fig-compute-temporal} is used to illustrate one possibility
 to compute a confidence interval for the Standardized Precipitation
