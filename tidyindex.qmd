@@ -204,7 +204,9 @@ Variable transformation takes the input of a single variable $x_j(s;t)$ and resh
 
 ## Scaling
 
-Unlike variable transformation, scaling maintains the distributional shape of the variable. It includes techniques such as centering, z-score standardization, and min-max standardization and can be expressed as $[x_{j}(s;t) - \alpha]/\gamma$. In the Human Development Index (HDI), the three dimensions (health, education, and economy) are converted into the same scale (0-1) using min-max standardization.
+Unlike variable transformation, scaling maintains the distributional shape of the variable. It includes techniques such as centering, z-score standardization, and min-max standardization and can be expressed as $[x_{j}(s;t) - \alpha]/\gamma$. In the Human Development Index (HDI), the three dimensions (health, education, and economy) are converted into the same scale (0-1) using min-max standardization. 
+
+Although the scaling might be considered to be a transformation, we have elected to make it a separate module because it is neater. Scaling simply changes the numbers in the data not the shape of a variable. Transformation will most likely change the shape, and is usually non-linear. 
 
 ```{r fig-scale-var-trans-compare}
 #| fig-cap: "Comparison of the module scaling (green) and variable transformation (orange). While both modules change the variable range, scaling maintains the same distributional shape, which is not the case with variable transformation. "
