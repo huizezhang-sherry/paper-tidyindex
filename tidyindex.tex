@@ -7,7 +7,6 @@
 ]{interact}
 
 \usepackage{amsmath,amssymb}
-\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -17,6 +16,10 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -195,10 +198,12 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 \makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[many]{tcolorbox}}
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
 \makeatother
 \makeatletter
 \@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
+\makeatother
+\makeatletter
 \makeatother
 \makeatletter
 \makeatother
@@ -268,7 +273,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced, breakable, interior hidden, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, breakable, enhanced, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -537,7 +542,7 @@ Table~\ref{tbl-notation}.
   >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.4062}}@{}}
 \caption{\label{tbl-notation}Summary of the notation for input,
 operation, and output of each pipeline module.}\tabularnewline
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Module
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -547,9 +552,9 @@ Operation
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Output
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endfirsthead
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Module
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -559,8 +564,10 @@ Operation
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Output
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endhead
+\bottomrule\noalign{}
+\endlastfoot
 Temporal processing & \(x_{sj}(t)\) & \(f[x_{sj}(t)]\) &
 \(x^{\text{Temp}}_{sj}(t^\prime) \quad t^\prime \in D_{t^\prime}\) \\
 Spatial processing & \(x_{tj}(s)\) & \(g[x_{tj}(s)]\) &
@@ -578,7 +585,6 @@ Normalising & \(x_j(s; t)\) & \(\Phi^{-1}[x_j(s; t)]\) &
 Benchmarking & \(x_j(s; t)\) & \(u[x_j(s;t)]\) & \(b_j(s;t)\) \\
 Simplification & \(x_j(s; t)\) & \(v[x_j(s;t)]\) &
 \(A_j(s;t) \in \{a_1, a_2, \cdots, a_z\}\) \\
-\bottomrule()
 \end{longtable}
 
 \hypertarget{temporal-processing}{%
@@ -809,10 +815,10 @@ customized indexes from existing modules.
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{idx\_spi }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(...)\{}
-\NormalTok{  DATA }\SpecialCharTok{|\textgreater{}} 
-    \FunctionTok{aggregate}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}
-    \FunctionTok{dist\_fit}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}} 
-    \FunctionTok{augment}\NormalTok{(...)}
+\NormalTok{  DATA }\SpecialCharTok{|\textgreater{}}
+    \FunctionTok{temporal\_aggregate}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}
+    \FunctionTok{distribution\_fit}\NormalTok{(...)}\SpecialCharTok{|\textgreater{}}
+    \FunctionTok{normalise}\NormalTok{(...)}
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
@@ -897,34 +903,34 @@ the gamma distribution is used for SPI:
 \begin{Highlighting}[]
 \NormalTok{.scale }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DecValTok{12}\NormalTok{, }\DecValTok{24}\NormalTok{, }\DecValTok{36}\NormalTok{)}
 \NormalTok{idx }\OtherTok{\textless{}{-}}\NormalTok{ queensland }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{init}\NormalTok{(}\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{time =}\NormalTok{ ym) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{month =}\NormalTok{ lubridate}\SpecialCharTok{::}\FunctionTok{month}\NormalTok{(ym)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{init}\NormalTok{(}\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{time =}\NormalTok{ ym, }\AttributeTok{group =}\NormalTok{ month) }\SpecialCharTok{|\textgreater{}} 
   \FunctionTok{compute\_indexes}\NormalTok{(}
     \AttributeTok{spei =} \FunctionTok{idx\_spei}\NormalTok{(}
-      \AttributeTok{.pet\_method =} \StringTok{"thornthwaite"}\NormalTok{, }\AttributeTok{.tavg =}\NormalTok{ tavg, }\AttributeTok{.lat =}\NormalTok{ lat, }
-      \AttributeTok{.scale =}\NormalTok{ .scale, }\AttributeTok{.dist =} \FunctionTok{c}\NormalTok{(}\FunctionTok{gev}\NormalTok{(), }\FunctionTok{loglogistic}\NormalTok{())),}
+      \AttributeTok{.tavg =}\NormalTok{ tavg, }\AttributeTok{.lat =}\NormalTok{ lat, }
+      \AttributeTok{.scale =}\NormalTok{ .scale, }\AttributeTok{.dist =} \FunctionTok{list}\NormalTok{(}\FunctionTok{dist\_gev}\NormalTok{(), }\FunctionTok{dist\_glo}\NormalTok{())),}
     \AttributeTok{spi =} \FunctionTok{idx\_spi}\NormalTok{(}\AttributeTok{.scale =}\NormalTok{ .scale)}
 \NormalTok{  )}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 128,586 x 19
-   .idx  .period id             ym  prcp  tmax  tmin  tavg  long   lat
-   <chr>   <dbl> <chr>       <mth> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
- 1 spei        6 ASN0002~ 1990 Jun   170  29.7  16.2  23.0  142. -15.5
- 2 spei        6 ASN0002~ 1990 Jun   170  29.7  16.2  23.0  142. -15.5
- 3 spei        6 ASN0002~ 1990 Jun     0  23.0  11.8  17.4  139. -20.7
- 4 spei        6 ASN0002~ 1990 Jun     0  23.0  11.8  17.4  139. -20.7
- 5 spei        6 ASN0003~ 1990 Jun   794  25.8  18.1  21.9  146. -16.9
- 6 spei        6 ASN0003~ 1990 Jun   794  25.8  18.1  21.9  146. -16.9
- 7 spei        6 ASN0003~ 1990 Jun   504  23.0  13.8  18.4  145. -17.1
- 8 spei        6 ASN0003~ 1990 Jun   504  23.0  13.8  18.4  145. -17.1
- 9 spei        6 ASN0003~ 1990 Jun  1970  23.9  16.4  20.2  146. -17.6
-10 spei        6 ASN0003~ 1990 Jun  1970  23.9  16.4  20.2  146. -17.6
-# i 128,576 more rows
-# i 9 more variables: name <chr>, pet <dbl>, diff <dbl>,
-#   .scale <dbl>, .agg <dbl>, .method <chr>, .fitted <dbl>,
-#   .dist <chr>, .index <dbl>
+# A tibble: 128,576 x 14
+   .idx  .dist id               ym  prcp  tmax  tmin  tavg  long   lat
+   <chr> <chr> <chr>         <mth> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+ 1 spei  gev   ASN000290~ 1990 Jun   170  29.7  16.2  23.0  142. -15.5
+ 2 spei  gev   ASN000290~ 1990 Jul   102  31.2  17.2  24.2  142. -15.5
+ 3 spei  gev   ASN000290~ 1990 Aug     0  31.3  13.1  22.2  142. -15.5
+ 4 spei  gev   ASN000290~ 1990 Sep     0  32.8  16.3  24.5  142. -15.5
+ 5 spei  gev   ASN000290~ 1990 Oct     0  36.8  21.5  29.2  142. -15.5
+ 6 spei  gev   ASN000290~ 1990 Nov   278  36.3  24.8  30.6  142. -15.5
+ 7 spei  gev   ASN000290~ 1990 Dec  1869  34.4  24.5  29.4  142. -15.5
+ 8 spei  gev   ASN000290~ 1990 Dec  1869  34.4  24.5  29.4  142. -15.5
+ 9 spei  gev   ASN000290~ 1991 Jan  5088  31.2  24.4  27.8  142. -15.5
+10 spei  gev   ASN000290~ 1991 Jan  5088  31.2  24.4  27.8  142. -15.5
+# i 128,566 more rows
+# i 4 more variables: name <chr>, month <dbl>, .scale <dbl>,
+#   .value <dbl>
 \end{verbatim}
 
 The output contains the original data, index values (\texttt{.index}),
@@ -1186,14 +1192,15 @@ of 24. The bootstrap procedure samples the aggregated precipitation
 (\texttt{.agg}) for 100 iterations (\texttt{.n\_boot\ =\ 100}) and then
 fits the gamma distribution. The resulting gamma probabilities are then
 transformed into normal densities in the normalizing step with
-\texttt{augment()}.
+\texttt{normalise()}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{DATA }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{aggregate}\NormalTok{(}\AttributeTok{.var =}\NormalTok{ prcp, }\AttributeTok{.scale =} \DecValTok{24}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{dist\_fit}\NormalTok{(}\AttributeTok{.dist =} \FunctionTok{gamma}\NormalTok{(), }\AttributeTok{.var =}\NormalTok{ .agg, }\AttributeTok{.n\_boot =} \DecValTok{100}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{augment}\NormalTok{(}\AttributeTok{.var =}\NormalTok{ .agg)}
+\NormalTok{DATA }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{temporal\_aggregate}\NormalTok{(}\AttributeTok{.agg =} \FunctionTok{temporal\_rolling\_window}\NormalTok{(prcp, }\AttributeTok{scale =} \DecValTok{24}\NormalTok{)) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{distribution\_fit}\NormalTok{(}\AttributeTok{.fit =} \FunctionTok{dist\_gamma}\NormalTok{(}\AttributeTok{var =} \StringTok{".agg"}\NormalTok{, }\AttributeTok{method =} \StringTok{"lmoms"}\NormalTok{,}
+                                     \AttributeTok{.n\_boot =} \DecValTok{100}\NormalTok{)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{normalise}\NormalTok{(}\AttributeTok{.index =} \FunctionTok{norm\_quantile}\NormalTok{(.fit))}
 \end{Highlighting}
 \end{Shaded}
 
