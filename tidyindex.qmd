@@ -284,7 +284,7 @@ Normalizing applies the inverse normal CDF $\Phi^{-1}$ on the input data to obta
 
 ## Benchmarking
 
-Benchmark sets a value $b_j(s,t)$ for comparing against the original variable $x_j(s;t)$. This benchmark can be a fixed value consistently across space and time, perhaps extracted from expert knowledge, perhaps extracted from expert knowledge, or determined by the data through the function $u[x_j(s;t)]$. Once a benchmark is set, observations can be highlighted for adjustments in other modules or can serve as targets for monitoring and planning.
+Benchmark sets a value $b_j(s,t)$ for comparing against the original variable $x_j(s;t)$. This benchmark can be a fixed value consistently across space and time, perhaps extracted from expert knowledge or determined by the data through the function $u[x_j(s;t)]$. Once a benchmark is set, observations can be highlighted for adjustments in other modules or can serve as targets for monitoring and planning.
 
 ## Simplification
 
@@ -368,13 +368,13 @@ queensland %>% head(5)
 
 ```{r fig-spei}
 #| fig-align: center
-#| fig-cap: "Index pipeline for two drought indexes: the Standardized Precipitation Index (SPI) and the Standardized Precipitation-Evapotranspiration Index (SPEI). Both indexes share similar construction steps with SPEI having two steps additional steps (variable transformation and dimension reduction) to convert temperature into evapotranspiration and combine it with the precipitation series. "
+#| fig-cap: "Index pipeline for two drought indexes: the Standardized Precipitation Index (SPI) and the Standardized Precipitation-Evapotranspiration Index (SPEI). Both indexes share similar construction steps with SPEI having two additional steps (variable transformation and dimension reduction) to convert temperature into evapotranspiration and combine it with the precipitation series. "
 #| out-height: 90%
 #| out-width: 100%
 knitr::include_graphics(path = here::here("figures/pipeline-spei.png"))
 ```
 
-@fig-spei illustrates the pipeline steps of the two indexes. The two indexes are similar with the distinct that SPEI involves two additional steps -- variable transformation and dimension reduction -- prior to temporal processing. As introduced in @sec-software, wrapper functions are available for both indexes as `idx_spi()` and `idx_spei()`, which allows for the specification of different time scales and distributions for fitting the aggregated series. In `tidyindex`, multiple indexes can be calculated collectively using the function `compute_indexes()`. Both SPI and SPEI are calculated across four time scales (6, 12, 24, and 36 months). The SPEI is fitted with two distributions (log-logistic and general extreme value distribution) and the gamma distribution is used for SPI: 
+@fig-spei illustrates the pipeline steps of the two indexes. The two indexes are similar with the difference that SPEI involves two additional steps -- variable transformation and dimension reduction -- prior to temporal processing. As introduced in @sec-software, wrapper functions are available for both indexes as `idx_spi()` and `idx_spei()`, which allows for the specification of different time scales and distributions for fitting the aggregated series. In `tidyindex`, multiple indexes can be calculated collectively using the function `compute_indexes()`. Both SPI and SPEI are calculated across four time scales (6, 12, 24, and 36 months). The SPEI is fitted with two distributions (log-logistic and general extreme value distribution) and the gamma distribution is used for SPI: 
 
 ```{r cache=TRUE, echo = TRUE, message=FALSE, eval=FALSE}
 .scale <- c(6, 12, 24, 36)
@@ -402,7 +402,7 @@ load(here::here("data/idx.rda"))
 idx
 ```
 
-The output contains the original data, index values (`.index`), parameters used (`.scale`, `.method`, and `.dist`), and all the intermediate variables (`pet`, `.agg`, and `.fitted`). This data can be visualized to investigate the spatio-temporal distribution of the drought or flood events, as well as the response of index values to different time scales and distribution parameters at specific single locations. @fig-compute-spatial and @fig-compute-temporal exemplify two possibilities. @fig-compute-spatial presents the spatial distribution of SPI during two periods: October 2010 to March 2011 for the 2010/11 Queensland flood and October 2019 to March 2020 for the 2019 Australia drought, which contributes to the notorious 2019/20 bushfire season. @fig-compute-temporal displays the sensitivity of the SPEI series at the Texas post office to different time scales and fitted distributions. Larger time scales produce a smoother index across time, however, all time scales indicate an extreme drought (corresponding to -2 in SPEI) in 2020, confirming the severity of the drought across different time horizons. Moreover, the chosen distribution has less influence on the index, with general extreme value distribution tending to produce more extreme outcomes than log-logistic distribution for the extreme events (index > 2 or <-2).
+The output contains the original data, index values (`.index`), parameters used (`.scale`, `.method`, and `.dist`), and all the intermediate variables (`.pet`, `.agg`, and `.fitted`). This data can be visualized to investigate the spatio-temporal distribution of the drought or flood events, as well as the response of index values to different time scales and distribution parameters at specific single locations. @fig-compute-spatial and @fig-compute-temporal exemplify two possibilities. @fig-compute-spatial presents the spatial distribution of SPI during two periods: October 2010 to March 2011 for the 2010/11 Queensland flood and October 2019 to March 2020 for the 2019 Australia drought, which contributes to the notorious 2019/20 bushfire season. @fig-compute-temporal displays the sensitivity of the SPEI series at the Texas post office to different time scales and fitted distributions. Larger time scales produce a smoother index across time, however, all time scales indicate an extreme drought (corresponding to -2 in SPEI) in 2020, confirming the severity of the drought across different time horizons. Moreover, the chosen distribution has less influence on the index, with general extreme value distribution tending to produce more extreme outcomes than log-logistic distribution for the extreme events (index > 2 or <-2).
 
 ```{r fig-compute-spatial}
 #| fig-cap: "Spatial distribution of Standardized Precipitation Index (SPI-12) in Queensland, Australia during two major flood and drought events: 2010/11 and 2019/20. The map shows a continuous wet period during the 2010/11 flood period and a mitigated drought situation, after its worst in 2019 December and 2020 January, likely due to the increased rainfall in February from the meteorological record."
@@ -425,7 +425,7 @@ queensland_map %>%
 ```
 
 ```{r fig-compute-temporal}
-#| fig-cap: 'Time series plot of Standardized Precipitation-Evapotranspiration Index (SPEI) at the Texas post office station (highlighted by a diamond shape in panel a). The SPEI is calculated at four time scales (6, 12, 24, and 36 months) and fitted with two distributions (Log Logistic and GEV). The dashed line at -2 represents the class "extreme drought" by the SPEI. A larger time scale gives a smoother index series, while also taking longer to recover from an extreme situation as seen in the  2019/20 drought period. The SPEI values from the two distribution fit mostly agree, while GEV can result in more extreme values, i.e. in 1998 and 2020.'
+#| fig-cap: 'Time series plot of Standardized Precipitation-Evapotranspiration Index (SPEI) at the Texas post office station (highlighted by a diamond shape in panel a). The SPEI is calculated at four time scales (6, 12, 24, and 36 months) and fitted with two distributions (Log Logistic and GEV). The dashed line at -2 represents the class "extreme drought" by the SPEI. A larger time scale gives a smoother index series, while also taking longer to recover from an extreme situation as seen in the  2019/20 drought period. The SPEI values from the two distributional fits mostly agree, while GEV can result in more extreme values, i.e. in 1998 and 2020.'
 #| fig-width: 8
 #| fig-height: 5
 texas <- idx %>%
@@ -578,7 +578,7 @@ gifski::gifski(
 ```
 
 ```{r fig-idx-tour, fig.align='center', fig.height=6, fig.width=6}   
-#| fig-cap: "Exploring the sensitivity of the GGGI, by varying the politics component's contribution, for a subset of countries. Each panel shows a dotplot of the index values, computed for the linear combination represented by the segment plots below. Frame 12 shows the actual GGGI values, and countries are sorted from highest to lowest on this. Frames 1 and 6 show the GGGI if the politics component is reduced. Frames 18, 24, 29 show the GGGI when the politics component is increased. The most notable feature is that Bangladesh's GGGI drops substantially when politics is removed, indicating that this component plays a large role in it's relatively high value. Also, politics plays a substantial role in the GGGI's for the top ranked countries, because each of them drops, to the state of being similar to the middle ranked countries when the politics component's contribution is reduced. The animation can be viewed at https://vimeo.com/847874016."
+#| fig-cap: "Exploring the sensitivity of the GGGI, by varying the politics component's contribution, for a subset of countries. Each panel shows a dotplot of the index values, computed for the linear combination represented by the segment plots below. Frame 12 shows the actual GGGI values, and countries are sorted from highest to lowest on this. Frames 1 and 6 show the GGGI if the politics component is reduced. Frames 18, 24, 29 show the GGGI when the politics component is increased. The most notable feature is that Bangladesh's GGGI drops substantially when politics is removed, indicating that this component plays a large role in its relatively high value. Also, politics plays a substantial role in the GGGI's for the top ranked countries, because each of them drops, to the state of being similar to the middle ranked countries when the politics component's contribution is reduced. The animation can be viewed at https://vimeo.com/847874016."
 frames <- c("001", "006", "012", "018", "024", "029") 
 ani <- paste0(here::here("figures/"), "idx-tour/", "idx-tour-", frames, ".png")
 rl <- lapply(ani, png::readPNG)
@@ -662,7 +662,7 @@ res_band %>%
 
 # Conclusion
 
-The paper introduces a data pipeline comprising nine modules designed for the construction and analysis of indexes within the tidy framework. The pipeline offers a modular workflow to allow compute index with different parameterizations, to test minor changes to the original index definition, and to quantify uncertainties. The framework proposed in the paper is universal to index across diverse domains. Examples are provided, including the drought indexes (SPI and SPEI) and Global Gender Gap Index (GGGI), to demonstrate the index calculation with different time scales and distributions, to illustrate how slight adjustment of linear combination weights impact the index, and to calculate confidence intervals on the index.  
+The paper introduces a data pipeline comprising nine modules designed for the construction and analysis of indexes within the tidy framework. The pipeline offers a modular workflow to compute indexes with different parameterizations, to test minor changes to the original index definition, and to quantify uncertainties. The framework proposed in the paper is universal to index across diverse domains. Examples are provided, including the drought indexes (SPI and SPEI) and the Global Gender Gap Index (GGGI), to demonstrate the index calculation with different time scales and distributions, to illustrate how slight adjustment of linear combination weights impact the index, and to calculate confidence intervals on the index.  
 
 <!-- When adopting the pipeline approach to construct indexes, analysts may consider developing software that can be readily deployed in the cloud for production purposes. -->
 
