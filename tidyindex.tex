@@ -273,7 +273,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, breakable, enhanced, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, frame hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -724,11 +724,10 @@ normal density values for normalizing).
 
 Benchmark sets a value \(b_j(s,t)\) for comparing against the original
 variable \(x_j(s;t)\). This benchmark can be a fixed value consistently
-across space and time, perhaps extracted from expert knowledge, perhaps
-extracted from expert knowledge, or determined by the data through the
-function \(u[x_j(s;t)]\). Once a benchmark is set, observations can be
-highlighted for adjustments in other modules or can serve as targets for
-monitoring and planning.
+across space and time, perhaps extracted from expert knowledge or
+determined by the data through the function \(u[x_j(s;t)]\). Once a
+benchmark is set, observations can be highlighted for adjustments in
+other modules or can serve as targets for monitoring and planning.
 
 \hypertarget{simplification}{%
 \subsection{Simplification}\label{simplification}}
@@ -879,14 +878,14 @@ data:
 \caption{\label{fig-spei}Index pipeline for two drought indexes: the
 Standardized Precipitation Index (SPI) and the Standardized
 Precipitation-Evapotranspiration Index (SPEI). Both indexes share
-similar construction steps with SPEI having two steps additional steps
+similar construction steps with SPEI having two additional steps
 (variable transformation and dimension reduction) to convert temperature
 into evapotranspiration and combine it with the precipitation series.}
 
 \end{figure}
 
 Figure~\ref{fig-spei} illustrates the pipeline steps of the two indexes.
-The two indexes are similar with the distinct that SPEI involves two
+The two indexes are similar with the difference that SPEI involves two
 additional steps -- variable transformation and dimension reduction --
 prior to temporal processing. As introduced in
 Section~\ref{sec-software}, wrapper functions are available for both
@@ -935,7 +934,7 @@ the gamma distribution is used for SPI:
 
 The output contains the original data, index values (\texttt{.index}),
 parameters used (\texttt{.scale}, \texttt{.method}, and \texttt{.dist}),
-and all the intermediate variables (\texttt{pet}, \texttt{.agg}, and
+and all the intermediate variables (\texttt{.pet}, \texttt{.agg}, and
 \texttt{.fitted}). This data can be visualized to investigate the
 spatio-temporal distribution of the drought or flood events, as well as
 the response of index values to different time scales and distribution
@@ -986,7 +985,7 @@ with two distributions (Log Logistic and GEV). The dashed line at -2
 represents the class ``extreme drought'' by the SPEI. A larger time
 scale gives a smoother index series, while also taking longer to recover
 from an extreme situation as seen in the 2019/20 drought period. The
-SPEI values from the two distribution fit mostly agree, while GEV can
+SPEI values from the two distributional fits mostly agree, while GEV can
 result in more extreme values, i.e.~in 1998 and 2020.}
 
 \end{figure}
@@ -1118,7 +1117,7 @@ lowest on this. Frames 1 and 6 show the GGGI if the politics component
 is reduced. Frames 18, 24, 29 show the GGGI when the politics component
 is increased. The most notable feature is that Bangladesh's GGGI drops
 substantially when politics is removed, indicating that this component
-plays a large role in it's relatively high value. Also, politics plays a
+plays a large role in its relatively high value. Also, politics plays a
 substantial role in the GGGI's for the top ranked countries, because
 each of them drops, to the state of being similar to the middle ranked
 countries when the politics component's contribution is reduced. The
@@ -1241,15 +1240,15 @@ given the extremity of the event.}
 
 The paper introduces a data pipeline comprising nine modules designed
 for the construction and analysis of indexes within the tidy framework.
-The pipeline offers a modular workflow to allow compute index with
-different parameterizations, to test minor changes to the original index
+The pipeline offers a modular workflow to compute indexes with different
+parameterizations, to test minor changes to the original index
 definition, and to quantify uncertainties. The framework proposed in the
 paper is universal to index across diverse domains. Examples are
-provided, including the drought indexes (SPI and SPEI) and Global Gender
-Gap Index (GGGI), to demonstrate the index calculation with different
-time scales and distributions, to illustrate how slight adjustment of
-linear combination weights impact the index, and to calculate confidence
-intervals on the index.
+provided, including the drought indexes (SPI and SPEI) and the Global
+Gender Gap Index (GGGI), to demonstrate the index calculation with
+different time scales and distributions, to illustrate how slight
+adjustment of linear combination weights impact the index, and to
+calculate confidence intervals on the index.
 
 \hypertarget{acknowledgement}{%
 \section{Acknowledgement}\label{acknowledgement}}
@@ -1280,7 +1279,7 @@ Christophe Dervieux. 2022. \emph{{Quarto}} (version 1.2).
 
 \leavevmode\vadjust pre{\hypertarget{ref-COINr}{}}%
 Becker, William, Giulio Caperna, Maria Del Sorbo, Hedvig Norlen, Eleni
-Papadimitriou, and Michaela Saisana. 2022. {``COINr: An r Package for
+Papadimitriou, and Michaela Saisana. 2022. {``COINr: An {R} Package for
 Developing Composite Indicators.''} \emph{Journal of Open Source
 Software} 7 (78): 4567. \url{https://doi.org/10.21105/joss.04567}.
 
@@ -1373,9 +1372,9 @@ Series A: Statistics in Society} 168 (2): 307--23.
 \url{https://doi.org/10.1111/j.1467-985X.2005.00350.x}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-RJ-2020-027}{}}%
-Spyrison, Nicholas, and Dianne Cook. 2020. {``The r Journal: Spinifex:
-An r Package for Creating a Manual Tour of Low-Dimensional Projections
-of Multivariate Data.''} \emph{The R Journal} 12: 243--57.
+Spyrison, Nicholas, and Dianne Cook. 2020. {``Spinifex: An {R} Package
+for Creating a Manual Tour of Low-Dimensional Projections of
+Multivariate Data.''} \emph{The R Journal} 12: 243--57.
 \url{https://doi.org/10.32614/RJ-2020-027}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-sutherland_orca_2000}{}}%
