@@ -1,0 +1,24 @@
+---
+from: H. Sherry Zhang
+fromqualifications: Ph.D.
+fromWWW: https://huizezhangsh.netlify.app/
+fromemail: huizezhangsh@gmail.com
+fromsignature: sig.png
+toname: Editors
+toaddress: Journal of Computational and Graphical Statistics
+closing: Sincerely
+spacing: 1.4
+output: monash::letter
+---
+
+
+\bigskip
+Please consider our manuscript "A Tidy Framework and Infrastructure to Systematically Assemble Spatio-temporal Indexes from Multivariate Data" for publication in the Journal of Computational and Graphical Statistics.
+\bigskip
+
+The paper describes a new framework for composing indexes from multivariate spatio-temporal data. The work arose since every index is developed in its own unique way, by different researchers or organisations, and often indexes designed for the same purpose cannot easily be compared. The framework described in this paper helps to standardise the construction of indexes so they can be compared, evaluated, tested, and allow for incorporating confidence interval calculations. The framework is accompanied by an R package, already on CRAN, `tidyindex`. The paper should be of interest to index developer and index analysts to think about how to construct indexes in a more systematic way.
+
+\bigskip
+Thank you for the consideration of this manuscript. We believe that it is a good fit for the Journal of Computational and Graphical Statistics. 
+
+\bigskip

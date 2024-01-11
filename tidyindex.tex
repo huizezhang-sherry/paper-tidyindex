@@ -7,6 +7,7 @@
 ]{interact}
 
 \usepackage{amsmath,amssymb}
+\usepackage{setspace}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -243,9 +244,9 @@ Zhang. Email: \href{mailto:huize.zhang@monash.edu}{\nolinkurl{huize.zhang@monash
 Statistics, Monash University, Melbourne,
 Victoria, Australia\\ \textsuperscript{2} Institute of
 Statistics, University of Natural Resources and Life
-Sciences, Vienna, Austria\\ \textsuperscript{3} Department of
-Mathematical Sciences, BNU-HKBU United International College, Zhuhai,
-Guangdong, China
+Sciences, Vienna, Austria\\ \textsuperscript{3} Guangdong Provincial Key
+Laboratory of Interdisciplinary Research and Application for Data
+Science, BNU-HKBU United International College, Zhuhai, Guangdong, China
 \begin{abstract}
 Indexes are useful for summarizing multivariate information into single
 metrics for monitoring, communicating, and decision-making. While most
@@ -273,8 +274,9 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, frame hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, breakable, enhanced, boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners]}{\end{tcolorbox}}\fi
 
+\setstretch{2}
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
@@ -1254,9 +1256,12 @@ calculate confidence intervals on the index.
 \section{Acknowledgement}\label{acknowledgement}}
 
 This work is funded by a Commonwealth Scientific and Industrial Research
-Organisation (CSIRO) Data61 Scholarship. The article is created using
-Quarto (Allaire et al. 2022) in R (R Core Team 2021). The source code
-for reproducing this paper can be found at:
+Organisation (CSIRO) Data61 Scholarship. Nicolas Langrené acknowledges
+the partial support of the Guangdong Provincial Key Laboratory IRADS
+(2022B1212010006, R0400001-22) and the UIC Start-up Research Fund
+UICR0700041-22. The article is created using Quarto (Allaire et al.
+2022) in R (R Core Team 2021). The source code for reproducing this
+paper can be found at:
 \url{https://github.com/huizezhang-sherry/paper-tidyindex}.
 
 \hypertarget{reference}{%

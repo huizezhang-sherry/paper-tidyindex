@@ -3,6 +3,7 @@ title: "A Tidy Framework and Infrastructure to Systematically Assemble Spatio-te
 format:
   tandf-pdf:
     keep-tex: true  
+    linestretch: 2
 pdf-engine: pdflatex
 author:
   - name: H. Sherry Zhang
@@ -33,7 +34,7 @@ author:
   - name: Nicolas Langrené
     affiliation: 
       - name: BNU-HKBU United International College
-        department: Department of Mathematical Sciences
+        department: Guangdong Provincial Key Laboratory of Interdisciplinary Research and Application for Data Science
         address: 2000 Jintong Road, Tangjiawan, Zhuhai
         city: Zhuhai, Guangdong
         country: China
@@ -668,6 +669,6 @@ The paper introduces a data pipeline comprising nine modules designed for the co
 
 # Acknowledgement
 
-This work is funded by a Commonwealth Scientific and Industrial Research Organisation (CSIRO) Data61 Scholarship. The article is created using Quarto [@Allaire_Quarto_2022] in R [@R]. The source code for reproducing this paper can be found at: <https://github.com/huizezhang-sherry/paper-tidyindex>.
+This work is funded by a Commonwealth Scientific and Industrial Research Organisation (CSIRO) Data61 Scholarship. Nicolas Langrené acknowledges the partial support of the Guangdong Provincial Key Laboratory IRADS (2022B1212010006, R0400001-22) and the UIC Start-up Research Fund UICR0700041-22. The article is created using Quarto [@Allaire_Quarto_2022] in R [@R]. The source code for reproducing this paper can be found at: <https://github.com/huizezhang-sherry/paper-tidyindex>.
 
 # Reference
