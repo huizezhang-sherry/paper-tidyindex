@@ -40,10 +40,15 @@ author:
         country: China
     orcid: 0000-0001-7601-4618
   - name: Patricia Menéndez
-    affiliation:
+    affiliation: 
       - name: Monash University
         department: Department of Econometrics and Business Statistics
         address: 29 Ancora Imparo Way, Clayton
+        city: Melbourne, Victoria
+        country: Australia
+      - name: University of Melbourne
+        department: School of Mathematics and Statistics
+        address: 813 Swanston Street, Parkville VIC 3052, Australia
         city: Melbourne, Victoria
         country: Australia
     orcid: 0000-0003-0701-6315
