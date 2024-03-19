@@ -1,0 +1,40 @@
+---
+title: "Response to Reviewers JCGS-23-428"
+subtitle: "A Tidy Framework and Infrastructure to Systematically Assemble Spatio-temporal Indexes from Multivariate Data"
+author: "H. Sherry Zhang, Dianne Cook, Ursula Laa, Nicolas Langrené, Patricia Menéndez"
+date: "2024-03-31"
+format: pdf
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Below is a point-by-point explanation of how we have changed the paper. The reviewer comments are in black and our responses are in red. Reviewers' comments are in black and **\textcolor{purple}{our responses are in red}**.
+
+# Reviewer: 1
+
+I commend the authors for their work in the tidy index library.  Certainly, a user friendly and unified approach to indices is useful across many fields.  My main concern about the paper is that it doesn't seem to fit within the aims and scope of JCGS.  A perusal of recent JCGS papers shows that a novel statistical component is needed for publication in addition to the software.  This paper, while certainly useful, doesn't necessarily propose new statistical methods but rather proposes a great tidy framework for handling index calculation.  As such, for JCGS, I think the authors need to highlight the statistical contributions more than the library.  However, I don't think the authors statistical contributions (even if highlighted) are sufficiently novel to warrant publication in JCGS.  As written, I think the paper is more suited for publication in, say, Journal of Statistical Software than JCGS.
+
+**\textcolor{purple}{we have highlighted the methodological contributions this framework makes in the conclusion.}**. methodology contribution: allow confidence interval to be calculated in the pipeline, doing sensitivity analysis throughout the pipeline. 
+
+
+# Reviewer: 2
+
+This paper proposes new pipeline work for index development, including index generation, validation, and sensitivity analysis. The authors develop a new R package, "tidyindex" including all functions in the pipeline to produce a new index. This package will be beneficial for developing new indices. The central part of this paper is the development of the R package and the explanation of its usage. However, this package needs to be fixed.
+
+The authors explain their functions briefly in Chapter 5 and use examples with R code in Chapter 6. However, the code in Chapter 6 does not work. Also, the demo in the R package (CRAN version 0.1.0) did not work (see attached R-output.html). Please check the package, including demos and examples in this paper. It would be great if all R codes for the example in Chapter 6 were provided, including generating plots.
+
+## minor comments
+
+- In Table 1, it would be great if there were a line between items. Because the name of the module is in two lines, it is not easy to match the other information (input, operation, and output) **\textcolor{purple}{We rearrange the table layout and the module name fits into one line now}**.
+
+ - On page 19, " The output contains the original data, index values (.index), parameters used (.scale,
+.method, and .dist), and all the intermediate variables (.pet, .agg, and .fitted)." However, the output has no .index, .pet, .agg, and .fitted. Please check. **\textcolor{purple}{Fixed. Some columns are shown at the bottom as "i 8 more variables: lat <dbl>, name <chr>, .pet <dbl>, .diff <dbl>, .scale <chr>, .agg <dbl>, .fit <dbl>, .index <dbl>" due to the number of columns to print and the page width.}**.
+
+- Figure 7 shows the sequence of screenshots from the animation to explore the sensitivity of the GGGI. It would be helpful to understand "what Frame 12 is"  if the authors should explain this between " Figure 7 illustrates doing sensitivity analysis for GGGI, for a subset of 16 countries" and "Frame 12 shows the dot plot of the original index values sorted from highest to lowest", **\textcolor{purple}{Added.}**
+
+- Figure 8 on page 27 also shows the relatively wide confidence interval around 2004. It would be great if the author mentioned it, too. **\textcolor{purple}{Added.}**
+
+- reference for "SPEI package" on page 4 should be (Beguería and Vicente-Serrano 2017),
+and reference for "the Standardized Precipitation-Evapotranspiration Index (SPEI)" on page 12 should be (Vicente-Serrano, Beguería, and López-Moreno 2010) **\textcolor{purple}{Fixed}**.

@@ -118,7 +118,7 @@ There are many documents providing advice on how to construct indexes for differ
 
 There is also some attention being given to the diagnosis of indexes, and incorporation of uncertainty. @jones_vulnerability_2007 investigates the methodological choices made in the development of indexes for assessing vulnerable neighborhoods. @uncertainty describes incorporating uncertainty estimates and conducting sensitivity analysis on composite indexes. @tate_social_2012 and @tate_uncertainty_2013, similarly, make a comparative assessment of social vulnerability indexes based on uncertainty estimation and sensitivity analysis. @laimighofer_how_2022 studies five uncertainty sources (record length, observation period, distribution choice, parameter estimation method, and GOF-test) of drought indexes. 
 
-There are also a few R packages supporting index calculation. The  `SPEI` package  [@spei] computes two drought indexes. The `gpindex` package [@gpindex] computes price indexes, and the `fundiversity` package [@fundiversity] computes functional diversity indexes for ecological study. The package `COINr` [@COINr] is more ambitious, making a start on following the broader guidelines in the OECD handbook to construct, analyze, and visualize composite indexes. 
+There are also a few R packages supporting index calculation. The  `SPEI` package  [@SPEI] computes two drought indexes. The `gpindex` package [@gpindex] computes price indexes, and the `fundiversity` package [@fundiversity] computes functional diversity indexes for ecological study. The package `COINr` [@COINr] is more ambitious, making a start on following the broader guidelines in the OECD handbook to construct, analyze, and visualize composite indexes. 
 
 From reviewing this literature, and in the process of developing methods for making it easier to work with multivariate spatio-temporal data, it seems possible to think about indexes in a more organised, cohesive and standard manner. Actually, the area could benefit from a *tidy* approach. 
 
@@ -182,7 +182,7 @@ where:
 In what follows when geographic or temporal components of the $x_j(s,t)$ process are fixed we will be using suffix notation. For example, $x_{sj}(t)$ represents the data for a fixed location $s$ as a function of time $t$. While $x_{tj}(s)$ denotes the spatial varying process for a fixed $t$. An overview of the notation for pipeline input, operation, and output is present in @tbl-notation.
 
 | Module                  | Input                                                                   | Operation                           | Output                                                                        |
-|--------------|---------|---------------|--------------------------|
+|-----------------------|---------|---------------|--------------------------|
 | Temporal processing     | $x_{sj}(t)$                                                             | $f[x_{sj}(t)]$                      | $x^{\text{Temp}}_{sj}(t^\prime) \quad t^\prime \in D_{t^\prime}$ |
 | Spatial processing      | $x_{tj}(s)$                                                             | $g[x_{tj}(s)]$                      | $x^{\text{Spat}}_{tj}(s^\prime) \quad s^\prime \in D_{s^\prime}$                 |
 | Variable transformation | $x_{j}(s; t)$                                                           | $T[x_j(s;t)]$                       | $x^{\text{Trans}}_j(s;t)$                                                     |
@@ -274,7 +274,7 @@ trans_df %>%
 ## Dimension reduction
 
 
-Dimension reduction takes the multivariate information $\mathbf{x}(s;t)$, where $\mathbf{x} \subseteq \mathbb{R}^p$, or a subset of variables in $\mathbf{x}(s;t)$, as the input. It summarises the high-dimensional information into a lower-dimension representation $\mathbf{y}(s;t)$, where $y \subseteq \mathbb{R}^d$ and $d < p$, as the output. The transformation can be based on domain-specific knowledge, originating from theories describing the underlying physical processes, or guided by statistical methods. For example, the Standardized Precipitation-Evapotranspiration Index (SPEI) [@SPEI] calculates the difference $D$ between precipitation ($P$) and potential evapotranspiration ($\text{PET}$), using a water balance model ($D = P - \text{PET}$). This is the only step that differs from the Standardized Precipitation Index (SPI), and can be considered to be a dimension reduction using a particular linear combination. 
+Dimension reduction takes the multivariate information $\mathbf{x}(s;t)$, where $\mathbf{x} \subseteq \mathbb{R}^p$, or a subset of variables in $\mathbf{x}(s;t)$, as the input. It summarises the high-dimensional information into a lower-dimension representation $\mathbf{y}(s;t)$, where $y \subseteq \mathbb{R}^d$ and $d < p$, as the output. The transformation can be based on domain-specific knowledge, originating from theories describing the underlying physical processes, or guided by statistical methods. For example, the Standardized Precipitation-Evapotranspiration Index (SPEI) [@spei] calculates the difference $D$ between precipitation ($P$) and potential evapotranspiration ($\text{PET}$), using a water balance model ($D = P - \text{PET}$). This is the only step that differs from the Standardized Precipitation Index (SPI), and can be considered to be a dimension reduction using a particular linear combination. 
 
 Linear combinations of variables are commonly used to reduce the dimension in statistical methodology, and chosen using a method like principal component analysis (PCA) [@hotelling1933analysis] or linear discriminant analysis [@fisher1936use], preparing contrasts to test particular elements in analysis of variance [@fisher1970statistical], or hand-crafted by a content-area expert. Linear combinations also form the basis for visualizing multivariate data, in methods such as tours [@wickham_tourr_2011].  This dimension reduction method can accommodate linear combinations as provided by any method, and hence is linear by design. The transformation module provides variable-wise non-linear transformation.
 
@@ -424,7 +424,7 @@ queensland_map %>%
       filter(.scale == 12) %>%
       filter(((year(ym) %in% c(2010, 2019) & month(ym) >= 10) )|
                ((year(ym) %in% c(2011, 2020) & month(ym) <= 3) )),
-    aes(x = long, y = lat, color = .value)) +
+    aes(x = long, y = lat, color = .index)) +
   colorspace::scale_color_continuous_divergingx(palette = "Geyser", rev = TRUE, name = "Index") + 
   theme_void() +
   facet_wrap(vars(ym), ncol = 6)
@@ -449,7 +449,7 @@ p1 <- queensland_map %>%
 
 p2 <- idx %>%
   filter(name == "TEXAS POST OFFICE", .idx == "spei") %>%
-  ggplot(aes(x = ym, y = .value, color = .dist, group = .dist)) +
+  ggplot(aes(x = ym, y = .index, color = .dist, group = .dist)) +
   geom_line() +
   theme_benchmark() +
   facet_wrap(vars(.scale), labeller = label_both, ncol = 1) +
@@ -458,6 +458,7 @@ p2 <- idx %>%
   xlab("Year") + 
   ylab("Index")
 
+library(patchwork)
 (p1 | p2)  + 
   patchwork::plot_annotation(tag_levels = "a") + 
   patchwork::plot_layout(guides = "collect", widths = c(1, 4))  &
@@ -525,7 +526,7 @@ gggi %>%
 
 After initializing the `gggi` object and attaching the `gggi_weights` as meta-data, a single linear combination within the dimension reduction module is applied to the 14 variables (from column `labour_force_participation` to `years_with_female_head_of_state`), using the weight specified in the `wgt` column of the attached metadata. While computing the index from the original 14 variables, it remains unclear how the missing values are handled within the index, which impacts 68 out of the total 146 countries. However, after aggregating variables into the four dimensions, where no missing values exist, the index is reproducible for all the countries.
 
-@fig-idx-tour illustrates doing sensitivity analysis for GGGI, for a subset of 16 countries. Frame 12 shows the dot plot of the original index values sorted from highest to lowest. Leading the rankings are the Nordic countries (Iceland, Norway, and Finland) and New Zealand. The index values are between 0 and 1, and indicate proportional difference between men and women, with a value of 0.8 indicating women are 80% of the way to equality of these measures. There is a gap in values between these countries and the middle group (Brazil, Panama, Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia), and another big drop to the next group (Pakistan, Iran, Algeria, and Chad). Afghanistan lags much further behind.
+@fig-idx-tour illustrates doing sensitivity analysis for GGGI, for a subset of 16 countries. It presents 6 frames from the animation that varies the weights of four dimensions (economy, education, health, and politics) in the index with Frame 12 showing the dot plot of the original index values sorted from highest to lowest. Leading the rankings are the Nordic countries (Iceland, Norway, and Finland) and New Zealand. The index values are between 0 and 1, and indicate proportional difference between men and women, with a value of 0.8 indicating women are 80% of the way to equality of these measures. There is a gap in values between these countries and the middle group (Brazil, Panama, Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia), and another big drop to the next group (Pakistan, Iran, Algeria, and Chad). Afghanistan lags much further behind.
 
 
 
@@ -619,7 +620,7 @@ DATA |>
   normalise(.index = norm_quantile(.fit))
 ```
 
-The confidence interval can then be calculated using the quantile method from the bootstrap samples. @fig-conf-interval presents the 80% and 95% confidence interval for the Texas post office station, in Queensland, Australia. From the start of 2019 to 2020,  the majority of the confidence intervals lie below the extreme drought line (SPI = -2), suggesting a high level of certainty that the Texas post office is suffering from a drastic drought. The relatively wide confidence interval, as well as during the excessive precipitation events in 1996-1998 and 1999-2000, suggests a high variation of the gamma parameters estimated from the bootstrap samples and its difficulty to accurately quantify the drought and flood severity in extreme events.
+The confidence interval can then be calculated using the quantile method from the bootstrap samples. @fig-conf-interval presents the 80% and 95% confidence interval for the Texas post office station, in Queensland, Australia. From the start of 2019 to 2020, the majority of the confidence intervals lie below the extreme drought line (SPI = -2), suggesting a high level of certainty that the Texas post office is suffering from a drastic drought. Also close to the extreme drought line is the period 2003-2004, which corresponds to the millennium drought. These relatively wide confidence intervals, as well as during the excessive precipitation events in 1996-1998 and 1999-2000, suggest a high variation of the gamma parameters estimated from the bootstrap samples and its difficulty to accurately quantify the drought and flood severity in extreme events.
 
 ```{r fig-conf-interval}
 #| fig-width: 8
