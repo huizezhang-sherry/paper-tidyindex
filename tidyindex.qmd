@@ -8,13 +8,18 @@ pdf-engine: pdflatex
 author:
   - name: H. Sherry Zhang
     affiliations:
+      - name: University of Texas at Austin
+        department: Department of Statistics and Data Science
+        address: Welch 5.216, 105E 24th Street, Stop G3800
+        city: Austin, Texas
+        country: USA
       - name: Monash University
         department: Department of Econometrics and Business Statistics
         address: 29 Ancora Imparo Way, Clayton
         city: Melbourne, Victoria
         country: Australia
     orcid: 0000-0002-7122-1463
-    email: huize.zhang@monash.edu
+    email: huize.zhang@austin.utexas.edu
   - name: Dianne Cook
     affiliation: 
       - name: Monash University
@@ -67,7 +72,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
-options(width = 70)
+options(width = 70, pillow.print_max = 5, pillar.print_min = 5)
 library(tidyverse)
 library(latex2exp)
 library(patchwork)
@@ -164,13 +169,7 @@ An overview of the pipeline is presented in @fig-pipeline-steps, illustrating th
 knitr::include_graphics(here::here("figures/pipeline-overall.png"))
 ```
 
-Now, we introduce the notation used for describing pipeline modules. Consider a multivariate spatio-temporal process,
-
-```{=tex}
-\begin{equation}
-\mathbf{x}(s;t) = \{x_1(s;t), x_2(s;t), \cdots, x_p(s;t)\} \qquad s \in D_s \subseteq \mathbb{R}^m, t \in D_t \subseteq \mathbb{R}^n 
-\end{equation}
-```
+Now, we introduce the notation used for describing pipeline modules. Consider a multivariate spatio-temporal process, $$\mathbf{x}(s;t) = \{x_1(s;t), x_2(s;t), \cdots, x_p(s;t)\} \qquad s \in D_s \subseteq \mathbb{R}^m, t \in D_t \subseteq \mathbb{R}^n $$
 where:
 
 -   $x_j(s, t)$ represents a variable of interest for example precipitation, $j = 1, \cdots, p$ and
@@ -295,7 +294,6 @@ Benchmark sets a value $b_j(s,t)$ for comparing against the original variable $x
 ## Simplification
 
 Simplification takes a continuous variable $x_j(s;t)$ and categorises it into a discrete set $A_j(s;t) \in \{a_1, a_2, \cdots, a_z\}$ through a piecewise constant function,
-
 ```{=tex}
 \begin{equation}
 v[x_i(s;t)] = 
@@ -315,11 +313,7 @@ This is typically used at the end of the index pipeline to simplify the index to
 The R package `tidyindex` implements a proof-of-concept of the index pipeline modules described in @sec-pipeline. These modules compute an index in a sequential manner, as shown below:
 
 ```{r eval = FALSE, echo = TRUE}
-DATA |> 
-  module1(...) |>
-  module2(...) |>
-  module3(...) |>
-  ...
+DATA |> module1(...) |> module2(...) |> module3(...) |> ...
 ```
 
 Each module offers a variety of alternatives, each represented by a distinct function. For example, within the `dimension_reduction()` module, three methods are available: `aggregate_linear()`, `aggregate_geometrical()`, and `manual_input()` and they can be used as: 
@@ -350,10 +344,7 @@ This recipe will then be evaluated in the pipeline module with data to obtain nu
 
 ```{r eval = FALSE, echo = TRUE}
 idx_spi <- function(...){
-  DATA |>
-    temporal_aggregate(...) |>
-    distribution_fit(...)|>
-    normalise(...)
+  DATA |> temporal_aggregate(...) |> distribution_fit(...)|> normalise(...)
 }
 ```
 
@@ -669,7 +660,13 @@ res_band %>%
 
 # Conclusion
 
-The paper introduces a data pipeline comprising nine modules designed for the construction and analysis of indexes within the tidy framework. The pipeline offers a modular workflow to compute indexes with different parameterizations, to test minor changes to the original index definition, and to quantify uncertainties. The framework proposed in the paper is universal to index across diverse domains. Examples are provided, including the drought indexes (SPI and SPEI) and the Global Gender Gap Index (GGGI), to demonstrate the index calculation with different time scales and distributions, to illustrate how slight adjustment of linear combination weights impact the index, and to calculate confidence intervals on the index.  
+The paper introduces a data pipeline for constructing and analyzing indexes within the tidy framework. The pipeline comprises nine modules including temporal and spatial aggregation, variable transformation and combination, distribution fitting, benchmark setting, and index communication. The proposed pipeline is implemented as an R package, `tidyindex`, available on CRAN.
+
+One of the contributions of our work is its emphasis on aspects often overlooked in index construction: uncertainty quantification and sensitivity analysis. While indexes are widely constructed and used to inform decision-making, such as on resource allocation, little effort is made to justify choices made during indexes construction and to experiment with alternatives. The pipeline proposed in the paper allows for confidence interval calculation and sensitivity analysis to be incorporated in the index construction process, for indexes across various domains. These is illustrated through the three examples on drought indexes (SPI and SPEI) and the Global Gender Gap Index (GGGI).
+
+One future development of the work is to extend the tidyindex framework to support index calculation on commonly used domain-specific data formats, for example, NetCDF for climate indexes. 
+
+ <!-- Given the decisions analysts need to make when combining multivariate data into indexes, the proposed pipeline enables the evaluation of how the specific choice can affect the index, as well as how the index may appear under alternative options. Furthermore, uncertainty calculation can also flow through the pipeline, providing the index with confidence measures. -->
 
 <!-- When adopting the pipeline approach to construct indexes, analysts may consider developing software that can be readily deployed in the cloud for production purposes. -->
 

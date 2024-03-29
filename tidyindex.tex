@@ -229,25 +229,27 @@ design, uncertainty, decision-making},
 \title{A Tidy Framework and Infrastructure to Systematically Assemble
 Spatio-temporal Indexes from Multivariate Data}
 \author{H. Sherry
-Zhang$\textsuperscript{1}$~\orcidlink{0000-0002-7122-1463}, Dianne
-Cook$\textsuperscript{1}$~\orcidlink{0000-0002-3813-7155}, Ursula
-Laa$\textsuperscript{2}$~\orcidlink{0000-0002-0249-6439}, Nicolas
-Langrené$\textsuperscript{3}$~\orcidlink{0000-0001-7601-4618}, Patricia
-Menéndez$\textsuperscript{1,4}$~\orcidlink{0000-0003-0701-6315}}
+Zhang$\textsuperscript{1,2}$~\orcidlink{0000-0002-7122-1463}, Dianne
+Cook$\textsuperscript{2}$~\orcidlink{0000-0002-3813-7155}, Ursula
+Laa$\textsuperscript{3}$~\orcidlink{0000-0002-0249-6439}, Nicolas
+Langrené$\textsuperscript{4}$~\orcidlink{0000-0001-7601-4618}, Patricia
+Menéndez$\textsuperscript{2,5}$~\orcidlink{0000-0003-0701-6315}}
 
 \thanks{CONTACT: H. Sherry
-Zhang. Email: \href{mailto:huize.zhang@monash.edu}{\nolinkurl{huize.zhang@monash.edu}}. }
+Zhang. Email: \href{mailto:huize.zhang@austin.utexas.edu}{\nolinkurl{huize.zhang@austin.utexas.edu}}. }
 \begin{document}
 \captionsetup{labelsep=space}
 \maketitle
-\textsuperscript{1} Department of Econometrics and Business
+\textsuperscript{1} Department of Statistics and Data
+Science, University of Texas at Austin, Austin,
+Texas, USA\\ \textsuperscript{2} Department of Econometrics and Business
 Statistics, Monash University, Melbourne,
-Victoria, Australia\\ \textsuperscript{2} Institute of
+Victoria, Australia\\ \textsuperscript{3} Institute of
 Statistics, University of Natural Resources and Life
-Sciences, Vienna, Austria\\ \textsuperscript{3} Guangdong Provincial Key
+Sciences, Vienna, Austria\\ \textsuperscript{4} Guangdong Provincial Key
 Laboratory of Interdisciplinary Research and Application for Data
 Science, BNU-HKBU United International College, Zhuhai,
-Guangdong, China\\ \textsuperscript{4} School of Mathematics and
+Guangdong, China\\ \textsuperscript{5} School of Mathematics and
 Statistics, University of Melbourne, Melbourne, Victoria, Australia
 \begin{abstract}
 Indexes are useful for summarizing multivariate information into single
@@ -276,7 +278,7 @@ bootstrap confidence intervals for the Standardized Precipitation Index
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, boxrule=0pt, breakable, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced, frame hidden, interior hidden]}{\end{tcolorbox}}\fi
 
 \setstretch{2}
 \hypertarget{introduction}{%
@@ -508,11 +510,7 @@ using the dimension reduction and simplification module.}
 
 Now, we introduce the notation used for describing pipeline modules.
 Consider a multivariate spatio-temporal process,
-
-\begin{equation}
-\mathbf{x}(s;t) = \{x_1(s;t), x_2(s;t), \cdots, x_p(s;t)\} \qquad s \in D_s \subseteq \mathbb{R}^m, t \in D_t \subseteq \mathbb{R}^n 
-\end{equation}
-
+\[\mathbf{x}(s;t) = \{x_1(s;t), x_2(s;t), \cdots, x_p(s;t)\} \qquad s \in D_s \subseteq \mathbb{R}^m, t \in D_t \subseteq \mathbb{R}^n \]
 where:
 
 \begin{itemize}
@@ -766,11 +764,7 @@ modules compute an index in a sequential manner, as shown below:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{DATA }\SpecialCharTok{|\textgreater{}} 
-  \FunctionTok{module1}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}
-  \FunctionTok{module2}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}
-  \FunctionTok{module3}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}
-\NormalTok{  ...}
+\NormalTok{DATA }\SpecialCharTok{|\textgreater{}} \FunctionTok{module1}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}} \FunctionTok{module2}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}} \FunctionTok{module3}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}\NormalTok{ ...}
 \end{Highlighting}
 \end{Shaded}
 
@@ -818,10 +812,7 @@ customized indexes from existing modules.
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{idx\_spi }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(...)\{}
-\NormalTok{  DATA }\SpecialCharTok{|\textgreater{}}
-    \FunctionTok{temporal\_aggregate}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}
-    \FunctionTok{distribution\_fit}\NormalTok{(...)}\SpecialCharTok{|\textgreater{}}
-    \FunctionTok{normalise}\NormalTok{(...)}
+\NormalTok{  DATA }\SpecialCharTok{|\textgreater{}} \FunctionTok{temporal\_aggregate}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}} \FunctionTok{distribution\_fit}\NormalTok{(...)}\SpecialCharTok{|\textgreater{}} \FunctionTok{normalise}\NormalTok{(...)}
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
@@ -919,20 +910,15 @@ the gamma distribution is used for SPI:
 
 \begin{verbatim}
 # A tibble: 128,576 x 18
-   .idx  .dist id         month       ym  prcp  tmax  tmin  tavg  long
-   <chr> <chr> <chr>      <dbl>    <mth> <dbl> <dbl> <dbl> <dbl> <dbl>
- 1 spei  gev   ASN000290~     6 1990 Jun   170  29.7  16.2  23.0  142.
- 2 spei  gev   ASN000290~     7 1990 Jul   102  31.2  17.2  24.2  142.
- 3 spei  gev   ASN000290~     8 1990 Aug     0  31.3  13.1  22.2  142.
- 4 spei  gev   ASN000290~     9 1990 Sep     0  32.8  16.3  24.5  142.
- 5 spei  gev   ASN000290~    10 1990 Oct     0  36.8  21.5  29.2  142.
- 6 spei  gev   ASN000290~    11 1990 Nov   278  36.3  24.8  30.6  142.
- 7 spei  gev   ASN000290~    12 1990 Dec  1869  34.4  24.5  29.4  142.
- 8 spei  gev   ASN000290~    12 1990 Dec  1869  34.4  24.5  29.4  142.
- 9 spei  gev   ASN000290~     1 1991 Jan  5088  31.2  24.4  27.8  142.
-10 spei  gev   ASN000290~     1 1991 Jan  5088  31.2  24.4  27.8  142.
-# i 128,566 more rows
-# i 8 more variables: lat <dbl>, name <chr>, .pet <dbl>, .diff <dbl>,
+  .idx  .dist id    month       ym  prcp  tmax  tmin  tavg  long   lat
+  <chr> <chr> <chr> <dbl>    <mth> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+1 spei  gev   ASN0~     6 1990 Jun   170  29.7  16.2  23.0  142. -15.5
+2 spei  gev   ASN0~     7 1990 Jul   102  31.2  17.2  24.2  142. -15.5
+3 spei  gev   ASN0~     8 1990 Aug     0  31.3  13.1  22.2  142. -15.5
+4 spei  gev   ASN0~     9 1990 Sep     0  32.8  16.3  24.5  142. -15.5
+5 spei  gev   ASN0~    10 1990 Oct     0  36.8  21.5  29.2  142. -15.5
+# i 128,571 more rows
+# i 7 more variables: name <chr>, .pet <dbl>, .diff <dbl>,
 #   .scale <chr>, .agg <dbl>, .fit <dbl>, .index <dbl>
 \end{verbatim}
 
@@ -1246,17 +1232,27 @@ given the extremity of the event.}
 \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}
 
-The paper introduces a data pipeline comprising nine modules designed
-for the construction and analysis of indexes within the tidy framework.
-The pipeline offers a modular workflow to compute indexes with different
-parameterizations, to test minor changes to the original index
-definition, and to quantify uncertainties. The framework proposed in the
-paper is universal to index across diverse domains. Examples are
-provided, including the drought indexes (SPI and SPEI) and the Global
-Gender Gap Index (GGGI), to demonstrate the index calculation with
-different time scales and distributions, to illustrate how slight
-adjustment of linear combination weights impact the index, and to
-calculate confidence intervals on the index.
+The paper introduces a data pipeline for constructing and analyzing
+indexes within the tidy framework. The pipeline comprises nine modules
+including temporal and spatial aggregation, variable transformation and
+combination, distribution fitting, benchmark setting, and index
+communication. The proposed pipeline is implemented as an R package,
+\texttt{tidyindex}, available on CRAN.
+
+One of the contributions of our work is its emphasis on aspects often
+overlooked in index construction: uncertainty quantification and
+sensitivity analysis. While indexes are widely constructed and used to
+inform decision-making, such as on resource allocation, little effort is
+made to justify choices made during indexes construction and to
+experiment with alternatives. The pipeline proposed in the paper allows
+for confidence interval calculation and sensitivity analysis to be
+incorporated in the index construction process, for indexes across
+various domains. These is illustrated through the three examples on
+drought indexes (SPI and SPEI) and the Global Gender Gap Index (GGGI).
+
+One future development of the work is to extend the tidyindex framework
+to support index calculation on commonly used domain-specific data
+formats, for example, NetCDF for climate indexes.
 
 \hypertarget{acknowledgement}{%
 \section{Acknowledgement}\label{acknowledgement}}
