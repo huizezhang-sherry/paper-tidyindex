@@ -508,7 +508,7 @@ The 2023 GGGI data is available from the Global Gender Gap Report 2023 in the co
 ```{r eval = FALSE, echo = TRUE}
 gggi %>% 
   init(id = country) %>%
-  add_meta(gggi_weights, var_col = variable) %>% 
+  add_paras(gggi_weights, by = "variable") %>% 
   dimension_reduction(
     index_new = aggregate_linear(
       ~labour_force_participation:years_with_female_head_of_state,
