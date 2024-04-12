@@ -278,7 +278,7 @@ called \texttt{tidyindex}.
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, enhanced, boxrule=0pt, breakable, borderline west={3pt}{0pt}{shadecolor}, interior hidden, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, sharp corners, breakable, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, interior hidden, frame hidden]}{\end{tcolorbox}}\fi
 
 \setstretch{2}
 \hypertarget{introduction}{%
@@ -668,21 +668,21 @@ shape, which is not the case with variable transformation.}
 \subsection{Dimension reduction}\label{dimension-reduction}}
 
 Dimension reduction takes the multivariate information
-\(\mathbf{x}(s;t)\), where
-\(\mathbf{x} \subseteq \mathbb{R}^m \times \mathbb{R}^n\), or a subset
-of variables in \(\mathbf{x}(s;t)\), as the input. It summarises the
-high-dimensional information into a lower-dimension representation
-\(\mathbf{y}(s;t)\), where \(\mathbf{y} \subseteq \mathbb{R}^d\) and
-\(d < p\), as the output. The transformation can be based on
-domain-specific knowledge, originating from theories describing the
-underlying physical processes, or guided by statistical methods. For
-example, the Standardized Precipitation-Evapotranspiration Index (SPEI)
-(Vicente-Serrano, Beguería, and López-Moreno 2010) calculates the
-difference \(D\) between precipitation (\(P\)) and potential
-evapotranspiration (\(\text{PET}\)), using a water balance model
-(\(D = P - \text{PET}\)). This is the only step that differs from the
-Standardized Precipitation Index (SPI), and can be considered to be a
-dimension reduction using a particular linear combination.
+\(\mathbf{x}(s;t)\), where \(\mathbf{x} \subseteq \mathbb{R}^p\), or a
+subset of variables \(x_i(s;t)\) in \(\mathbf{x}(s;t)\), as the input.
+It summarises the high-dimensional information into a lower-dimension
+representation \(\mathbf{y}(s;t)\), where
+\(\mathbf{y} \subseteq \mathbb{R}^d\) and \(d < p\), as the output. The
+transformation can be based on domain-specific knowledge, originating
+from theories describing the underlying physical processes, or guided by
+statistical methods. For example, the Standardized
+Precipitation-Evapotranspiration Index (SPEI) (Vicente-Serrano,
+Beguería, and López-Moreno 2010) calculates the difference \(D\) between
+precipitation (\(P\)) and potential evapotranspiration (\(\text{PET}\)),
+using a water balance model (\(D = P - \text{PET}\)). This is the only
+step that differs from the Standardized Precipitation Index (SPI), and
+can be considered to be a dimension reduction using a particular linear
+combination.
 
 Linear combinations of variables are commonly used to reduce the
 dimension in statistical methodology, and chosen using a method like
