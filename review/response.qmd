@@ -31,16 +31,18 @@ This paper proposes new pipeline work for index development, including index gen
 
 The authors explain their functions briefly in Chapter 5 and use examples with R code in Chapter 6. However, the code in Chapter 6 does not work. Also, the demo in the R package (CRAN version 0.1.0) did not work (see attached R-output.html). Please check the package, including demos and examples in this paper. It would be great if all R codes for the example in Chapter 6 were provided, including generating plots.
 
+**\textcolor{purple}{Fixed. The scripts in the demo folder contains some legacy code from the past and we have cleaned them up, as well as cross-checked teh code in the paper. The new CRAN version???[TODO]. We select the most relevant code to present in the paper given the length of the manuscript. However, all the code used to reproduce the paper is available in the GitHub repo, which can be found from the Acknowledgement section.}**
+
 ## minor comments
 
 - In Table 1, it would be great if there were a line between items. Because the name of the module is in two lines, it is not easy to match the other information (input, operation, and output) **\textcolor{purple}{We rearrange the table layout and the module name fits into one line now}**.
 
  - On page 19, " The output contains the original data, index values (.index), parameters used (.scale,
-.method, and .dist), and all the intermediate variables (.pet, .agg, and .fitted)." However, the output has no .index, .pet, .agg, and .fitted. Please check. **\textcolor{purple}{Fixed. Some columns are shown at the bottom as "i 8 more variables: lat <dbl>, name <chr>, .pet <dbl>, .diff <dbl>, .scale <chr>, .agg <dbl>, .fit <dbl>, .index <dbl>" due to the number of columns to print and the page width.}**.
+.method, and .dist), and all the intermediate variables (.pet, .agg, and .fitted)." However, the output has no .index, .pet, .agg, and .fitted. Please check. **\textcolor{purple}{Fixed. We use the dplyr::glimpse() function to print all the columns of the output.}**.
 
-- Figure 7 shows the sequence of screenshots from the animation to explore the sensitivity of the GGGI. It would be helpful to understand "what Frame 12 is"  if the authors should explain this between " Figure 7 illustrates doing sensitivity analysis for GGGI, for a subset of 16 countries" and "Frame 12 shows the dot plot of the original index values sorted from highest to lowest", **\textcolor{purple}{Added.}**
+- Figure 7 shows the sequence of screenshots from the animation to explore the sensitivity of the GGGI. It would be helpful to understand "what Frame 12 is"  if the authors should explain this between " Figure 7 illustrates doing sensitivity analysis for GGGI, for a subset of 16 countries" and "Frame 12 shows the dot plot of the original index values sorted from highest to lowest", **\textcolor{purple}{We have added more text to describe Frame 12 being from an animation where the weight on one dimension, politics, is gradually increased. }**
 
-- Figure 8 on page 27 also shows the relatively wide confidence interval around 2004. It would be great if the author mentioned it, too. **\textcolor{purple}{Added.}**
+- Figure 8 on page 27 also shows the relatively wide confidence interval around 2004. It would be great if the author mentioned it, too. **\textcolor{purple}{We point out the wider confidence interval around 2004 corresponds to the millennium drought in Australia.}**
 
 - reference for "SPEI package" on page 4 should be (Beguería and Vicente-Serrano 2017),
 and reference for "the Standardized Precipitation-Evapotranspiration Index (SPEI)" on page 12 should be (Vicente-Serrano, Beguería, and López-Moreno 2010) **\textcolor{purple}{Fixed}**.

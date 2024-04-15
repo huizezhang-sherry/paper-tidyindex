@@ -395,8 +395,10 @@ save(idx, file = here::here("data/idx.rda"))
 load(here::here("data/idx.rda"))
 ```
 
-```{r}
-idx
+We use the `dplyr::glimpse()` function to inspect the `idx` object created: 
+
+```{r echo = TRUE}
+dplyr::glimpse(idx)
 ```
 
 The output contains the original data, index values (`.index`), parameters used (`.scale`, `.method`, and `.dist`), and all the intermediate variables (`.pet`, `.agg`, and `.fitted`). This data can be visualized to investigate the spatio-temporal distribution of the drought or flood events, as well as the response of index values to different time scales and distribution parameters at specific single locations. @fig-compute-spatial and @fig-compute-temporal exemplify two possibilities. @fig-compute-spatial presents the spatial distribution of SPI during two periods: October 2010 to March 2011 for the 2010/11 Queensland flood and October 2019 to March 2020 for the 2019 Australia drought, which contributes to the notorious 2019/20 bushfire season. @fig-compute-temporal displays the sensitivity of the SPEI series at the Texas post office to different time scales and fitted distributions. Larger time scales produce a smoother index across time, however, all time scales indicate an extreme drought (corresponding to -2 in SPEI) in 2020, confirming the severity of the drought across different time horizons. Moreover, the chosen distribution has less influence on the index, with general extreme value distribution tending to produce more extreme outcomes than log-logistic distribution for the extreme events (index > 2 or <-2).
@@ -517,7 +519,7 @@ gggi %>%
 
 After initializing the `gggi` object and attaching the `gggi_weights` as meta-data, a single linear combination within the dimension reduction module is applied to the 14 variables (from column `labour_force_participation` to `years_with_female_head_of_state`), using the weight specified in the `wgt` column of the attached metadata. While computing the index from the original 14 variables, it remains unclear how the missing values are handled within the index, which impacts 68 out of the total 146 countries. However, after aggregating variables into the four dimensions, where no missing values exist, the index is reproducible for all the countries.
 
-@fig-idx-tour illustrates doing sensitivity analysis for GGGI, for a subset of 16 countries. It presents 6 frames from the animation that varies the weights of four dimensions (economy, education, health, and politics) in the index with Frame 12 showing the dot plot of the original index values sorted from highest to lowest. Leading the rankings are the Nordic countries (Iceland, Norway, and Finland) and New Zealand. The index values are between 0 and 1, and indicate proportional difference between men and women, with a value of 0.8 indicating women are 80% of the way to equality of these measures. There is a gap in values between these countries and the middle group (Brazil, Panama, Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia), and another big drop to the next group (Pakistan, Iran, Algeria, and Chad). Afghanistan lags much further behind.
+@fig-idx-tour illustrates doing sensitivity analysis for GGGI, for a subset of 16 countries. It presents 6 frames selected from the animation where the weight on the politics dimension is gradually increased, where other dimensions (economy, education, health) decrease correspondingly. Frame 12 present the original index where all the four dimensions receive equal weight. The index values are sorted from highest to lowest, with the Nordic countries (Iceland, Norway, and Finland) and New Zealand leading the rankings. The index values are between 0 and 1, and indicate proportional difference between men and women, with a value of 0.8 indicating women are 80% of the way to equality of these measures. There is a gap in values between these countries and the middle group (Brazil, Panama, Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia), and another big drop to the next group (Pakistan, Iran, Algeria, and Chad). Afghanistan lags much further behind.
 
 
 
