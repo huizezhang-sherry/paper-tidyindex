@@ -1036,13 +1036,10 @@ reduction twice on the data.}
 
 \end{figure}%
 
-\begin{table}
+\begingroup\fontsize{11}{13}\selectfont
 
-\centering{
+\begin{longtable}[t]{>{\raggedright\arraybackslash}p{17.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{3.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedleft\arraybackslash}p{3em}}
 
-\centering\begingroup\fontsize{11}{13}\selectfont
-
-\begin{tabular}{>{\raggedright\arraybackslash}p{17.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{3.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedleft\arraybackslash}p{3em}}
 \toprule
 \textbf{Variable} & \textbf{V-wgt} & \textbf{Dimension} & \textbf{D-wgt} & \textbf{wgt}\\
 \midrule
@@ -1051,30 +1048,29 @@ Wage equality for similar work & 0.310 &  &  & 0.078\\
 Estimated earned income & 0.221 &  &  & 0.055\\
 Legislators senior officials and managers & 0.149 &  &  & 0.037\\
 Professional and technical workers & 0.121 &  &  & 0.030\\
-\hline
+\addlinespace
 Literacy rate & 0.191 & Education & 0.25 & 0.048\\
 Enrolment in primary education & 0.459 &  &  & 0.115\\
 Enrolment in secondary education & 0.230 &  &  & 0.058\\
 Enrolment in tertiary education & 0.121 &  &  & 0.030\\
-\hline
 Sex ratio at birth & 0.693 & Health & 0.25 & 0.173\\
+\addlinespace
 Healthy life expectancy & 0.307 &  &  & 0.077\\
-\hline
 Women in parliament & 0.310 & Politics & 0.25 & 0.078\\
 Women in ministerial positions & 0.247 &  &  & 0.062\\
 Years with female head of state & 0.443 &  &  & 0.111\\
 \bottomrule
-\end{tabular}
-\endgroup{}
-
-}
 
 \caption{\label{tbl-gggi-weights}Weights for the two applications of
 dimension reduction to compute the Global Gender Gap Index. V-wgt is
 used to compute four new variables from the original 14. These are then
 equally combined to get the final index value.}
 
-\end{table}%
+\tabularnewline
+
+\end{longtable}
+
+\endgroup{}
 
 The 2023 GGGI data is available from the Global Gender Gap Report 2023
 in the country's economy profile and can be accessed in the
