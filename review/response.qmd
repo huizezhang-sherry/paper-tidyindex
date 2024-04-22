@@ -10,7 +10,7 @@ format: pdf
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Below is a point-by-point explanation of how we have changed the paper. The reviewer comments are in black and our responses are in red. Reviewers' comments are in black and **\textcolor{purple}{our responses are in red}**.
+Below is a point-by-point explanation of how we have changed the paper. Reviewers' comments are in black and **\textcolor{purple}{our responses are in red}**.
 
 # Editor and Associate Editor
 
@@ -41,12 +41,12 @@ The authors explain their functions briefly in Chapter 5 and use examples with R
 
 - In Table 1, it would be great if there were a line between items. Because the name of the module is in two lines, it is not easy to match the other information (input, operation, and output) 
 
-**\textcolor{purple}{Fixed. The table layout has been modified accordingly.}**.
+**\textcolor{purple}{Fixed. The table layout has been modified accordingly.}**
 
  - On page 19, " The output contains the original data, index values (.index), parameters used (.scale,
 .method, and .dist), and all the intermediate variables (.pet, .agg, and .fitted)." However, the output has no .index, .pet, .agg, and .fitted. Please check. 
 
-**\textcolor{purple}{Fixed. The output has been written in a way that all variables are visible now (using dplyr::glimpse()).}**.
+**\textcolor{purple}{Fixed. The output has been written in a way that all variables are visible now (using dplyr::glimpse()).}**
 
 - Figure 7 shows the sequence of screenshots from the animation to explore the sensitivity of the GGGI. It would be helpful to understand "what Frame 12 is"  if the authors should explain this between " Figure 7 illustrates doing sensitivity analysis for GGGI, for a subset of 16 countries" and "Frame 12 shows the dot plot of the original index values sorted from highest to lowest", 
 
