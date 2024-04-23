@@ -297,15 +297,22 @@ equity, or university quality.
 
 The problem is that every index is developed in its own unique way, by
 different researchers or organizations, and often indexes designed for
-the same purpose cannot easily be compared. This echoes an issue
-highlighted by Donoho (2017), where varying data analysis workflows can
-resulted in different, or even reversed, conclusions when the identical
-data is analyzed in medicine research. In Greater Data Science (GDS) 6:
-Science About Data Science, Donoho envisions future research on
-structuring unified workflow to address methodological variation across
-studies in data science. It also violates statistical principles, where
+the same purpose cannot easily be compared. This echoes an issue raised
+in Donoho (2017), that different data analysts might arrive at different
+conclusions despite using the same data. This is especially pertinent to
+index use which affects important decisions such as in natural disaster
+prevention, economic interventions, resource allocation or human
+development. It is primarily due to a lack of standards in data analysis
+workflow. Donoho (2017) called for research on structuring unified
+workflow to address methodological variation across studies in data
+science. Current practices also violate statistical principles, where
 quantifying and understanding uncertainty are essential to deciding on a
-best measure or metric (Efron 1979).
+best measure or metric, for example by incorporating bootstrap
+confidence intervals (Efron 1979). There has been considerable research
+in tidying up routine data analyses {[}XXX tidyr, dplyr, tidymodels,
+\ldots, tsibble, cubble{]} that turn ideas into software quickly and
+faithfully, as envisioned by (\textbf{chambers?}). Index development and
+use needs tidying. .
 
 To construct an index, experts typically start by defining a concept of
 interest that requires measurement. This concept often lacks a direct
@@ -1039,10 +1046,13 @@ reduction twice on the data.}
 
 \end{figure}%
 
-\begingroup\fontsize{11}{13}\selectfont
+\begin{table}
 
-\begin{longtable}[t]{>{\raggedright\arraybackslash}p{17.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{3.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedleft\arraybackslash}p{3em}}
+\centering{
 
+\centering\begingroup\fontsize{11}{13}\selectfont
+
+\begin{tabular}{>{\raggedright\arraybackslash}p{17.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{3.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedleft\arraybackslash}p{3em}}
 \toprule
 \textbf{Variable} & \textbf{V-wgt} & \textbf{Dimension} & \textbf{D-wgt} & \textbf{wgt}\\
 \midrule
@@ -1051,29 +1061,30 @@ Wage equality for similar work & 0.310 &  &  & 0.078\\
 Estimated earned income & 0.221 &  &  & 0.055\\
 Legislators senior officials and managers & 0.149 &  &  & 0.037\\
 Professional and technical workers & 0.121 &  &  & 0.030\\
-\addlinespace
+\hline
 Literacy rate & 0.191 & Education & 0.25 & 0.048\\
 Enrolment in primary education & 0.459 &  &  & 0.115\\
 Enrolment in secondary education & 0.230 &  &  & 0.058\\
 Enrolment in tertiary education & 0.121 &  &  & 0.030\\
+\hline
 Sex ratio at birth & 0.693 & Health & 0.25 & 0.173\\
-\addlinespace
 Healthy life expectancy & 0.307 &  &  & 0.077\\
+\hline
 Women in parliament & 0.310 & Politics & 0.25 & 0.078\\
 Women in ministerial positions & 0.247 &  &  & 0.062\\
 Years with female head of state & 0.443 &  &  & 0.111\\
 \bottomrule
+\end{tabular}
+\endgroup{}
+
+}
 
 \caption{\label{tbl-gggi-weights}Weights for the two applications of
 dimension reduction to compute the Global Gender Gap Index. V-wgt is
 used to compute four new variables from the original 14. These are then
 equally combined to get the final index value.}
 
-\tabularnewline
-
-\end{longtable}
-
-\endgroup{}
+\end{table}%
 
 The 2023 GGGI data is available from the Global Gender Gap Report 2023
 in the country's economy profile and can be accessed in the
@@ -1264,32 +1275,29 @@ given the extremity of the event.}
 The paper introduces a tidy data pipeline for constructing and analyzing
 indexes. It has nine modules including temporal and spatial aggregation,
 variable transformation and combination, distribution fitting, benchmark
-setting, and index communication.
+setting, and index communication. This addresses statistical principles
+absent from current index definitions: uncertainty quantification and
+sensitivity. The tidyindex framework should encourage better statistical
+practice wherever indexes are used as critical tools in natural and
+social sciences.
 
-This work addresses aspects often overlooked in index construction:
-uncertainty quantification and sensitivity. The pipeline supports
-confidence interval calculation and sensitivity analysis to be
-incorporated in the index construction process. It should encourage
-better statistical practice wherever indexes are used as critical tools
-in natural and social sciences.
-
-The pipeline approach is illustrated with examples on drought indexes
-(SPI and SPEI) and the Global Gender Gap Index (GGGI). While indexes are
-widely constructed and used to inform decision-making, such as in
-resource allocation and policy making worldwide, little effort is made
-to justify the choices made during index construction or to experiment
-with alternatives while providing means for reproducibility. This work
-highlights the importance of carefully constructing statistical indexes
-and introduces new computational methods for studying and calculating
-statistical indexes and their uncertainties.
+Several examples are shown illustrating usage. For the drought indexes
+(SPI and SPEI) we showed how multiple indexes can be computed with a
+range of parameter choices, and compared across space and time. We
+showed how bootstrap confidence intervals can be readily computed and
+plotted to assess uncertainty about the index values, and how it may be
+used to make better decisions on drought declarations. The Global Gender
+Gap Index (GGGI) was used to illustrate how choices in dimension
+reduction can radically affect index values and country rankings. This
+also illustrates how the pipeline feeds nicely into advanced interactive
+graphics.
 
 There are many potential directions for the development of the work.
 Computationally, the tidyindex framework could be extended to support
-other commonly used data formats, for example, NetCDF for climate
-indexes. Conceptually, extending the examples to re-express additional
-common-practice indexes in the pipeline structure will help broader
-adoption, and further test that the framework can indeed accommodate any
-and all possible indexes.
+other data formats, like NetCDF for climate indexes. Conceptually,
+extending the examples to re-express additional common-practice indexes
+in the pipeline structure will help broader adoption, and further test
+that the framework can indeed accommodate any and all possible indexes.
 
 \section{Acknowledgement}\label{acknowledgement}
 
