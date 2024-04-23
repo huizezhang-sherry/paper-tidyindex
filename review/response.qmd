@@ -9,8 +9,7 @@ format: pdf
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-Below is a point-by-point explanation of how we have changed the paper. Reviewers' comments are in black and **\textcolor{purple}{our responses are in red}**.
+We would like to thank the reviewers and editor for taking the time to review our paper and provide constructive comments. Below is a point-by-point explanation of how we have changed the paper. Reviewers' comments are in black and **\textcolor{purple}{our responses are in red}**.
 
 # Editor and Associate Editor
 
