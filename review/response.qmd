@@ -16,13 +16,13 @@ Below is a point-by-point explanation of how we have changed the paper. Reviewer
 
 Two referees, an Associate Editor (AE), and I have reviewed your paper. The two referees hold significantly different views on the paper. As you will see, the first referee's assessment is rather negative, whereas the second is more positive. As recommended by the AE, it is essential to incorporate or highlight your methodological contributions in the paper to address the concerns raised by the first referee. Therefore, I would like to extend an opportunity for revision. However, the decision for the revision will depend on whether you can adequately address the reviewers' concerns.
 
-**\textcolor{purple}{To be addressed}**
+**\textcolor{purple}{We have made changes to the introduction and to the conclusions being more specific about the methodological contributions of this work.}**
 
 # Reviewer: 1
 
 I commend the authors for their work in the tidy index library.  Certainly, a user friendly and unified approach to indices is useful across many fields.  My main concern about the paper is that it doesn't seem to fit within the aims and scope of JCGS.  A perusal of recent JCGS papers shows that a novel statistical component is needed for publication in addition to the software.  This paper, while certainly useful, doesn't necessarily propose new statistical methods but rather proposes a great tidy framework for handling index calculation.  As such, for JCGS, I think the authors need to highlight the statistical contributions more than the library.  However, I don't think the authors statistical contributions (even if highlighted) are sufficiently novel to warrant publication in JCGS.  As written, I think the paper is more suited for publication in, say, Journal of Statistical Software than JCGS.
 
-**\textcolor{purple}{We have highlighted the methodology contributions this framework makes in the conclusion: While indexes are widely constructed and used to inform decision-making, such as on resource allocation, little effort is made to justify choices made during indexes construction and to experiment with alternatives. The pipeline proposed in the paper allows confidence interval to be calculated in the pipeline and sensitivity analysis to be incorporated in the index construction process.}**
+**\textcolor{purple}{We are quite disappointed to see the language in this review: "A perusal of recent JCGS papers shows that a novel statistical component is needed for publication in addition to the software." If the reviewer had read the journal scope they will find "The Journal of Computational and Graphical Statistics (JCGS) presents the very latest techniques on improving and extending the use of computational and graphical methods in statistics and data analysis." The contributions that this paper makes are in computational statistics for an especially prevalent data analysis activity, that also provides potential for making better graphics in this area, also. We have added language to the introduction and to the conclusions that hopefully helps see these contributions.}**
 
 
 # Reviewer: 2
