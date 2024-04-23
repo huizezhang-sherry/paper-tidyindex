@@ -15,13 +15,13 @@ We would like to thank the reviewers and editor for taking the time to review ou
 
 Two referees, an Associate Editor (AE), and I have reviewed your paper. The two referees hold significantly different views on the paper. As you will see, the first referee's assessment is rather negative, whereas the second is more positive. As recommended by the AE, it is essential to incorporate or highlight your methodological contributions in the paper to address the concerns raised by the first referee. Therefore, I would like to extend an opportunity for revision. However, the decision for the revision will depend on whether you can adequately address the reviewers' concerns.
 
-**\textcolor{purple}{We have made changes to the introduction and to the conclusions being more specific about the methodological contributions of this work.}**
+**\textcolor{purple}{We have made changes to the introduction and to the conclusions being more specific about the methodological and computational contributions of this work.}**
 
 # Reviewer: 1
 
 I commend the authors for their work in the tidy index library.  Certainly, a user friendly and unified approach to indices is useful across many fields.  My main concern about the paper is that it doesn't seem to fit within the aims and scope of JCGS.  A perusal of recent JCGS papers shows that a novel statistical component is needed for publication in addition to the software.  This paper, while certainly useful, doesn't necessarily propose new statistical methods but rather proposes a great tidy framework for handling index calculation.  As such, for JCGS, I think the authors need to highlight the statistical contributions more than the library.  However, I don't think the authors statistical contributions (even if highlighted) are sufficiently novel to warrant publication in JCGS.  As written, I think the paper is more suited for publication in, say, Journal of Statistical Software than JCGS.
 
-**\textcolor{purple}{We are quite disappointed to see the language in this review: ``A perusal of recent JCGS papers shows that a novel statistical component is needed for publication in addition to the software." Reading the journal scope would have informed them that ``The Journal of Computational and Graphical Statistics (JCGS) presents the very latest techniques on improving and extending the use of computational and graphical methods in statistics and data analysis." The contributions that this paper makes are in computational statistics for an especially prevalent data analysis activity, that also provides potential for making better graphics in this area. We have added language to the introduction and to the conclusions that hopefully helps see these contributions.}**
+**\textcolor{purple}{We are quite disappointed to see the language in this review: ``A perusal of recent JCGS papers shows that a novel statistical component is needed for publication in addition to the software." Reading the journal scope would have informed them that ``The Journal of Computational and Graphical Statistics (JCGS) presents the very latest techniques on improving and extending the use of computational and graphical methods in statistics and data analysis." The contributions that this paper makes are in computational statistics for an especially prevalent data analysis activity, that also provides potential for making better graphics in this area. We have added language to the introduction and to the conclusions that hopefully helps see these contributions.}** 
 
 
 # Reviewer: 2
@@ -30,32 +30,32 @@ This paper proposes new pipeline work for index development, including index gen
 
 The authors explain their functions briefly in Chapter 5 and use examples with R code in Chapter 6. However, the code in Chapter 6 does not work. Also, the demo in the R package (CRAN version 0.1.0) did not work (see attached R-output.html). Please check the package, including demos and examples in this paper. It would be great if all R codes for the example in Chapter 6 were provided, including generating plots.
 
-**\textcolor{purple}{Fixed. We were expecting that readers worked from the vignettes folder. The problem was that the demo folder had some irrelevant code. We've removed these now. We have also re-organised the code for the paper as follows.}**
+**\textcolor{purple}{ This issue is now fixed in the Demo folder (the vignette folder worked fine) and we have also re-organised the code for the paper as follows:}**
 
-- **\textcolor{purple}{The main file tidyindex.R, reproduces the content in the paper from saved data objects, available in the data folder.}** 
-- **\textcolor{purple}{New scripts have been provided in the scripts folder which completely generate each of the examples. There is a README.md, that instructs the reader how to set their environment up to reproduce all of the analyses.}**
+- **\textcolor{purple}{The main file tidyindex.R, can be used to reproduce the paper from saved data objects, available in the data folder.}** 
+- **\textcolor{purple}{New scripts can be found in the 'scripts' folder, which generate each of the examples. The README.md file has been updated and it contains instructions on how to set up the R environment to reproduce all of the analyses in the paper.}**
 - **\textcolor{purple}{The GitHub repo is listed in the Acknowledgements section, and any further updates needed for future versions to run will be made there.}**
 
 ## minor comments
 
 - In Table 1, it would be great if there were a line between items. Because the name of the module is in two lines, it is not easy to match the other information (input, operation, and output) 
 
-**\textcolor{purple}{Fixed. The table layout has been modified accordingly.}**
+**\textcolor{purple}{The table layout has been modified accordingly.}**
 
  - On page 19, " The output contains the original data, index values (.index), parameters used (.scale,
 .method, and .dist), and all the intermediate variables (.pet, .agg, and .fitted)." However, the output has no .index, .pet, .agg, and .fitted. Please check. 
 
-**\textcolor{purple}{Fixed. The output has been written in a way that all variables are visible now (using dplyr::glimpse()).}**
+**\textcolor{purple}{ The output is now written in a way that all variables are visible (availble from dplyr::glimpse()).}**
 
 - Figure 7 shows the sequence of screenshots from the animation to explore the sensitivity of the GGGI. It would be helpful to understand "what Frame 12 is"  if the authors should explain this between " Figure 7 illustrates doing sensitivity analysis for GGGI, for a subset of 16 countries" and "Frame 12 shows the dot plot of the original index values sorted from highest to lowest", 
 
-**\textcolor{purple}{Frame 12 is described in more detail now, and additional explanation of the information being communicated by the figure is provided.}**
+**\textcolor{purple}{Frame 12 is now described in more detail, with additional explanations provided regarding the information conveyed by the figure.}**
 
 - Figure 8 on page 27 also shows the relatively wide confidence interval around 2004. It would be great if the author mentioned it, too. 
 
-**\textcolor{purple}{Added. This wider confidence interval is interesting and corresponds to the millennium drought in Australia.}**
+**\textcolor{purple}{The following has been added in the text: This wider confidence interval is interesting and corresponds to the millennium drought in Australia.}**
 
 - reference for "SPEI package" on page 4 should be (Beguería and Vicente-Serrano 2017),
 and reference for "the Standardized Precipitation-Evapotranspiration Index (SPEI)" on page 12 should be (Vicente-Serrano, Beguería, and López-Moreno 2010) 
 
-**\textcolor{purple}{Fixed}**.
+**\textcolor{purple}{The reference has been fixed}**.
