@@ -297,12 +297,15 @@ equity, or university quality.
 
 The problem is that every index is developed in its own unique way, by
 different researchers or organizations, and often indexes designed for
-the same purpose cannot easily be compared. This violates \emph{tidy
-principles} (Wickham et al. 2019a) which makes it difficult to
-investigate the nature of calculations through a principled data
-pipeline. It also violates statistical principles, where quantifying and
-understanding uncertainty are essential to deciding on a best measure or
-metric {[}@???Spiegelhalter, someone else{]}.
+the same purpose cannot easily be compared. This echoes an issue
+highlighted by Donoho (2017), where varying data analysis workflows can
+resulted in different, or even reversed, conclusions when the identical
+data is analyzed in medicine research. In Greater Data Science (GDS) 6:
+Science About Data Science, Donoho envisions future research on
+structuring unified workflow to address methodological variation across
+studies in data science. It also violates statistical principles, where
+quantifying and understanding uncertainty are essential to deciding on a
+best measure or metric (Efron 1979).
 
 To construct an index, experts typically start by defining a concept of
 interest that requires measurement. This concept often lacks a direct
@@ -423,7 +426,7 @@ making them explicit is beneficial for understanding the implementation
 and comparing between different graphic systems. While this comment is
 made in the context of interactive graphics programs, it is also
 applicable generally to any data analysis workflow. More recently, the
-tidyverse suite (Wickham et al. 2019b) takes the pipeline approach for
+tidyverse suite (Wickham et al. 2019) takes the pipeline approach for
 general-purpose data wrangling and has gained popularity within the R
 community. The pipeline-style code can be directly read as a series of
 operations applied successively on tidy data objects, offering a method
@@ -1341,6 +1344,16 @@ Buja, Andreas, Dianne Cook, Daniel Asimov, and Catherine Hurley. 2005.
 Visualization.''} \emph{Handbook of Statistics} 24: 391--413.
 \url{https://doi.org/10.1016/S0169-7161(04)24014-7}.
 
+\bibitem[\citeproctext]{ref-donoho_50_2017}
+Donoho, David. 2017. {``50 {Years} of {Data} {Science}.''} \emph{Journal
+of Computational and Graphical Statistics} 26 (4): 745--66.
+\url{https://doi.org/10.1080/10618600.2017.1384734}.
+
+\bibitem[\citeproctext]{ref-efron_bootstrap_1979}
+Efron, B. 1979. {``Bootstrap {Methods}: {Another} {Look} at the
+{Jackknife}.''} \emph{The Annals of Statistics} 7 (1): 1--26.
+\url{https://doi.org/10.1214/aos/1176344552}.
+
 \bibitem[\citeproctext]{ref-fisher1936use}
 Fisher, Ronald A. 1936. {``The Use of Multiple Measurements in Taxonomic
 Problems.''} \emph{Annals of Eugenics} 7 (2): 179--88.
@@ -1455,16 +1468,11 @@ Wickham, Hadley. 2014. {``Tidy {Data}.''} \emph{Journal of Statistical
 Software} 59 (September): 1--23.
 \url{https://doi.org/10.18637/jss.v059.i10}.
 
-\bibitem[\citeproctext]{ref-tidyverse}
-Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy
-D'Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019a.
-{``Welcome to the {tidyverse}.''} \emph{Journal of Open Source Software}
-4 (43): 1686. \url{https://doi.org/10.21105/joss.01686}.
-
 \bibitem[\citeproctext]{ref-wickham_welcome_2019}
----------, et al. 2019b. {``Welcome to the {Tidyverse}.''} \emph{Journal
-of Open Source Software} 4 (43): 1686.
-\url{https://doi.org/10.21105/joss.01686}.
+Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy
+D'Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019.
+{``Welcome to the {Tidyverse}.''} \emph{Journal of Open Source Software}
+4 (43): 1686. \url{https://doi.org/10.21105/joss.01686}.
 
 \bibitem[\citeproctext]{ref-wickham_tourr_2011}
 Wickham, Hadley, Dianne Cook, Heike Hofmann, and Andreas Buja. 2011.
