@@ -4,6 +4,7 @@
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
+  12pt,
 ]{interact}
 
 \usepackage{amsmath,amssymb}
@@ -309,10 +310,10 @@ science. Current practices also violate statistical principles, where
 quantifying and understanding uncertainty are essential to deciding on a
 best measure or metric, for example by incorporating bootstrap
 confidence intervals (Efron 1979). There has been considerable research
-in tidying up routine data analyses {[}XXX tidyr, dplyr, tidymodels,
-\ldots, tsibble, cubble{]} that ``turn ideas into software quickly and
-faithfully'', as envisioned by (\textbf{chambers?}). Index development
-and use needs tidying. .
+in tidying up routine data analyses (Wickham 2014, 2011; Kuhn and Silge
+2022; Wang, Cook, and Hyndman 2020; Zhang et al. 2024) that ``turn ideas
+into software quickly and faithfully'', as envisioned by Chambers
+(1998). Index development and use needs tidying.
 
 To construct an index, experts typically start by defining a concept of
 interest that requires measurement. This concept often lacks a direct
@@ -443,14 +444,14 @@ details for reproducibility.
 Since the success of tidyverse, more packages have been developed to
 analyze data using the tidy framework for domains specific applications,
 a noticeable example of which is \texttt{tidymodels} for building
-machine learning models (Kuhn and Wickham 2020). To create a tidy
-workflow tailored to a specific domain, developers first need to
-identify the fundamental building blocks to create a workflow. These
-components are then implemented as modules, which can be combined to
-form the pipeline. For example, in supervised machine learning models,
-steps such as data splitting, model training, and model evaluation are
-commonly used in most workflow. In the \texttt{tidymodels}, these steps
-are correspondingly implemented as package \texttt{rsample},
+machine learning models (Kuhn and Silge 2022). To create a tidy workflow
+tailored to a specific domain, developers first need to identify the
+fundamental building blocks to create a workflow. These components are
+then implemented as modules, which can be combined to form the pipeline.
+For example, in supervised machine learning models, steps such as data
+splitting, model training, and model evaluation are commonly used in
+most workflow. In the \texttt{tidymodels}, these steps are
+correspondingly implemented as package \texttt{rsample},
 \texttt{parsnip}, and \texttt{yardstick}, agnostic to the specific model
 chosen. The uniform interface in tidymodels frees analysts from
 recalling model-specific syntax for performing the same operation across
@@ -1046,13 +1047,10 @@ reduction twice on the data.}
 
 \end{figure}%
 
-\begin{table}
+\begingroup\fontsize{11}{13}\selectfont
 
-\centering{
+\begin{longtable}[t]{>{\raggedright\arraybackslash}p{17.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{3.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedleft\arraybackslash}p{3em}}
 
-\centering\begingroup\fontsize{11}{13}\selectfont
-
-\begin{tabular}{>{\raggedright\arraybackslash}p{17.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{3.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedleft\arraybackslash}p{3em}}
 \toprule
 \textbf{Variable} & \textbf{V-wgt} & \textbf{Dimension} & \textbf{D-wgt} & \textbf{wgt}\\
 \midrule
@@ -1061,30 +1059,29 @@ Wage equality for similar work & 0.310 &  &  & 0.078\\
 Estimated earned income & 0.221 &  &  & 0.055\\
 Legislators senior officials and managers & 0.149 &  &  & 0.037\\
 Professional and technical workers & 0.121 &  &  & 0.030\\
-\hline
+\addlinespace
 Literacy rate & 0.191 & Education & 0.25 & 0.048\\
 Enrolment in primary education & 0.459 &  &  & 0.115\\
 Enrolment in secondary education & 0.230 &  &  & 0.058\\
 Enrolment in tertiary education & 0.121 &  &  & 0.030\\
-\hline
 Sex ratio at birth & 0.693 & Health & 0.25 & 0.173\\
+\addlinespace
 Healthy life expectancy & 0.307 &  &  & 0.077\\
-\hline
 Women in parliament & 0.310 & Politics & 0.25 & 0.078\\
 Women in ministerial positions & 0.247 &  &  & 0.062\\
 Years with female head of state & 0.443 &  &  & 0.111\\
 \bottomrule
-\end{tabular}
-\endgroup{}
-
-}
 
 \caption{\label{tbl-gggi-weights}Weights for the two applications of
 dimension reduction to compute the Global Gender Gap Index. V-wgt is
 used to compute four new variables from the original 14. These are then
 equally combined to get the final index value.}
 
-\end{table}%
+\tabularnewline
+
+\end{longtable}
+
+\endgroup{}
 
 The 2023 GGGI data is available from the Global Gender Gap Report 2023
 in the country's economy profile and can be accessed in the
@@ -1313,8 +1310,8 @@ the partial support of the Guangdong Provincial Key Laboratory IRADS
 UICR0700041-22. The article is created using Quarto (Allaire et al.
 2022) in R (R Core Team 2021).
 
-\section*{Reference}\label{reference}
-\addcontentsline{toc}{section}{Reference}
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
@@ -1351,6 +1348,10 @@ Buja, Andreas, Dianne Cook, Daniel Asimov, and Catherine Hurley. 2005.
 {``Computational Methods for High-Dimensional Rotations in Data
 Visualization.''} \emph{Handbook of Statistics} 24: 391--413.
 \url{https://doi.org/10.1016/S0169-7161(04)24014-7}.
+
+\bibitem[\citeproctext]{ref-chambers1998programming}
+Chambers, John M. 1998. \emph{Programming with Data: A Guide to the s
+Language}. Berlin, Heidelberg: Springer-Verlag.
 
 \bibitem[\citeproctext]{ref-donoho_50_2017}
 Donoho, David. 2017. {``50 {Years} of {Data} {Science}.''} \emph{Journal
@@ -1396,9 +1397,8 @@ Management} 4 (2): 269--95.
 \url{https://doi.org/10.1504/IJEM.2007.013994}.
 
 \bibitem[\citeproctext]{ref-tidymodels}
-Kuhn, Max, and Hadley Wickham. 2020. \emph{Tidymodels: A Collection of
-Packages for Modeling and Machine Learning Using Tidyverse Principles.}
-\url{https://www.tidymodels.org}.
+Kuhn, Max, and Julia Silge. 2022. \emph{Tidy Modeling with r}. "
+O'Reilly Media, Inc.".
 
 \bibitem[\citeproctext]{ref-laimighofer_how_2022}
 Laimighofer, Johannes, and Gregor Laaha. 2022. {``How Standard Are
@@ -1471,8 +1471,19 @@ Vicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno.
 {Index}.''} \emph{Journal of Climate} 23 (7): 1696--1718.
 \url{https://journals.ametsoc.org/view/journals/clim/23/7/2009jcli2909.1.xml}.
 
+\bibitem[\citeproctext]{ref-wang2020}
+Wang, Earo, Dianne Cook, and Rob J Hyndman. 2020. {``A New Tidy Data
+Structure to Support Exploration and Modeling of Temporal Data.''}
+\emph{Journal of Computational and Graphical Statistics} 29 (3):
+466--78. \url{https://doi.org/10.1080/10618600.2019.1695624}.
+
+\bibitem[\citeproctext]{ref-wickham_split-apply-combine_2011}
+Wickham, Hadley. 2011. {``The {Split}-{Apply}-{Combine} {Strategy} for
+{Data} {Analysis}.''} \emph{Journal of Statistical Software} 40 (April):
+1--29. \url{https://doi.org/10.18637/jss.v040.i01}.
+
 \bibitem[\citeproctext]{ref-wickham_tidy_2014}
-Wickham, Hadley. 2014. {``Tidy {Data}.''} \emph{Journal of Statistical
+---------. 2014. {``Tidy {Data}.''} \emph{Journal of Statistical
 Software} 59 (September): 1--23.
 \url{https://doi.org/10.18637/jss.v059.i10}.
 
@@ -1508,6 +1519,12 @@ Science} 29 (2): 201--13.
 Zargar, Amin, Rehan Sadiq, Bahman Naser, and Faisal I Khan. 2011. {``A
 Review of Drought Indices.''} \emph{Environmental Reviews} 19 (NA):
 333--49. \url{https://www.jstor.org/stable/envirevi.19.333}.
+
+\bibitem[\citeproctext]{ref-zhang2024cubble}
+Zhang, H. Sherry, Dianne Cook, Ursula Laa, Nicolas Langrené, and
+Patricia Menéndez. 2024. {``Cubble: An r Package for Organizing and
+Wrangling Multivariate Spatio-Temporal Data.''}
+\url{https://arxiv.org/abs/2205.00259}.
 
 \end{CSLReferences}
 
