@@ -10,7 +10,7 @@ author:
   - name: H. Sherry Zhang
     affiliations:
       - name: University of Texas at Austin
-        department: Department of Statistics and Data Science
+        department: Department of Statistics and Data Sciences
         address: Welch 5.216, 105E 24th Street, Stop G3800
         city: Austin, Texas
         country: USA
@@ -47,11 +47,6 @@ author:
     orcid: 0000-0001-7601-4618
   - name: Patricia Menéndez
     affiliation: 
-      - name: Monash University
-        department: Department of Econometrics and Business Statistics
-        address: 29 Ancora Imparo Way, Clayton
-        city: Melbourne, Victoria
-        country: Australia
       - name: University of Melbourne
         department: School of Mathematics and Statistics
         address: 813 Swanston Street, Parkville VIC 3052, Australia
