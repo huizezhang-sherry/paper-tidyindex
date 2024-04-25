@@ -341,21 +341,20 @@ of each component. We call this process the \emph{index pipeline}, which
 are the steps of the data analysis pipeline for index construction. Such
 a decomposition of index components provides the means to standardize
 index construction via a pipeline and offers benefits for comparing
-among indexes, calculating index uncertainty, and assessing index
-robustness. In addition it provides an unambiguous documentation for the
-index definition, facilitating reproducibility of results.
+versions of indexes, calculating index uncertainty, and assessing index
+robustness. It also provides clear recipes for the index definition,
+facilitating reproducibility of results.
 
-In this work, we provide statistical and computational methods for
-developing a data pipeline framework to construct and customize indexes
-using data. The proposed pipeline comprises various modules, including
-temporal and spatial aggregation, variable transformation and
-combination, distribution fitting, benchmark setting, and index
-communication. Given the decisions analysts need to make when combining
-multivariate data into indexes, the proposed pipeline enables the
-evaluation of how the specific choice can affect the index, as well as
-how the index may appear under alternative options. Furthermore,
-uncertainty calculation can also flow through the pipeline, providing
-the index with confidence measures.
+Here we detail the statistical and computational methods for developing
+a data pipeline framework to construct and customize indexes using data.
+The pipeline comprises various modules, including temporal and spatial
+aggregation, variable transformation and combination, distribution
+fitting, benchmark setting, and index communication. When combining
+multivariate data into indexes, the pipeline enables the evaluation of
+how any particular combination can affect the index. Uncertainty
+calculation can also flow through the pipeline to provide an index with
+confidence intervals. The pipeline also fits neatly into current tidy
+data workflows and data visualisation.
 
 The rest of the paper is structured as follows.
 Section~\ref{sec-idx-dev} provides background about the development of
@@ -867,9 +866,9 @@ the data:
   <chr>          <mth> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <chr>      
 1 ASN00029038 1990 Jan  1682  34.3  24.7  29.5  142. -15.5 KOWANYAMA ~
 2 ASN00029038 1990 Feb   416  35.2  23.2  29.2  142. -15.5 KOWANYAMA ~
-3 ASN00029038 1990 Mär  2026  32.5  23.6  28.0  142. -15.5 KOWANYAMA ~
+3 ASN00029038 1990 Mar  2026  32.5  23.6  28.0  142. -15.5 KOWANYAMA ~
 4 ASN00029038 1990 Apr   597  32.9  17.7  25.3  142. -15.5 KOWANYAMA ~
-5 ASN00029038 1990 Mai   244  31.8  20.1  25.9  142. -15.5 KOWANYAMA ~
+5 ASN00029038 1990 May   244  31.8  20.1  25.9  142. -15.5 KOWANYAMA ~
 \end{verbatim}
 
 \begin{figure}
@@ -934,7 +933,7 @@ $ .idx   <chr> "spei", "spei", "spei", "spei", "spei", "spei", "spei~
 $ .dist  <chr> "gev", "gev", "gev", "gev", "gev", "gev", "gev", "gev~
 $ id     <chr> "ASN00029038", "ASN00029038", "ASN00029038", "ASN0002~
 $ month  <dbl> 6, 7, 8, 9, 10, 11, 12, 12, 1, 1, 2, 2, 3, 3, 4, 4, 5~
-$ ym     <mth> 1990 Jun, 1990 Jul, 1990 Aug, 1990 Sep, 1990 Okt, 199~
+$ ym     <mth> 1990 Jun, 1990 Jul, 1990 Aug, 1990 Sep, 1990 Oct, 199~
 $ prcp   <dbl> 170, 102, 0, 0, 0, 278, 1869, 1869, 5088, 5088, 8484,~
 $ tmax   <dbl> 29.65357, 31.20323, 31.32581, 32.80870, 36.80357, 36.~
 $ tmin   <dbl> 16.25000, 17.15161, 13.11613, 16.25714, 21.49655, 24.~
@@ -1048,10 +1047,13 @@ reduction twice on the data.}
 
 \end{figure}%
 
-\begingroup\fontsize{11}{13}\selectfont
+\begin{table}
 
-\begin{longtable}[t]{>{\raggedright\arraybackslash}p{17.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{3.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedleft\arraybackslash}p{3em}}
+\centering{
 
+\centering\begingroup\fontsize{11}{13}\selectfont
+
+\begin{tabular}{>{\raggedright\arraybackslash}p{17.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{3.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedleft\arraybackslash}p{3em}}
 \toprule
 \textbf{Variable} & \textbf{V-wgt} & \textbf{Dimension} & \textbf{D-wgt} & \textbf{wgt}\\
 \midrule
@@ -1060,29 +1062,30 @@ Wage equality for similar work & 0.310 &  &  & 0.078\\
 Estimated earned income & 0.221 &  &  & 0.055\\
 Legislators senior officials and managers & 0.149 &  &  & 0.037\\
 Professional and technical workers & 0.121 &  &  & 0.030\\
-\addlinespace
+\hline
 Literacy rate & 0.191 & Education & 0.25 & 0.048\\
 Enrolment in primary education & 0.459 &  &  & 0.115\\
 Enrolment in secondary education & 0.230 &  &  & 0.058\\
 Enrolment in tertiary education & 0.121 &  &  & 0.030\\
+\hline
 Sex ratio at birth & 0.693 & Health & 0.25 & 0.173\\
-\addlinespace
 Healthy life expectancy & 0.307 &  &  & 0.077\\
+\hline
 Women in parliament & 0.310 & Politics & 0.25 & 0.078\\
 Women in ministerial positions & 0.247 &  &  & 0.062\\
 Years with female head of state & 0.443 &  &  & 0.111\\
 \bottomrule
+\end{tabular}
+\endgroup{}
+
+}
 
 \caption{\label{tbl-gggi-weights}Weights for the two applications of
 dimension reduction to compute the Global Gender Gap Index. V-wgt is
 used to compute four new variables from the original 14. These are then
 equally combined to get the final index value.}
 
-\tabularnewline
-
-\end{longtable}
-
-\endgroup{}
+\end{table}%
 
 The 2023 GGGI data is available from the Global Gender Gap Report 2023
 in the country's economy profile and can be accessed in the
