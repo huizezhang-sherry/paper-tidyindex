@@ -532,7 +532,7 @@ where:
 \begin{itemize}
 \item
   \(x_j(s, t)\) represents a variable of interest for example
-  precipitation, \(j = 1, \cdots, p\) and
+  precipitation, \(j = 1, \cdots, p\),
 \item
   \(s\) represents the geographic locations in the space
   \(D_s \subseteq \mathbb{R}^m\). Examples of geographic locations
@@ -644,22 +644,6 @@ Development Index (HDI), a logarithmic transformation is applied to the
 variable Gross National Income per capita (GNI), to reduce its impact on
 HDI, particularly for countries with high GNI values.
 
-\subsection{Scaling}\label{scaling}
-
-Unlike variable transformation, scaling maintains the distributional
-shape of the variable. It includes techniques such as centering, z-score
-standardization, and min-max standardization and can be expressed as
-\([x_{j}(s;t) - \alpha]/\gamma\) where \(\alpha\) and \(\gamma\) are
-constants. In the Human Development Index (HDI), the three dimensions
-(health, education, and economy) are converted into the same scale (0-1)
-using min-max standardization.
-
-Although the scaling might be considered to be a transformation, we have
-elected to make it a separate module because it is neater. Scaling
-simply changes the numbers in the data not the shape of a variable.
-Transformation will most likely change the shape, and is usually
-non-linear.
-
 \begin{figure}
 
 \centering{
@@ -674,6 +658,23 @@ change the variable range, scaling maintains the same distributional
 shape, which is not the case with variable transformation.}
 
 \end{figure}%
+
+\subsection{Scaling}\label{scaling}
+
+Unlike variable transformation, scaling maintains the distributional
+shape of the variable. It includes techniques such as centering, z-score
+standardization, and min-max standardization and can be expressed as
+\([x_{j}(s;t) - \alpha]/\gamma\) where \(\alpha\) and \(\gamma\) are
+constants. In the Human Development Index (HDI), the three dimensions
+(health, education, and economy) are converted into the same scale (0-1)
+using min-max standardization.
+
+Although the scaling might be considered to be a transformation, we have
+elected to make it a separate module because it is neater.
+Figure~\ref{fig-scale-var-trans-compare} shows that scaling simply
+changes the numbers in the data not the shape of a variable, while
+transformation will most likely change the shape, and is usually
+non-linear.
 
 \subsection{Dimension reduction}\label{dimension-reduction}
 
@@ -920,12 +921,6 @@ the gamma distribution is used for SPI:
 We use the \texttt{dplyr::glimpse()} function to inspect the
 \texttt{idx} object created:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{glimpse}\NormalTok{(idx)}
-\end{Highlighting}
-\end{Shaded}
-
 \begin{verbatim}
 Rows: 128,576
 Columns: 18
@@ -948,29 +943,6 @@ $ .agg   <dbl> 4263.7863, 2819.8773, 2529.0243, 578.8843, -117.6571,~
 $ .fit   <dbl> 0.02902164, 0.10512807, 0.57680687, 0.83297600, 0.818~
 $ .index <dbl> -1.89537090, -1.25286143, 0.19373133, 0.96599235, 0.9~
 \end{verbatim}
-
-The output contains the original data, index values (\texttt{.index}),
-parameters used (\texttt{.scale}, \texttt{.method}, and \texttt{.dist}),
-and all the intermediate variables (\texttt{.pet}, \texttt{.agg}, and
-\texttt{.fitted}). This data can be visualized to investigate the
-spatio-temporal distribution of the drought or flood events, as well as
-the response of index values to different time scales and distribution
-parameters at specific single locations.
-Figure~\ref{fig-compute-spatial} and Figure~\ref{fig-compute-temporal}
-exemplify two possibilities. Figure~\ref{fig-compute-spatial} presents
-the spatial distribution of SPI during two periods: October 2010 to
-March 2011 for the 2010/11 Queensland flood and October 2019 to March
-2020 for the 2019 Australia drought, which contributes to the notorious
-2019/20 bushfire season. Figure~\ref{fig-compute-temporal} displays the
-sensitivity of the SPEI series at the Texas post office to different
-time scales and fitted distributions. Larger time scales produce a
-smoother index across time, however, all time scales indicate an extreme
-drought (corresponding to -2 in SPEI) in 2020, confirming the severity
-of the drought across different time horizons. Moreover, the chosen
-distribution has less influence on the index, with general extreme value
-distribution tending to produce more extreme outcomes than log-logistic
-distribution for the extreme events (index \textgreater{} 2 or
-\textless-2).
 
 \begin{figure}
 
@@ -1011,6 +983,29 @@ result in more extreme values, i.e.~in 1998 and 2020.}
 
 \end{figure}%
 
+The output contains the original data, index values (\texttt{.index}),
+parameters used (\texttt{.scale}, \texttt{.method}, and \texttt{.dist}),
+and all the intermediate variables (\texttt{.pet}, \texttt{.agg}, and
+\texttt{.fitted}). This data can be visualized to investigate the
+spatio-temporal distribution of the drought or flood events, as well as
+the response of index values to different time scales and distribution
+parameters at specific single locations.
+Figure~\ref{fig-compute-spatial} and Figure~\ref{fig-compute-temporal}
+exemplify two possibilities. Figure~\ref{fig-compute-spatial} presents
+the spatial distribution of SPI during two periods: October 2010 to
+March 2011 for the 2010/11 Queensland flood and October 2019 to March
+2020 for the 2019 Australia drought, which contributes to the notorious
+2019/20 bushfire season. Figure~\ref{fig-compute-temporal} displays the
+sensitivity of the SPEI series at the Texas post office to different
+time scales and fitted distributions. Larger time scales produce a
+smoother index across time, however, all time scales indicate an extreme
+drought (corresponding to -2 in SPEI) in 2020, confirming the severity
+of the drought across different time horizons. Moreover, the chosen
+distribution has less influence on the index, with general extreme value
+distribution tending to produce more extreme outcomes than log-logistic
+distribution for the extreme events (index \textgreater{} 2 or
+\textless-2).
+
 \subsection{Does a puff of change in variable weights cause a tornado in
 ranks?}\label{does-a-puff-of-change-in-variable-weights-cause-a-tornado-in-ranks}
 
@@ -1047,13 +1042,10 @@ reduction twice on the data.}
 
 \end{figure}%
 
-\begin{table}
+\begingroup\fontsize{11}{13}\selectfont
 
-\centering{
+\begin{longtable}[t]{>{\raggedright\arraybackslash}p{17.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{3.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedleft\arraybackslash}p{3em}}
 
-\centering\begingroup\fontsize{11}{13}\selectfont
-
-\begin{tabular}{>{\raggedright\arraybackslash}p{17.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{3.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedleft\arraybackslash}p{3em}}
 \toprule
 \textbf{Variable} & \textbf{V-wgt} & \textbf{Dimension} & \textbf{D-wgt} & \textbf{wgt}\\
 \midrule
@@ -1062,30 +1054,29 @@ Wage equality for similar work & 0.310 &  &  & 0.078\\
 Estimated earned income & 0.221 &  &  & 0.055\\
 Legislators senior officials and managers & 0.149 &  &  & 0.037\\
 Professional and technical workers & 0.121 &  &  & 0.030\\
-\hline
+\addlinespace
 Literacy rate & 0.191 & Education & 0.25 & 0.048\\
 Enrolment in primary education & 0.459 &  &  & 0.115\\
 Enrolment in secondary education & 0.230 &  &  & 0.058\\
 Enrolment in tertiary education & 0.121 &  &  & 0.030\\
-\hline
 Sex ratio at birth & 0.693 & Health & 0.25 & 0.173\\
+\addlinespace
 Healthy life expectancy & 0.307 &  &  & 0.077\\
-\hline
 Women in parliament & 0.310 & Politics & 0.25 & 0.078\\
 Women in ministerial positions & 0.247 &  &  & 0.062\\
 Years with female head of state & 0.443 &  &  & 0.111\\
 \bottomrule
-\end{tabular}
-\endgroup{}
-
-}
 
 \caption{\label{tbl-gggi-weights}Weights for the two applications of
 dimension reduction to compute the Global Gender Gap Index. V-wgt is
 used to compute four new variables from the original 14. These are then
 equally combined to get the final index value.}
 
-\end{table}%
+\tabularnewline
+
+\end{longtable}
+
+\endgroup{}
 
 The 2023 GGGI data is available from the Global Gender Gap Report 2023
 in the country's economy profile and can be accessed in the
@@ -1173,13 +1164,11 @@ than the original. It is interesting to note that the gap between the
 Nordic countries and the middle countries dissipates, indicating that
 this component was one reason for the relatively higher GGGI values of
 these countries. Also interesting is the large drop in value for
-Bangladesh.
-
-Frames 18, 24, 29 show linear combinations where politics contributes
-more than the original. The most notable feature is that Bangladesh
-retains it's high index value whereas the other middle group countries
-decline, indicating that the politics score is a major component for
-Bangladesh's index value.
+Bangladesh. Frames 18, 24, 29 show linear combinations where politics
+contributes more than the original. The most notable feature is that
+Bangladesh retains it's high index value whereas the other middle group
+countries decline, indicating that the politics score is a major
+component for Bangladesh's index value.
 
 Ideally, an index should be robust against minor changes in its
 construction components. This is not the case with GGGI, where small
