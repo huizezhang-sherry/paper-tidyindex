@@ -136,7 +136,7 @@ The tidy framework consists of two key components: tidy data and tidy tools. The
 
 Examples of using a pipeline approach for data analysis can be traced back to the interactive graphics literature, including @buja_elements_1988; @sutherland_orca_2000; @wickham_plumbing_2009; @xie_reactive_2014. @wickham_plumbing_2009 argue that whether made explicit or not, a pipeline has to be presented in every graphics program, and making them explicit is beneficial for understanding the implementation and comparing between different graphic systems. While this comment is made in the context of interactive graphics programs, it is also applicable generally to any data analysis workflow. More recently, the tidyverse suite [@wickham_welcome_2019] takes the pipeline approach for general-purpose data wrangling and has gained popularity within the R community. The pipeline-style code can be directly read as a series of operations applied successively on tidy data objects, offering a method to document the data wrangling process with all the computational details for reproducibility.
 
-Since the success of tidyverse, more packages have been developed to analyze data using the tidy framework for domains specific applications, a noticeable example of which is `tidymodels` for building machine learning models [@tidymodels]. To create a tidy workflow tailored to a specific domain, developers first need to identify the fundamental building blocks to create a workflow. These components are then implemented as modules, which can be combined to form the pipeline. For example, in supervised machine learning models, steps such as data splitting, model training, and model evaluation are commonly used in most workflow. In the `tidymodels`, these steps are correspondingly implemented as packages `rsample`, `parsnip`, and `yardstick`, agnostic to the specific model chosen. The uniform interface in tidymodels frees analysts from recalling model-specific syntax for performing the same operation across different models, increasing the efficiency to work with different models simultaneously.
+Since the success of tidyverse, more packages have been developed to analyze data using the tidy framework for domain-specific applications, a noticeable example of which is `tidymodels` for building machine learning models [@tidymodels]. To create a tidy workflow tailored to a specific domain, developers first need to identify the fundamental building blocks to create a workflow. These components are then implemented as modules, which can be combined to form the pipeline. For example, in supervised machine learning models, steps such as data splitting, model training, and model evaluation are commonly used in most workflows. In the `tidymodels`, these steps are correspondingly implemented as packages `rsample`, `parsnip`, and `yardstick`, agnostic to the specific model chosen. The uniform interface in tidymodels frees analysts from recalling model-specific syntax for performing the same operation across different models, increasing the efficiency to work with different models simultaneously.
 
 <!-- **Constructing indexes would also benefit from pipeline and embracing the aforementioned design philosophy.** -->
 
@@ -148,9 +148,9 @@ For constructing indexes, the pipeline approach adopts explicit and standalone m
 -   enables systematic comparison of surrogate indexes designed to measure the same phenomenon.
 -   it may even be possible to automate diagrammatic explanations and documentation of the index.
 
-Adoption of this pipeline approach would provide uniformity to the field of index development, research, and application to improve comparability, reproducibility, and communication.
+The adoption of this pipeline approach would provide uniformity to the field of index development, research, and application to improve comparability, reproducibility, and communication.
 
-<!-- They might even  insert new modules to experiment with possible new index definitions or to understand an index's behaviour. Also, the readability of the pipeline code can complement conventional diagrams and textual information to understand the how indexes are constructed. The uniform interface of pipeline allows analysts to assemble a diverse array of indexes with a shared set of components, reducing the learning curve for adopting new implementation for different indexes.-->
+<!-- They might even insert new modules to experiment with possible new index definitions or to understand an index's behaviour. Also, the readability of the pipeline code can complement conventional diagrams and textual information to understand the how indexes are constructed. The uniform interface of pipeline allows analysts to assemble a diverse array of indexes with a shared set of components, reducing the learning curve for adopting new implementation for different indexes.-->
 
 <!-- This approach allows for quick experimentation with alternatives and facilitates building new indexes. Consequently, maintenance is streamlined in the long term, as all the indexes are developed in-house using a unified syntax. -->
 
@@ -162,7 +162,7 @@ An overview of the pipeline is presented in @fig-pipeline-steps, illustrating th
 
 ```{r fig-pipeline-steps}
 #| fig-align: center
-#| fig-cap: "Diagram of pipeline modules for index construction. The highlighted path illustrates one possible construction using the dimension reduction and simplification module."
+#| fig-cap: "Diagram of pipeline modules for index construction. The highlighted path illustrates one possible construction using the dimension reduction and simplification modules."
 #| out-height: 90%
 #| out-width: 100%
 knitr::include_graphics(here::here("figures/pipeline-overall.png"))
@@ -177,7 +177,7 @@ where:
 
 -   $t$ denotes the temporal order in $D_t \subseteq \mathbb{R}^n$. For instance, time measurements could be recorded hourly, yearly, monthly, quarterly, or by season.
 
-In what follows when geographic or temporal components of the $x_j(s,t)$ process are fixed we will be using suffix notation. For example, $x_{sj}(t)$ represents the data for a fixed location $s$ as a function of time $t$. While $x_{tj}(s)$ denotes the spatial varying process for a fixed $t$. An overview of the notation for pipeline input, operation, and output is presented in @tbl-notation.
+In what follows when geographic or temporal components of the $x_j(s,t)$ process are fixed we will be using suffix notation. For example, $x_{sj}(t)$ represents the data for a fixed location $s$ as a function of time $t$, while $x_{tj}(s)$ denotes the spatial varying process for a fixed $t$. An overview of the notation for pipeline input, operation, and output is presented in @tbl-notation.
 
 | Module                  | Input                                                                   | Operation                           | Output                                                                        |
 |-----------------------|---------|---------------|--------------------------|
@@ -196,7 +196,7 @@ In what follows when geographic or temporal components of the $x_j(s,t)$ process
 
 ## Temporal processing
 
-The temporal processing module takes as input argument a single variable $x_{sj}(t)$ at location $s$ as a function of time. In this step the original time series can be transformed or summarized into a new one via time aggregation, the transformation is represented by the function $f$, $x^{\text{Temp}}_{sj}(t^\prime) = f[x_{sj}(t)]$ where $t^\prime$ refers to the new temporal resolution after aggregation. An example of temporal processing done in the computation of the Standardized Precipitation Index (SPI) [@mckee1993relationship], consists of summing the monthly precipitation series over a rolling time window of size $k$. That is also known as the time scale. For SPI, the choice of the time scale $k$ is used to control the accumulation period for the water deficit, enabling the assessment of drought severity across various types (meteorological, agricultural, and hydrological).
+The temporal processing module takes as input argument a single variable $x_{sj}(t)$ at location $s$ as a function of time. In this step, the original time series can be transformed or summarized into a new one via time aggregation. The transformation is represented by the function $f$, $x^{\text{Temp}}_{sj}(t^\prime) = f[x_{sj}(t)]$ where $t^\prime$ refers to the new temporal resolution after aggregation. An example of temporal processing done in the computation of the Standardized Precipitation Index (SPI) [@mckee1993relationship], consists of summing the monthly precipitation series over a rolling time window of size $k$. That is also known as the time scale. For SPI, the choice of the time scale $k$ is used to control the accumulation period for the water deficit, enabling the assessment of drought severity across various types (meteorological, agricultural, and hydrological).
 
 ## Spatial processing
 
@@ -207,7 +207,7 @@ The spatial processing module takes a single variable with a fixed temporal dime
 Variable transformation takes the input of a single variable $x_j(s;t)$ and reshapes its distribution using the function $T$ to produce $x^{\text{Trans}}_{j}(s;t)$. When a variable has a skewed distribution, transformations such as log, square root, or cubic root can adjust the distribution towards normality. For example, in the Human Development Index (HDI), a logarithmic transformation is applied to the variable Gross National Income per capita (GNI), to reduce its impact on HDI, particularly for countries with high GNI values.
 
 ```{r fig-scale-var-trans-compare}
-#| fig-cap: "Comparison of the module scaling (green) and variable transformation (orange). While both modules change the variable range, scaling maintains the same distributional shape, which is not the case with variable transformation. "
+#| fig-cap: "Comparison of the scaling (green) and variable transformation (orange) modules. While both modules change the variable range, scaling maintains the same distributional shape, which is not the case with variable transformation. "
 #| fig-height: 5.5
 #| fig-width: 8
 set.seed(123)
@@ -267,7 +267,7 @@ trans_df %>%
 
 Unlike variable transformation, scaling maintains the distributional shape of the variable. It includes techniques such as centering, z-score standardization, and min-max standardization and can be expressed as $[x_{j}(s;t) - \alpha]/\gamma$ where $\alpha$ and $\gamma$ are constants. In the Human Development Index (HDI), the three dimensions (health, education, and economy) are converted into the same scale (0-1) using min-max standardization. 
 
-Although the scaling might be considered to be a transformation, we have elected to make it a separate module because it is neater. @fig-scale-var-trans-compare shows that scaling simply changes the numbers in the data not the shape of a variable, while transformation will most likely change the shape, and is usually non-linear.
+Although the scaling might be considered to be a transformation, we have elected to make it a separate module because it is neater. @fig-scale-var-trans-compare shows that scaling simply changes the numbers in the data but not the shape of a variable, while transformation will most likely change the shape, as it is usually non-linear.
 
 ## Dimension reduction
 
@@ -296,11 +296,11 @@ Simplification takes a continuous variable $x_j(s;t)$ and categorises it into a 
 \begin{equation}
 v[x_i(s;t)] = 
 \begin{cases}
-a_0 & C_1 \leq x^i(s; t) < C_0 \\
-a_1 & C_2 \leq x^i(s; t) < C_1 \\
-a_2 & C_3 \leq x^i(s; t) < C_2 \\
+a_0, & C_1 \leq x^i(s; t) < C_0 \\
+a_1, & C_2 \leq x^i(s; t) < C_1 \\
+a_2, & C_3 \leq x^i(s; t) < C_2 \\
 \cdots \\
-a_z & C_z \leq x^i(s; t)
+a_z, & C_z \leq x^i(s; t)
 \end{cases}
 \end{equation}
 ```
@@ -523,7 +523,7 @@ gggi %>%
 
 After initializing the `gggi` object and attaching the `gggi_weights` as meta-data, a single linear combination within the dimension reduction module is applied to the 14 variables (from column `labour_force_participation` to `years_with_female_head_of_state`), using the weight specified in the `wgt` column of the attached metadata. While computing the index from the original 14 variables, it remains unclear how the missing values are handled within the index, which impacts 68 out of the total 146 countries. However, after aggregating variables into the four dimensions, where no missing values exist, the index is reproducible for all the countries.
 
-@fig-idx-tour illustrates doing sensitivity analysis for GGGI, for a subset of 16 countries. It presents 6 frames selected from an animation where the weight on the politics dimension is gradually increased, while other dimensions (economy, education, health) decrease correspondingly. Frame 12 present the original index where all the four dimensions receive equal weight. The index values are sorted from highest to lowest, with the Nordic countries (Iceland, Norway, and Finland) and New Zealand leading the rankings. The index values are between 0 and 1, and indicate proportional difference between men and women, with a value of 0.8 indicating women are 80% of the way to equality of these measures. There is a gap in values between these countries and the middle group (Brazil, Panama, Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia), and another big drop to the next group (Pakistan, Iran, Algeria, and Chad). Afghanistan lags much further behind.
+@fig-idx-tour illustrates doing sensitivity analysis for GGGI, for a subset of 16 countries. It presents 6 frames selected from an animation where the weight on the politics dimension is gradually increased, while other dimensions (economy, education, health) decrease correspondingly. Frame 12 presents the original index where all the four dimensions receive equal weight. The index values are sorted from highest to lowest, with the Nordic countries (Iceland, Norway, and Finland) and New Zealand leading the rankings. The index values are between 0 and 1, and indicate proportional difference between men and women, with a value of 0.8 indicating women are 80% of the way to equality of these measures. There is a gap in values between these countries and the middle group (Brazil, Panama, Poland, Bangladesh, Kazakhstan, Armenia, and Slovakia), and another big drop to the next group (Pakistan, Iran, Algeria, and Chad). Afghanistan lags much further behind.
 
 
 
@@ -593,12 +593,12 @@ wrap_plots(gl, ncol = 3)
 
 To make a simple illustration of sensitivity analysis, we slightly vary the weight for politics, between 0.07 and 0.52, while maintaining equal weights among other dimensions. This can be viewed as an animation to examine change in relative index values as a response to the changing weights. This visualization technique, which presents a sequence of data projections, is referred to as a "tour" and the specific kind of tour used here to move between nearby projections is known as a "radial tour" (see @buja2005computational, @wickham_tourr_2011 and @RJ-2020-027 for more details).
 
-Frames 1 and 6 show linear combinations where politics contributes less than the original. It is interesting to note that the gap between the Nordic countries and the middle countries dissipates, indicating that this component was one reason for the relatively higher GGGI values of these countries. Also interesting is the large drop in value for Bangladesh. Frames 18, 24, 29 show linear combinations where politics contributes more than the original. The most notable feature is that Bangladesh retains it's high index value whereas the other middle group countries decline, indicating that the politics score is a major component for Bangladesh's index value. 
+Frames 1 and 6 show linear combinations where politics contributes less than the original. It is interesting to note that the gap between the Nordic countries and the middle countries dissipates, indicating that this component was one reason for the relatively higher GGGI values of these countries. Also interesting is the large drop in value for Bangladesh. Frames 18, 24, 29 show linear combinations where politics contributes more than the original. The most notable feature is that Bangladesh retains its high index value whereas the other middle group countries decline, indicating that the politics score is a major component for Bangladesh's index value. 
 
 <!--In @fig-idx-tour, six frames have been chosen from the local tour to explore the role of the politics dimension to the index. When the weight of politics is reduced (Frame 1 and 6 vs. Frame 12), the difference in GGGI values between the Nordic and other countries narrows, suggesting a smaller variation among countries in achieving gender parity. Conversely, when the weight of politics increases (Frame 18, 24, and 29 vs. Frame 12), nearly all the countries experience a decrease in GGGI values. A noticeable exception to this trend is Bangladesh, where its index value moves in the same direction as the politics weight, which leads to an almost similar index value to the Nordics when the politics dimension is assigned a weight of 0.52 in Frame 29.-->
 
-Ideally, an index should be robust against minor changes in its construction components. This is not the case with GGGI, where small changes to one component lead to fairly large change in the index. The modular pipeline framework for computing the index makes it easy to conduct this type of sensitivity analysis, where one or more components are perturbed and the index re-calculated. 
-One aspect of the GGGI not well-described in the Global Gender Gap Report is handling of missing values that are present in the initial variables for many countries, something that is common for this type of data. This could also be made more transparent with the dimension reduction module, by specifying an imputation method or providing warnings about missing values.
+Ideally, an index should be robust against minor changes in its construction components. This is not the case with GGGI, where small changes to one component lead to fairly large change in the index. The modular pipeline framework for computing the index makes it easy to conduct this type of sensitivity analysis, where one or more components are perturbed and the index recalculated. 
+One aspect of the GGGI not well-described in the Global Gender Gap Report is the handling of missing values that are present in the initial variables for many countries, something that is common for this type of data. This could also be made more transparent with the dimension reduction module, by specifying an imputation method or providing warnings about missing values.
 
 
 ## Decoding uncertainty through the wisdom of the crowd 
@@ -615,12 +615,12 @@ DATA |>
   normalise(.index = norm_quantile(.fit))
 ```
 
-The confidence interval can then be calculated using the quantile method from the bootstrap samples. @fig-conf-interval presents the 80% and 95% confidence interval for the Texas post office station, in Queensland, Australia. From the start of 2019 to 2020, the majority of the confidence intervals lie below the extreme drought line (SPI = -2), suggesting a high level of certainty that the Texas post office is suffering from a drastic drought. Also close to the extreme drought line is the period 2003-2004, which corresponds to the millennium drought. These relatively wide confidence intervals, as well as during the excessive precipitation events in 1996-1998 and 1999-2000, suggest a high variation of the gamma parameters estimated from the bootstrap samples and its difficulty to accurately quantify the drought and flood severity in extreme events.
+The confidence interval can then be calculated using the quantile method from the bootstrap samples. @fig-conf-interval presents the 80% and 95% confidence intervals for the Texas post office station, in Queensland, Australia. From the start of 2019 to 2020, the majority of the confidence intervals lie below the extreme drought line (SPI = -2), suggesting a high level of certainty that the Texas post office is suffering from a drastic drought. Also close to the extreme drought line is the period 2003-2004, which corresponds to the millennium drought. These relatively wide confidence intervals, as well as during the excessive precipitation events in 1996-1998 and 1999-2000, suggest a high variation of the gamma parameters estimated from the bootstrap samples and its difficulty to accurately quantify the drought and flood severity in extreme events.
 
 ```{r fig-conf-interval}
 #| fig-width: 8
 #| fig-height: 2
-#| fig-cap: "80% and 95% confidence interval of the Standardized Precipitation Index (SPI-24) for the Texas post office station, in Queensland, Australia. A bootstrap sample of 100 is taken from the aggregated precipitation series to estimate gamma parameters and to calculate the index. The dashed line at SPI = -2 represents an extreme drought as defined by the SPI. Most parts of the confidence intervals from 2019 to 2020 sit below the extreme drought line and are relatively wide compared to other time periods. This suggests that while it is certain that the Texas post office is suffering from a drastic drought, there is considerable uncertainty in quantifying its severity, given the extremity of the event."
+#| fig-cap: "80% and 95% confidence intervals of the Standardized Precipitation Index (SPI-24) for the Texas post office station, in Queensland, Australia. A bootstrap sample of 100 is taken from the aggregated precipitation series to estimate gamma parameters and to calculate the index. The dashed line at SPI = -2 represents an extreme drought as defined by the SPI. Most parts of the confidence intervals from 2019 to 2020 sit below the extreme drought line and are relatively wide compared to other time periods. This suggests that while it is certain that the Texas post office is suffering from a drastic drought, there is considerable uncertainty in quantifying its severity, given the extremity of the event."
 res <- queensland %>% 
   filter(name == "TEXAS POST OFFICE") %>% 
   mutate(month = lubridate::month(ym)) |>

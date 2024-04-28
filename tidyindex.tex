@@ -117,38 +117,28 @@
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
-% definitions for citeproc citations
-\NewDocumentCommand\citeproctext{}{}
-\NewDocumentCommand\citeproc{mm}{%
-  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
-\makeatletter
- % allow citations to break across lines
- \let\@cite@ofmt\@firstofone
- % avoid brackets around text for \cite:
- \def\@biblabel#1{}
- \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
-\makeatother
 \newlength{\cslhangindent}
 \setlength{\cslhangindent}{1.5em}
 \newlength{\csllabelwidth}
 \setlength{\csllabelwidth}{3em}
-\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
- {\begin{list}{}{%
-  \setlength{\itemindent}{0pt}
-  \setlength{\leftmargin}{0pt}
-  \setlength{\parsep}{0pt}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
   % turn on hanging indent if param 1 is 1
   \ifodd #1
-   \setlength{\leftmargin}{\cslhangindent}
-   \setlength{\itemindent}{-1\cslhangindent}
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
   \fi
   % set entry spacing
-  \setlength{\itemsep}{#2\baselineskip}}}
- {\end{list}}
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
 \usepackage{calc}
-\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
-\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
-\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \usepackage{booktabs}
@@ -166,6 +156,10 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \usepackage{orcidlink}
+\makeatletter
+\makeatother
+\makeatletter
+\makeatother
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -202,16 +196,23 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
-\makeatother
-\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\makeatletter
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
+\makeatother
+\makeatletter
+\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
 \makeatother
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
-\usepackage{bookmark}
-
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
@@ -278,9 +279,11 @@ called \texttt{tidyindex}.
 indexes\sep data pipeline\sep software design\sep uncertainty\sep 
 decision-making
 \end{keywords}
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, sharp corners, frame hidden, enhanced]}{\end{tcolorbox}}\fi
 
 \setstretch{2}
-\section{Introduction}\label{introduction}
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
 
 Indexes are commonly used to combine and summarize different sources of
 information into a single number for monitoring, communicating, and
@@ -366,7 +369,8 @@ package that implements the modules. Examples are given in
 Section~\ref{sec-examples} to illustrate three use cases of the
 pipeline.
 
-\section{Background to index development}\label{sec-idx-dev}
+\hypertarget{sec-idx-dev}{%
+\section{Background to index development}\label{sec-idx-dev}}
 
 There are many documents providing advice on how to construct indexes
 for different fields, and review articles describing the range of
@@ -407,7 +411,8 @@ seems possible to think about indexes in a more organised, cohesive and
 standard manner. Actually, the area could benefit from a \emph{tidy}
 approach.
 
-\section{Tidy framework}\label{sec-tidy}
+\hypertarget{sec-tidy}{%
+\section{Tidy framework}\label{sec-tidy}}
 
 The tidy framework consists of two key components: tidy data and tidy
 tools. The concept of tidy data (Wickham 2014) prescribes specific rules
@@ -442,7 +447,7 @@ to document the data wrangling process with all the computational
 details for reproducibility.
 
 Since the success of tidyverse, more packages have been developed to
-analyze data using the tidy framework for domains specific applications,
+analyze data using the tidy framework for domain-specific applications,
 a noticeable example of which is \texttt{tidymodels} for building
 machine learning models (Kuhn and Silge 2022). To create a tidy workflow
 tailored to a specific domain, developers first need to identify the
@@ -450,7 +455,7 @@ fundamental building blocks to create a workflow. These components are
 then implemented as modules, which can be combined to form the pipeline.
 For example, in supervised machine learning models, steps such as data
 splitting, model training, and model evaluation are commonly used in
-most workflow. In the \texttt{tidymodels}, these steps are
+most workflows. In the \texttt{tidymodels}, these steps are
 correspondingly implemented as packages \texttt{rsample},
 \texttt{parsnip}, and \texttt{yardstick}, agnostic to the specific model
 chosen. The uniform interface in tidymodels frees analysts from
@@ -484,11 +489,12 @@ purpose. The pipeline approach provides many advantages:
   documentation of the index.
 \end{itemize}
 
-Adoption of this pipeline approach would provide uniformity to the field
-of index development, research, and application to improve
+The adoption of this pipeline approach would provide uniformity to the
+field of index development, research, and application to improve
 comparability, reproducibility, and communication.
 
-\section{Details of the index pipeline}\label{sec-pipeline}
+\hypertarget{sec-pipeline}{%
+\section{Details of the index pipeline}\label{sec-pipeline}}
 
 In constructing various indexes, the primary aim is to transform the
 data, often multivariate, into a univariate index. Spatial and temporal
@@ -512,17 +518,15 @@ connecting modules according to their preferences.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=0.9\textheight]{figures/pipeline-overall.png}
+{\centering \includegraphics[width=1\textwidth,height=0.9\textheight]{figures/pipeline-overall.png}
 
 }
 
 \caption{\label{fig-pipeline-steps}Diagram of pipeline modules for index
 construction. The highlighted path illustrates one possible construction
-using the dimension reduction and simplification module.}
+using the dimension reduction and simplification modules.}
 
-\end{figure}%
+\end{figure}
 
 Now, we introduce the notation used for describing pipeline modules.
 Consider a multivariate spatio-temporal process,
@@ -547,18 +551,19 @@ where:
 In what follows when geographic or temporal components of the
 \(x_j(s,t)\) process are fixed we will be using suffix notation. For
 example, \(x_{sj}(t)\) represents the data for a fixed location \(s\) as
-a function of time \(t\). While \(x_{tj}(s)\) denotes the spatial
+a function of time \(t\), while \(x_{tj}(s)\) denotes the spatial
 varying process for a fixed \(t\). An overview of the notation for
 pipeline input, operation, and output is presented in
 Table~\ref{tbl-notation}.
 
+\hypertarget{tbl-notation}{}
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.3151}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1233}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2055}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.3562}}@{}}
-\caption{Summary of the notation for input, operation, and output of
-each pipeline module.}\label{tbl-notation}\tabularnewline
+\caption{\label{tbl-notation}Summary of the notation for input,
+operation, and output of each pipeline module.}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Module
@@ -604,12 +609,13 @@ Simplification & \(x_j(s; t)\) & \(v[x_j(s;t)]\) &
 \(A_j(s;t) \in \{a_1, a_2, \cdots, a_z\}\) \\
 \end{longtable}
 
-\subsection{Temporal processing}\label{temporal-processing}
+\hypertarget{temporal-processing}{%
+\subsection{Temporal processing}\label{temporal-processing}}
 
 The temporal processing module takes as input argument a single variable
-\(x_{sj}(t)\) at location \(s\) as a function of time. In this step the
+\(x_{sj}(t)\) at location \(s\) as a function of time. In this step, the
 original time series can be transformed or summarized into a new one via
-time aggregation, the transformation is represented by the function
+time aggregation. The transformation is represented by the function
 \(f\), \(x^{\text{Temp}}_{sj}(t^\prime) = f[x_{sj}(t)]\) where
 \(t^\prime\) refers to the new temporal resolution after aggregation. An
 example of temporal processing done in the computation of the
@@ -620,7 +626,8 @@ the time scale \(k\) is used to control the accumulation period for the
 water deficit, enabling the assessment of drought severity across
 various types (meteorological, agricultural, and hydrological).
 
-\subsection{Spatial processing}\label{spatial-processing}
+\hypertarget{spatial-processing}{%
+\subsection{Spatial processing}\label{spatial-processing}}
 
 The spatial processing module takes a single variable with a fixed
 temporal dimension, \(x_{tj}(s)\), as input. This step transforms the
@@ -633,7 +640,8 @@ satellite imagery, or originating from different resolutions. This also
 includes the aggregation of variables into different levels, such as
 city, state, and country scales.
 
-\subsection{Variable transformation}\label{variable-transformation}
+\hypertarget{variable-transformation}{%
+\subsection{Variable transformation}\label{variable-transformation}}
 
 Variable transformation takes the input of a single variable
 \(x_j(s;t)\) and reshapes its distribution using the function \(T\) to
@@ -646,20 +654,19 @@ HDI, particularly for countries with high GNI values.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{tidyindex_files/figure-pdf/fig-scale-var-trans-compare-1.pdf}
+{\centering \includegraphics{tidyindex_files/figure-pdf/fig-scale-var-trans-compare-1.pdf}
 
 }
 
-\caption{\label{fig-scale-var-trans-compare}Comparison of the module
-scaling (green) and variable transformation (orange). While both modules
+\caption{\label{fig-scale-var-trans-compare}Comparison of the scaling
+(green) and variable transformation (orange) modules. While both modules
 change the variable range, scaling maintains the same distributional
 shape, which is not the case with variable transformation.}
 
-\end{figure}%
+\end{figure}
 
-\subsection{Scaling}\label{scaling}
+\hypertarget{scaling}{%
+\subsection{Scaling}\label{scaling}}
 
 Unlike variable transformation, scaling maintains the distributional
 shape of the variable. It includes techniques such as centering, z-score
@@ -672,11 +679,12 @@ using min-max standardization.
 Although the scaling might be considered to be a transformation, we have
 elected to make it a separate module because it is neater.
 Figure~\ref{fig-scale-var-trans-compare} shows that scaling simply
-changes the numbers in the data not the shape of a variable, while
-transformation will most likely change the shape, and is usually
+changes the numbers in the data but not the shape of a variable, while
+transformation will most likely change the shape, as it is usually
 non-linear.
 
-\subsection{Dimension reduction}\label{dimension-reduction}
+\hypertarget{dimension-reduction}{%
+\subsection{Dimension reduction}\label{dimension-reduction}}
 
 Dimension reduction takes the multivariate information
 \(\mathbf{x}(s;t)\), where \(\mathbf{x} \subseteq \mathbb{R}^p\), or a
@@ -707,7 +715,8 @@ accommodate linear combinations as provided by any method, and hence is
 linear by design. The transformation module provides variable-wise
 non-linear transformation.
 
-\subsection{Distribution fit}\label{distribution-fit}
+\hypertarget{distribution-fit}{%
+\subsection{Distribution fit}\label{distribution-fit}}
 
 Distribution fit applies the Cumulative Distribution Function (CDF)
 \(F\) of a distribution on the variable \(x_j(s; t)\) to obtain the
@@ -722,7 +731,8 @@ is conducted on two or more variables simultaneously. For this reason,
 and because it usually is applied later in the pipeline it is neater to
 make this a separate module.
 
-\subsection{Normalising}\label{normalising}
+\hypertarget{normalising}{%
+\subsection{Normalising}\label{normalising}}
 
 Normalizing applies the inverse normal CDF \(\Phi^{-1}\) on the input
 data to obtain the normal density \(z_{j}(s;t)\). Normalizing can
@@ -734,7 +744,8 @@ made to separate them into two modules given the different types of
 output each module presents (probability values for distribution fit and
 normal density values for normalizing).
 
-\subsection{Benchmarking}\label{benchmarking}
+\hypertarget{benchmarking}{%
+\subsection{Benchmarking}\label{benchmarking}}
 
 Benchmark sets a value \(b_j(s,t)\) for comparing against the original
 variable \(x_j(s;t)\). This benchmark can be a fixed value consistently
@@ -743,7 +754,8 @@ determined by the data through the function \(u[x_j(s;t)]\). Once a
 benchmark is set, observations can be highlighted for adjustments in
 other modules or can serve as targets for monitoring and planning.
 
-\subsection{Simplification}\label{simplification}
+\hypertarget{simplification}{%
+\subsection{Simplification}\label{simplification}}
 
 Simplification takes a continuous variable \(x_j(s;t)\) and categorises
 it into a discrete set \(A_j(s;t) \in \{a_1, a_2, \cdots, a_z\}\)
@@ -752,11 +764,11 @@ through a piecewise constant function,
 \begin{equation}
 v[x_i(s;t)] = 
 \begin{cases}
-a_0 & C_1 \leq x^i(s; t) < C_0 \\
-a_1 & C_2 \leq x^i(s; t) < C_1 \\
-a_2 & C_3 \leq x^i(s; t) < C_2 \\
+a_0, & C_1 \leq x^i(s; t) < C_0 \\
+a_1, & C_2 \leq x^i(s; t) < C_1 \\
+a_2, & C_3 \leq x^i(s; t) < C_2 \\
 \cdots \\
-a_z & C_z \leq x^i(s; t)
+a_z, & C_z \leq x^i(s; t)
 \end{cases}
 \end{equation}
 
@@ -766,7 +778,8 @@ interest measured by the index. An example of simplification is to map
 the calculated SPI to four categories: mild, moderate, severe, and
 extreme drought.
 
-\section{Software design}\label{sec-software}
+\hypertarget{sec-software}{%
+\section{Software design}\label{sec-software}}
 
 The R package \texttt{tidyindex} implements a proof-of-concept of the
 index pipeline modules described in Section~\ref{sec-pipeline}. These
@@ -834,7 +847,8 @@ adopting the pipeline approach to construct indexes, analysts may
 consider developing software that can be readily deployed in the cloud
 for production purposes.
 
-\section{Examples}\label{sec-examples}
+\hypertarget{sec-examples}{%
+\section{Examples}\label{sec-examples}}
 
 This section uses the example of drought and social indexes to show the
 analysis made possible with the index pipeline. The drought index
@@ -845,8 +859,9 @@ on the dimension reduction step in the Global Gender Gap Index to
 explore how the changes in linear combination weights affect the index
 values and country rankings.
 
+\hypertarget{sec-example1}{%
 \subsection{Every distribution, every scale, every index all at
-once}\label{sec-example1}
+once}\label{sec-example1}}
 
 The state of Queensland in Australia frequently experiences natural
 disaster events such as flood and drought, which can significantly
@@ -874,9 +889,7 @@ the data:
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=0.9\textheight]{figures/pipeline-spei.png}
+{\centering \includegraphics[width=1\textwidth,height=0.9\textheight]{figures/pipeline-spei.png}
 
 }
 
@@ -887,7 +900,7 @@ similar construction steps with SPEI having two additional steps
 (variable transformation and dimension reduction) to convert temperature
 into evapotranspiration and combine it with the precipitation series.}
 
-\end{figure}%
+\end{figure}
 
 Figure~\ref{fig-spei} illustrates the pipeline steps of the two indexes.
 The two indexes are similar with the difference that SPEI involves two
@@ -946,9 +959,7 @@ $ .index <dbl> -1.89537090, -1.25286143, 0.19373133, 0.96599235, 0.9~
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{tidyindex_files/figure-pdf/fig-compute-spatial-1.pdf}
+{\centering \includegraphics{tidyindex_files/figure-pdf/fig-compute-spatial-1.pdf}
 
 }
 
@@ -960,13 +971,11 @@ drought situation, after its worst in 2019 December and 2020 January,
 likely due to the increased rainfall in February from the meteorological
 record.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{tidyindex_files/figure-pdf/fig-compute-temporal-1.pdf}
+{\centering \includegraphics{tidyindex_files/figure-pdf/fig-compute-temporal-1.pdf}
 
 }
 
@@ -981,7 +990,7 @@ from an extreme situation as seen in the 2019/20 drought period. The
 SPEI values from the two distributional fits mostly agree, while GEV can
 result in more extreme values, i.e.~in 1998 and 2020.}
 
-\end{figure}%
+\end{figure}
 
 The output contains the original data, index values (\texttt{.index}),
 parameters used (\texttt{.scale}, \texttt{.method}, and \texttt{.dist}),
@@ -1006,8 +1015,9 @@ distribution tending to produce more extreme outcomes than log-logistic
 distribution for the extreme events (index \textgreater{} 2 or
 \textless-2).
 
+\hypertarget{does-a-puff-of-change-in-variable-weights-cause-a-tornado-in-ranks}{%
 \subsection{Does a puff of change in variable weights cause a tornado in
-ranks?}\label{does-a-puff-of-change-in-variable-weights-cause-a-tornado-in-ranks}
+ranks?}\label{does-a-puff-of-change-in-variable-weights-cause-a-tornado-in-ranks}}
 
 The Global Gender Gap Index (GGGI), published annually by the World
 Economic Forum, measures gender parity by assessing relative gaps
@@ -1030,9 +1040,7 @@ indexes.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=0.9\textheight]{figures/pipeline-gggi.png}
+{\centering \includegraphics[width=1\textwidth,height=0.9\textheight]{figures/pipeline-gggi.png}
 
 }
 
@@ -1040,11 +1048,16 @@ indexes.
 Index (GGGI). The index is constructed as applying the module dimension
 reduction twice on the data.}
 
-\end{figure}%
+\end{figure}
 
 \begingroup\fontsize{11}{13}\selectfont
 
+\hypertarget{tbl-gggi-weights}{}
 \begin{longtable}[t]{>{\raggedright\arraybackslash}p{17.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{3.5em}>{\raggedleft\arraybackslash}p{4em}>{\raggedleft\arraybackslash}p{3em}}
+\caption{\label{tbl-gggi-weights}Weights for the two applications of dimension reduction to compute the
+Global Gender Gap Index. V-wgt is used to compute four new variables
+from the original 14. These are then equally combined to get the final
+index value. }\tabularnewline
 
 \toprule
 \textbf{Variable} & \textbf{V-wgt} & \textbf{Dimension} & \textbf{D-wgt} & \textbf{wgt}\\
@@ -1066,16 +1079,7 @@ Women in parliament & 0.310 & Politics & 0.25 & 0.078\\
 Women in ministerial positions & 0.247 &  &  & 0.062\\
 Years with female head of state & 0.443 &  &  & 0.111\\
 \bottomrule
-
-\caption{\label{tbl-gggi-weights}Weights for the two applications of
-dimension reduction to compute the Global Gender Gap Index. V-wgt is
-used to compute four new variables from the original 14. These are then
-equally combined to get the final index value.}
-
-\tabularnewline
-
 \end{longtable}
-
 \endgroup{}
 
 The 2023 GGGI data is available from the Global Gender Gap Report 2023
@@ -1112,7 +1116,7 @@ Figure~\ref{fig-idx-tour} illustrates doing sensitivity analysis for
 GGGI, for a subset of 16 countries. It presents 6 frames selected from
 an animation where the weight on the politics dimension is gradually
 increased, while other dimensions (economy, education, health) decrease
-correspondingly. Frame 12 present the original index where all the four
+correspondingly. Frame 12 presents the original index where all the four
 dimensions receive equal weight. The index values are sorted from
 highest to lowest, with the Nordic countries (Iceland, Norway, and
 Finland) and New Zealand leading the rankings. The index values are
@@ -1126,9 +1130,7 @@ behind.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{tidyindex_files/figure-pdf/fig-idx-tour-1.pdf}
+{\centering \includegraphics{tidyindex_files/figure-pdf/fig-idx-tour-1.pdf}
 
 }
 
@@ -1147,7 +1149,7 @@ each of them drops, to the state of being similar to the middle ranked
 countries when the politics component's contribution is reduced. The
 animation can be viewed at https://vimeo.com/847874016.}
 
-\end{figure}%
+\end{figure}
 
 To make a simple illustration of sensitivity analysis, we slightly vary
 the weight for politics, between 0.07 and 0.52, while maintaining equal
@@ -1166,7 +1168,7 @@ this component was one reason for the relatively higher GGGI values of
 these countries. Also interesting is the large drop in value for
 Bangladesh. Frames 18, 24, 29 show linear combinations where politics
 contributes more than the original. The most notable feature is that
-Bangladesh retains it's high index value whereas the other middle group
+Bangladesh retains its high index value whereas the other middle group
 countries decline, indicating that the politics score is a major
 component for Bangladesh's index value.
 
@@ -1175,15 +1177,17 @@ construction components. This is not the case with GGGI, where small
 changes to one component lead to fairly large change in the index. The
 modular pipeline framework for computing the index makes it easy to
 conduct this type of sensitivity analysis, where one or more components
-are perturbed and the index re-calculated. One aspect of the GGGI not
-well-described in the Global Gender Gap Report is handling of missing
-values that are present in the initial variables for many countries,
-something that is common for this type of data. This could also be made
-more transparent with the dimension reduction module, by specifying an
-imputation method or providing warnings about missing values.
+are perturbed and the index recalculated. One aspect of the GGGI not
+well-described in the Global Gender Gap Report is the handling of
+missing values that are present in the initial variables for many
+countries, something that is common for this type of data. This could
+also be made more transparent with the dimension reduction module, by
+specifying an imputation method or providing warnings about missing
+values.
 
+\hypertarget{decoding-uncertainty-through-the-wisdom-of-the-crowd}{%
 \subsection{Decoding uncertainty through the wisdom of the
-crowd}\label{decoding-uncertainty-through-the-wisdom-of-the-crowd}
+crowd}\label{decoding-uncertainty-through-the-wisdom-of-the-crowd}}
 
 Errors in measurement, variability and sampling error, may arise at
 various stages of the pipeline calculation, including from different
@@ -1226,7 +1230,7 @@ transformed into normal densities in the normalizing step with
 
 The confidence interval can then be calculated using the quantile method
 from the bootstrap samples. Figure~\ref{fig-conf-interval} presents the
-80\% and 95\% confidence interval for the Texas post office station, in
+80\% and 95\% confidence intervals for the Texas post office station, in
 Queensland, Australia. From the start of 2019 to 2020, the majority of
 the confidence intervals lie below the extreme drought line (SPI = -2),
 suggesting a high level of certainty that the Texas post office is
@@ -1240,13 +1244,11 @@ severity in extreme events.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{tidyindex_files/figure-pdf/fig-conf-interval-1.pdf}
+{\centering \includegraphics{tidyindex_files/figure-pdf/fig-conf-interval-1.pdf}
 
 }
 
-\caption{\label{fig-conf-interval}80\% and 95\% confidence interval of
+\caption{\label{fig-conf-interval}80\% and 95\% confidence intervals of
 the Standardized Precipitation Index (SPI-24) for the Texas post office
 station, in Queensland, Australia. A bootstrap sample of 100 is taken
 from the aggregated precipitation series to estimate gamma parameters
@@ -1258,9 +1260,10 @@ it is certain that the Texas post office is suffering from a drastic
 drought, there is considerable uncertainty in quantifying its severity,
 given the extremity of the event.}
 
-\end{figure}%
+\end{figure}
 
-\section{Conclusion}\label{conclusion}
+\hypertarget{conclusion}{%
+\section{Conclusion}\label{conclusion}}
 
 The paper introduces a tidy data pipeline for constructing and analyzing
 indexes. It has nine modules including temporal and spatial aggregation,
@@ -1289,7 +1292,8 @@ extending the examples to re-express additional common-practice indexes
 in the pipeline structure will help broader adoption, and further test
 that the framework can indeed accommodate any and all possible indexes.
 
-\section{Acknowledgement}\label{acknowledgement}
+\hypertarget{acknowledgement}{%
+\section{Acknowledgement}\label{acknowledgement}}
 
 The steps of this pipeline are available in the R package,
 \texttt{tidyindex}, available on CRAN. The source code for reproducing
@@ -1303,219 +1307,220 @@ the partial support of the Guangdong Provincial Key Laboratory IRADS
 UICR0700041-22. The article is created using Quarto (Allaire et al.
 2022) in R (R Core Team 2021).
 
-\section*{References}\label{references}
+\hypertarget{references}{%
+\section*{References}\label{references}}
 \addcontentsline{toc}{section}{References}
 
-\phantomsection\label{refs}
+\hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
-\bibitem[\citeproctext]{ref-alahacoon_comprehensive_2022}
+\leavevmode\vadjust pre{\hypertarget{ref-alahacoon_comprehensive_2022}{}}%
 Alahacoon, Niranga, and Mahesh Edirisinghe. 2022. {``A Comprehensive
 Assessment of Remote Sensing and Traditional Based Drought Monitoring
 Indices at Global and Regional Scale.''} \emph{Geomatics, Natural
 Hazards and Risk} 13 (December): 762--99.
 \url{https://doi.org/10.1080/19475705.2022.2044394}.
 
-\bibitem[\citeproctext]{ref-Allaire_Quarto_2022}
+\leavevmode\vadjust pre{\hypertarget{ref-Allaire_Quarto_2022}{}}%
 Allaire, J. J., Charles Teague, Carlos Scheidegger, Yihui Xie, and
 Christophe Dervieux. 2022. \emph{{Quarto}} (version 1.2).
 \url{https://doi.org/10.5281/zenodo.5960048}.
 
-\bibitem[\citeproctext]{ref-COINr}
+\leavevmode\vadjust pre{\hypertarget{ref-COINr}{}}%
 Becker, William, Giulio Caperna, Maria Del Sorbo, Hedvig Norlen, Eleni
 Papadimitriou, and Michaela Saisana. 2022. {``COINr: An {R} Package for
 Developing Composite Indicators.''} \emph{Journal of Open Source
 Software} 7 (78): 4567. \url{https://doi.org/10.21105/joss.04567}.
 
-\bibitem[\citeproctext]{ref-SPEI}
+\leavevmode\vadjust pre{\hypertarget{ref-SPEI}{}}%
 Beguería, Santiago, and Sergio M. Vicente-Serrano. 2017. \emph{SPEI:
 Calculation of the Standardised Precipitation-Evapotranspiration Index}.
 \url{https://CRAN.R-project.org/package=SPEI}.
 
-\bibitem[\citeproctext]{ref-buja_elements_1988}
+\leavevmode\vadjust pre{\hypertarget{ref-buja_elements_1988}{}}%
 Buja, A, D Asimov, C Hurley, and JA McDonald. 1988. {``Elements of a
 Viewing Pipeline for Data Analysis.''} In \emph{Dynamic Graphics for
 Statistics}, 277--308. Wadsworth, Belmont.
 
-\bibitem[\citeproctext]{ref-buja2005computational}
+\leavevmode\vadjust pre{\hypertarget{ref-buja2005computational}{}}%
 Buja, Andreas, Dianne Cook, Daniel Asimov, and Catherine Hurley. 2005.
 {``Computational Methods for High-Dimensional Rotations in Data
 Visualization.''} \emph{Handbook of Statistics} 24: 391--413.
 \url{https://doi.org/10.1016/S0169-7161(04)24014-7}.
 
-\bibitem[\citeproctext]{ref-chambers1998programming}
-Chambers, John M. 1998. \emph{Programming with Data: A Guide to the s
+\leavevmode\vadjust pre{\hypertarget{ref-chambers1998programming}{}}%
+Chambers, John M. 1998. \emph{Programming with Data: A Guide to the {S}
 Language}. Berlin, Heidelberg: Springer-Verlag.
 
-\bibitem[\citeproctext]{ref-donoho_50_2017}
+\leavevmode\vadjust pre{\hypertarget{ref-donoho_50_2017}{}}%
 Donoho, David. 2017. {``50 {Years} of {Data} {Science}.''} \emph{Journal
 of Computational and Graphical Statistics} 26 (4): 745--66.
 \url{https://doi.org/10.1080/10618600.2017.1384734}.
 
-\bibitem[\citeproctext]{ref-efron_bootstrap_1979}
+\leavevmode\vadjust pre{\hypertarget{ref-efron_bootstrap_1979}{}}%
 Efron, B. 1979. {``Bootstrap {Methods}: {Another} {Look} at the
 {Jackknife}.''} \emph{The Annals of Statistics} 7 (1): 1--26.
 \url{https://doi.org/10.1214/aos/1176344552}.
 
-\bibitem[\citeproctext]{ref-fisher1936use}
+\leavevmode\vadjust pre{\hypertarget{ref-fisher1936use}{}}%
 Fisher, Ronald A. 1936. {``The Use of Multiple Measurements in Taxonomic
 Problems.''} \emph{Annals of Eugenics} 7 (2): 179--88.
 
-\bibitem[\citeproctext]{ref-fisher1970statistical}
+\leavevmode\vadjust pre{\hypertarget{ref-fisher1970statistical}{}}%
 Fisher, Ronald Aylmer. 1970. {``Statistical Methods for Research
 Workers.''} In \emph{Breakthroughs in Statistics: Methodology and
 Distribution}, 66--70. Springer.
 \url{https://doi.org/10.1007/978-1-4612-4380-9_6}.
 
-\bibitem[\citeproctext]{ref-fundiversity}
+\leavevmode\vadjust pre{\hypertarget{ref-fundiversity}{}}%
 Grenié, Matthias, and Hugo Gruson. 2023. \emph{{fundiversity}: Easy
 Computation of Functional Diversity Indices}.
 \url{https://doi.org/10.5281/zenodo.4761754}.
 
-\bibitem[\citeproctext]{ref-hao_drought_2015}
+\leavevmode\vadjust pre{\hypertarget{ref-hao_drought_2015}{}}%
 Hao, Zengchao, and Vijay P. Singh. 2015. {``Drought Characterization
 from a Multivariate Perspective: {A} Review.''} \emph{Journal of
 Hydrology} 527 (August): 668--78.
 \url{https://doi.org/10.1016/j.jhydrol.2015.05.031}.
 
-\bibitem[\citeproctext]{ref-hotelling1933analysis}
+\leavevmode\vadjust pre{\hypertarget{ref-hotelling1933analysis}{}}%
 Hotelling, Harold. 1933. {``Analysis of a Complex of Statistical
 Variables into Principal Components.''} \emph{Journal of Educational
 Psychology} 24 (6): 417.
 
-\bibitem[\citeproctext]{ref-jones_vulnerability_2007}
+\leavevmode\vadjust pre{\hypertarget{ref-jones_vulnerability_2007}{}}%
 Jones, Brenda, and Jean Andrey. 2007. {``Vulnerability Index
 Construction: Methodological Choices and Their Influence on Identifying
 Vulnerable Neighbourhoods.''} \emph{International Journal of Emergency
 Management} 4 (2): 269--95.
 \url{https://doi.org/10.1504/IJEM.2007.013994}.
 
-\bibitem[\citeproctext]{ref-tidymodels}
-Kuhn, Max, and Julia Silge. 2022. \emph{Tidy Modeling with r}. "
+\leavevmode\vadjust pre{\hypertarget{ref-tidymodels}{}}%
+Kuhn, Max, and Julia Silge. 2022. \emph{Tidy Modeling with {R}}. "
 O'Reilly Media, Inc.".
 
-\bibitem[\citeproctext]{ref-laimighofer_how_2022}
+\leavevmode\vadjust pre{\hypertarget{ref-laimighofer_how_2022}{}}%
 Laimighofer, Johannes, and Gregor Laaha. 2022. {``How Standard Are
 Standardized Drought Indices? {Uncertainty} Components for the {SPI} \&
 {SPEI} Case.''} \emph{Journal of Hydrology} 613 (October): 128385.
 \url{https://doi.org/10.1016/j.jhydrol.2022.128385}.
 
-\bibitem[\citeproctext]{ref-gpindex}
+\leavevmode\vadjust pre{\hypertarget{ref-gpindex}{}}%
 Martin, Steve. 2023. \emph{Gpindex: Generalized Price and Quantity
 Indexes}. \url{https://CRAN.R-project.org/package=gpindex}.
 
-\bibitem[\citeproctext]{ref-mckee1993relationship}
+\leavevmode\vadjust pre{\hypertarget{ref-mckee1993relationship}{}}%
 McKee, Thomas B, Nolan J Doesken, John Kleist, et al. 1993. {``The
 Relationship of Drought Frequency and Duration to Time Scales.''} In
 \emph{Proceedings of the 8th Conference on Applied Climatology},
 17:179--83. 22. Boston, MA, USA.
 
-\bibitem[\citeproctext]{ref-oecd_handbook_2008}
+\leavevmode\vadjust pre{\hypertarget{ref-oecd_handbook_2008}{}}%
 OECD, European Union, and Joint Research Centre - European Commission.
 2008. \emph{Handbook on {Constructing} {Composite} {Indicators}:
 {Methodology} and {User} {Guide}}. OECD.
 \url{https://doi.org/10.1787/9789264043466-en}.
 
-\bibitem[\citeproctext]{ref-R}
+\leavevmode\vadjust pre{\hypertarget{ref-R}{}}%
 R Core Team. 2021. \emph{R: A Language and Environment for Statistical
 Computing}. Vienna, Austria: R Foundation for Statistical Computing.
 \url{https://www.R-project.org/}.
 
-\bibitem[\citeproctext]{ref-uncertainty}
+\leavevmode\vadjust pre{\hypertarget{ref-uncertainty}{}}%
 Saisana, M., A. Saltelli, and S. Tarantola. 2005. {``{Uncertainty and
 Sensitivity Analysis Techniques as Tools for the Quality Assessment of
 Composite Indicators}.''} \emph{Journal of the Royal Statistical Society
 Series A: Statistics in Society} 168 (2): 307--23.
 \url{https://doi.org/10.1111/j.1467-985X.2005.00350.x}.
 
-\bibitem[\citeproctext]{ref-RJ-2020-027}
+\leavevmode\vadjust pre{\hypertarget{ref-RJ-2020-027}{}}%
 Spyrison, Nicholas, and Dianne Cook. 2020. {``Spinifex: An {R} Package
 for Creating a Manual Tour of Low-Dimensional Projections of
 Multivariate Data.''} \emph{The R Journal} 12: 243--57.
 \url{https://doi.org/10.32614/RJ-2020-027}.
 
-\bibitem[\citeproctext]{ref-sutherland_orca_2000}
+\leavevmode\vadjust pre{\hypertarget{ref-sutherland_orca_2000}{}}%
 Sutherland, Peter, Anthony Rossini, Thomas Lumley, Nicholas Lewin-Koh,
 Julie Dickerson, Zach Cox, and Dianne Cook. 2000. {``Orca: {A}
 {Visualization} {Toolkit} for {High}-{Dimensional} {Data}.''}
 \emph{Journal of Computational and Graphical Statistics} 9 (3): 509--29.
 \url{https://www.jstor.org/stable/1390943}.
 
-\bibitem[\citeproctext]{ref-svoboda2016handbook}
+\leavevmode\vadjust pre{\hypertarget{ref-svoboda2016handbook}{}}%
 Svoboda, Mark, Brian Fuchs, et al. 2016. {``Handbook of Drought
 Indicators and Indices.''} \emph{Drought and Water Crises: Integrating
 Science, Management, and Policy}, 155--208.
 
-\bibitem[\citeproctext]{ref-tate_social_2012}
+\leavevmode\vadjust pre{\hypertarget{ref-tate_social_2012}{}}%
 Tate, Eric. 2012. {``Social Vulnerability Indices: A Comparative
 Assessment Using Uncertainty and Sensitivity Analysis.''} \emph{Natural
 Hazards} 63 (2): 325--47.
 \url{https://doi.org/10.1007/s11069-012-0152-2}.
 
-\bibitem[\citeproctext]{ref-tate_uncertainty_2013}
+\leavevmode\vadjust pre{\hypertarget{ref-tate_uncertainty_2013}{}}%
 ---------. 2013. {``Uncertainty {Analysis} for a {Social}
 {Vulnerability} {Index}.''} \emph{Annals of the Association of American
 Geographers} 103 (3): 526--43.
 \url{https://doi.org/10.1080/00045608.2012.700616}.
 
-\bibitem[\citeproctext]{ref-spei}
+\leavevmode\vadjust pre{\hypertarget{ref-spei}{}}%
 Vicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno.
 2010. {``A {Multiscalar} {Drought} {Index} {Sensitive} to {Global}
 {Warming}: {The} {Standardized} {Precipitation} {Evapotranspiration}
 {Index}.''} \emph{Journal of Climate} 23 (7): 1696--1718.
 \url{https://journals.ametsoc.org/view/journals/clim/23/7/2009jcli2909.1.xml}.
 
-\bibitem[\citeproctext]{ref-wang2020}
+\leavevmode\vadjust pre{\hypertarget{ref-wang2020}{}}%
 Wang, Earo, Dianne Cook, and Rob J Hyndman. 2020. {``A New Tidy Data
 Structure to Support Exploration and Modeling of Temporal Data.''}
 \emph{Journal of Computational and Graphical Statistics} 29 (3):
 466--78. \url{https://doi.org/10.1080/10618600.2019.1695624}.
 
-\bibitem[\citeproctext]{ref-wickham_split-apply-combine_2011}
+\leavevmode\vadjust pre{\hypertarget{ref-wickham_split-apply-combine_2011}{}}%
 Wickham, Hadley. 2011. {``The {Split}-{Apply}-{Combine} {Strategy} for
 {Data} {Analysis}.''} \emph{Journal of Statistical Software} 40 (April):
 1--29. \url{https://doi.org/10.18637/jss.v040.i01}.
 
-\bibitem[\citeproctext]{ref-wickham_tidy_2014}
+\leavevmode\vadjust pre{\hypertarget{ref-wickham_tidy_2014}{}}%
 ---------. 2014. {``Tidy {Data}.''} \emph{Journal of Statistical
 Software} 59 (September): 1--23.
 \url{https://doi.org/10.18637/jss.v059.i10}.
 
-\bibitem[\citeproctext]{ref-wickham_welcome_2019}
+\leavevmode\vadjust pre{\hypertarget{ref-wickham_welcome_2019}{}}%
 Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy
 D'Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019.
 {``Welcome to the {Tidyverse}.''} \emph{Journal of Open Source Software}
 4 (43): 1686. \url{https://doi.org/10.21105/joss.01686}.
 
-\bibitem[\citeproctext]{ref-wickham_tourr_2011}
+\leavevmode\vadjust pre{\hypertarget{ref-wickham_tourr_2011}{}}%
 Wickham, Hadley, Dianne Cook, Heike Hofmann, and Andreas Buja. 2011.
 {``Tourr: {An} {R} {Package} for {Exploring} {Multivariate} {Data} with
 {Projections}.''} \emph{Journal of Statistical Software} 40 (2).
 \url{https://doi.org/10.18637/jss.v040.i02}.
 
-\bibitem[\citeproctext]{ref-wickham_plumbing_2009}
+\leavevmode\vadjust pre{\hypertarget{ref-wickham_plumbing_2009}{}}%
 Wickham, Hadley, Michael Lawrence, Dianne Cook, Andreas Buja, Heike
 Hofmann, and Deborah F. Swayne. 2009. {``The Plumbing of Interactive
 Graphics.''} \emph{Computational Statistics} 24 (2): 207--15.
 \url{https://doi.org/10.1007/s00180-008-0116-x}.
 
-\bibitem[\citeproctext]{ref-WEF2023}
+\leavevmode\vadjust pre{\hypertarget{ref-WEF2023}{}}%
 World Economic Forum. 2023. {``{The Global Gender Gap Report 2023}.''}
 \url{https://www3.weforum.org/docs/WEF_GGGR_2023.pdf}.
 
-\bibitem[\citeproctext]{ref-xie_reactive_2014}
+\leavevmode\vadjust pre{\hypertarget{ref-xie_reactive_2014}{}}%
 Xie, Yihui, Heike Hofmann, and Xiaoyue Cheng. 2014. {``Reactive
 {Programming} for {Interactive} {Graphics}.''} \emph{Statistical
 Science} 29 (2): 201--13.
 \url{https://www.jstor.org/stable/43288470?seq=1}.
 
-\bibitem[\citeproctext]{ref-zargar2011review}
+\leavevmode\vadjust pre{\hypertarget{ref-zargar2011review}{}}%
 Zargar, Amin, Rehan Sadiq, Bahman Naser, and Faisal I Khan. 2011. {``A
 Review of Drought Indices.''} \emph{Environmental Reviews} 19 (NA):
 333--49. \url{https://www.jstor.org/stable/envirevi.19.333}.
 
-\bibitem[\citeproctext]{ref-zhang2024cubble}
+\leavevmode\vadjust pre{\hypertarget{ref-zhang2024cubble}{}}%
 Zhang, H. Sherry, Dianne Cook, Ursula Laa, Nicolas Langrené, and
-Patricia Menéndez. 2024. {``Cubble: An r Package for Organizing and
+Patricia Menéndez. 2024. {``Cubble: An {R} Package for Organizing and
 Wrangling Multivariate Spatio-Temporal Data.''}
 \url{https://arxiv.org/abs/2205.00259}.
 
