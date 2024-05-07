@@ -2,7 +2,7 @@
 title: "Response to Reviewers JCGS-23-428"
 subtitle: "A Tidy Framework and Infrastructure to Systematically Assemble Spatio-temporal Indexes from Multivariate Data"
 author: "H. Sherry Zhang, Dianne Cook, Ursula Laa, Nicolas Langrené, Patricia Menéndez"
-date: "2024-03-31"
+date: "2024-05-07"
 format: pdf
 ---
 

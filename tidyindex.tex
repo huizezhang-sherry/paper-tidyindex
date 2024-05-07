@@ -271,7 +271,8 @@ Queensland, Australia; the effect of dimension reduction choices on the
 Global Gender Gap Index (GGGI) on countries' ranking; and how to
 calculate bootstrap confidence intervals for the Standardized
 Precipitation Index (SPI). The methods are supported by a new R package,
-called \texttt{tidyindex}.
+called \texttt{tidyindex}. Supplemental materials for the article are
+available online.
 \end{abstract}
 \begin{keywords}
 \def\sep{;\ }
@@ -1195,10 +1196,9 @@ perfectly measure these errors, it is important that they are recognised
 and estimated for an index, so that it is possible to compute confidence
 intervals. In this example, the Texas post office station highlighted in
 Figure~\ref{fig-compute-temporal} is used to illustrate one possibility
-to compute a confidence interval for the Standardized Precipitation
-Index (SPI). Bootstrapping is used to account for the sampling
-uncertainty in the distribution fit step of the index pipeline and to
-assess its impact on the SPI series.
+to compute a confidence interval for SPI. Bootstrapping is used to
+account for the sampling uncertainty in the distribution fit step of the
+index pipeline and to assess its impact on the SPI series.
 
 In SPI, the distribution fit step fits the gamma distribution to the
 aggregated precipitation series separately for each month. This results
@@ -1303,6 +1303,13 @@ the partial support of the Guangdong Provincial Key Laboratory IRADS
 (2022B1212010006, R0400001-22) and the UIC Start-up Research Fund
 UICR0700041-22. The article is created using Quarto (Allaire et al.
 2022) in R (R Core Team 2021).
+
+\section{Supplementary Materials}\label{supplementary-materials}
+
+The supplementary materials include the full scripts for the three
+examples in Section 6 (\texttt{/scripts} folder), a saved data for
+Example 6.1 (\texttt{/data} folder), and a \texttt{README.md} file
+containing the install instructions for running the scripts.
 
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
