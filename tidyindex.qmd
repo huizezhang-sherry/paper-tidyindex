@@ -494,7 +494,7 @@ gggi_weights %>%
                         0.25, rep("", 2))) %>% 
   knitr::kable(
     digits = 3, booktabs = TRUE, 
-    col.names = c("Variable", "V-wgt", "Dimension", "D-wgt", "wgt"),
+    col.names = c("Variable", "V-wgt", "Dimension", "D-wgt", "weight"),
     linesep = c("", "", "", "", "\\hline",
                 "", "", "", "\\hline",
                 "", "\\hline",
